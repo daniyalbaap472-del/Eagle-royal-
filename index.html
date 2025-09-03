@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Eagle Royal 🦅 Live Streams</title>
     <link rel="stylesheet" href="https://cdn.vidstack.io/player/theme.css" />
     <link rel="stylesheet" href="https://cdn.vidstack.io/player/video.css" />
-    
+
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -40,7 +40,7 @@
             from { background-position: 0% center; }
             to { background-position: 200% center; }
         }
-        /* New Sidebar Navigation Styles */
+        /* Sidebar styles */
         .nav-toggle {
             position: fixed;
             top: 20px;
@@ -188,29 +188,28 @@
             margin-top: 20px;
             border-radius: 10px;
             text-align: center;
-            /* New Sticky Player styles */
-            position: sticky; /* Make the player stick to the screen */
+            /* Sticky position */
+            position: sticky;
             top: 0;
-            z-index: 999; /* Ensure it stays on top of other content */
+            z-index: 999;
         }
         .player-placeholder {
-            /* This div takes up space so content doesn't jump */
             display: none;
-            height: 500px; /* This height should match the player container's height on most devices */
+            height: 500px;
         }
-        #player-section media-player {
+        #video-player {
             width: 100%;
             max-width: 900px;
             margin: 0 auto;
             border-radius: 8px;
         }
-        /* Style for the "Back to Matches" button */
+        /* Back button style */
         #back-to-matches-btn {
             background-color: #007bff;
             color: white;
             border: none;
             padding: 12px 24px;
-            margin-top: 20px; /* Added space below the player */
+            margin-top: 20px;
             border-radius: 5px;
             cursor: pointer;
             font-size: 1em;
@@ -232,7 +231,6 @@
             border: none;
             padding: 10px 15px;
             border-radius: 5px;
-            text-decoration: none;
             cursor: pointer;
             font-weight: bold;
             transition: background-color 0.3s ease;
@@ -242,17 +240,17 @@
             background-color: #c0392b;
         }
     </style>
+
     <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.8/dist/hls.min.js"></script>
     <script src="https://cdn.vidstack.io/player" type="module"></script>
 </head>
 <body>
-
     <header class="header">
         <h1 class="banner-text">Eagle Royal 🦅</h1>
     </header>
 
     <button class="nav-toggle" onclick="toggleNav()">☰</button>
-    
+
     <div id="sidebar" class="sidebar">
         <a href="javascript:void(0)" class="sidebar-close" onclick="toggleNav()">×</a>
         <a href="#top" class="sidebar-nav-item">🏠 Home</a>
@@ -276,7 +274,7 @@
         <div id="live-matches-container" class="match-grid">
             <p>Loading live matches...</p>
         </div>
-        
+
         <hr>
         <h2 class="section-title" id="upcoming-matches-section">Upcoming Matches</h2>
         <div id="upcoming-matches-container" class="match-grid">
@@ -289,695 +287,85 @@
     </footer>
 
     <script>
-        // Directly embed the JSON data for a single-file solution
+        // Embed the JSON data
         const apiData = {
-    "Author": "DOCTOR_STRANGE",
-    "name": "FanCode Live Matches API",
-    "last_updated": "02:46:45 PM 28-08-2025",
-    "headers": {
-        "User-Agent": "ReactNativeVideo/7.19.1 (Linux;Android/13) AndroidXMedia3/1.1.1",
-        "Referer": "https://fancode.com/"
-    },
-    "total_matches": 39,
-    "live_matches": 5,
-    "upcoming_matches": 34,
-    "website_info": {
-        "banner_text": "Eagle Royal 🦅",
-        "telegram_channel": "https://t.me/EAGLEROYALM3u8",
-        "homepage_url": "https://fancode.com/"
-    },
-    "matches": [
-        {
-            "category": "Cricket",
-            "title": "Kochi Blue Tigers Vs Adani Trivandrum Royals",
-            "tournament": "Kerala Cricket League, 2025",
-            "match_id": 133890,
-            "status": "LIVE",
-            "streamingStatus": "STARTED",
-            "startTime": "28 August 2025 02:30 PM",
-            "startDate": "01 January 1970 05:30 AM",
-            "image": "https://www.fancode.com/skillup-uploads/cms-media/133890_5600_KBT_TR_fc-Web_1756275176751.jpg",
-            "image_cdn": {
-                "TATAPLAY": "https://images.fancode.com/aig/match/v1/133890_CASACARDS_PARTNER_16_9_1920_1080.png",
-                "APP": "https://www.fancode.com/skillup-uploads/cms-media/133890_5600_KBT_TR_fc-Web_1756275176751.jpg",
-                "PLAYBACK": "https://www.fancode.com/skillup-uploads/cms-media/133890_5600_KBT_TR_fc-Web_1756275176751.jpg",
-                "LOGO": "https://www.fancode.com/skillup-uploads/cms-media/Kerala-Cricket-League-Tour-Logo-(1).png",
-                "SPORTS": "https://www.fancode.com/skillup-uploads/cms-media/Cricket_Fallback_Old_match-card.jpg",
-                "BG_IMAGE": "https://www.fancode.com/skillup-uploads/cms-media/133890_5600_KBT_TR_fc-Web_1756275176751.jpg",
-                "SPORT_BY_IMAGE": "https://www.fancode.com/skillup-uploads/cms-media/133890_5600_KBT_TR_fc-App_1756275183162.jpg",
-                "CLOUDFARE": "https://d229kpbsb5jevy.cloudfront.net/vffancode2/aig/match/v1/133890_CASACARDS_PARTNER_16_9_1920_1080.png"
+            "Author": "DOCTOR_STRANGE",
+            "name": "FanCode Live Matches API",
+            "last_updated": "02:46:45 PM 28-08-2025",
+            "headers": {
+                "User-Agent": "ReactNativeVideo/7.19.1 (Linux;Android/13) AndroidXMedia3/1.1.1",
+                "Referer": "https://fancode.com/"
             },
-            "teams": [
+            "total_matches": 39,
+            "live_matches": 5,
+            "upcoming_matches": 34,
+            "website_info": {
+                "banner_text": "Eagle Royal 🦅",
+                "telegram_channel": "https://t.me/EAGLEROYALM3u8",
+                "homepage_url": "https://fancode.com/"
+            },
+            "matches": [
                 {
-                    "name": "Kochi Blue Tigers",
-                    "shortName": "KBT",
-                    "flag": {
-                        "src": "https://d13ir53smqqeyp.cloudfront.net/flags/cr-flags/FC-KBT@2x.png"
+                    "category": "Cricket",
+                    "title": "Arizona Diamondbacks Vs Texas Rangers",
+                    "tournament": "Major League Baseball, 2025",
+                    "match_id": 132898,
+                    "status": "LIVE",
+                    "streamingStatus": "STARTED",
+                    "startTime": "03 September 2025 07:10 AM",
+                    "startDate": "01 January 1970 05:30 AM",
+                    "image": "https://images.fancode.com/aig/match/v1/132898_CASACARDS_APP.png",
+                    "image_cdn": {
+                        "TATAPLAY": "https://images.fancode.com/aig/match/v1/132898_CASACARDS_PARTNER_16_9_1920_1080.png",
+                        "APP": "https://images.fancode.com/aig/match/v1/132898_CASACARDS_APP.png",
+                        "PLAYBACK": "https://images.fancode.com/aig/match/v1/132898_CASACARDS_APP.png",
+                        "LOGO": "https://fancode.com/skillup-uploads/prod-images/2024/04/MLB-Tour-Logo.png",
+                        "SPORTS": "https://www.fancode.com/skillup-uploads/cms-media/FC_Sports_Default_Baseball-1440-x-360.jpg",
+                        "BG_IMAGE": "https://images.fancode.com/aig/match/v1/132898_CASACARDS_APP.png",
+                        "SPORT_BY_IMAGE": "https://images.fancode.com/aig/match/v1/132898_CASACARDS_SPORTY_APP.png",
+                        "CLOUDFARE": "https://d229kpbsb5jevy.cloudfront.net/vffancode2/aig/match/v1/132898_CASACARDS_PARTNER_16_9_1920_1080.png"
                     },
-                    "isWinner": null,
-                    "color": "#01c0f6",
-                    "cricketScore": [
+                    "teams": [
                         {
-                            "runs": 39,
-                            "overs": "3.4",
-                            "balls": "22",
-                            "status": "IN_PROGRESS",
-                            "wickets": 0
+                            "name": "Arizona Diamondbacks",
+                            "shortName": "AD",
+                            "flag": {
+                                "src": "https://d13ir53smqqeyp.cloudfront.net/flags/bb-flags/FC-ARIZ@2x.png"
+                            },
+                            "isWinner": null,
+                            "color": "#6f212e"
+                        },
+                        {
+                            "name": "Texas Rangers",
+                            "shortName": "TR",
+                            "flag": {
+                                "src": "https://d13ir53smqqeyp.cloudfront.net/flags/bb-flags/FC-TEXSRA@2x.png"
+                            },
+                            "isWinner": null,
+                            "color": "#4b8fef"
                         }
                     ],
-                    "kabaddiScore": null,
-                    "footballScore": null,
-                    "basketBallScore": null,
-                    "hockeyScore": null,
-                    "status": {
-                        "cricket": {
-                            "isBatting": true
-                        }
-                    }
-                },
-                {
-                    "name": "Adani Trivandrum Royals",
-                    "shortName": "TR",
-                    "flag": {
-                        "src": "https://d13ir53smqqeyp.cloudfront.net/flags/cr-flags/FC-TRK@2x.png"
-                    },
-                    "isWinner": null,
-                    "color": "#74B8E1",
-                    "cricketScore": [],
-                    "kabaddiScore": null,
-                    "footballScore": null,
-                    "basketBallScore": null,
-                    "hockeyScore": null,
-                    "status": {
-                        "cricket": {
-                            "isBatting": false
-                        }
+                    "language": "ENGLISH",
+                    "adfree_stream": "https://in-mc-fdlive.fancode.com/mumbai/132898_english_hls_dee2cf05792715ta-di_h264/index.m3u8",
+                    "dai_stream": "Unavailable",
+                    "STREAMING_CDN": {
+                        "Primary_Playback_URL": "https://in-mc-fdlive.fancode.com/mumbai/132898_english_hls_dee2cf05792715ta-di_h264/index.m3u8",
+                        "fancode_cdn": "https://in-mc-fdlive.fancode.com/mumbai/132898_english_hls_dee2cf05792715ta-di_h264/index.m3u8",
+                        "dai_google_cdn": "Unavailable",
+                        "cloudfront_cdn": "Unavailable",
+                        "language": "ENGLISH"
                     }
                 }
-            ],
-            "language": "ENGLISH",
-            "adfree_stream": "https://in-mc-fdlive.fancode.com/mumbai/133890_english_hls_6a57cd7a3d63018ta-di_h264/index.m3u8",
-            "dai_stream": "https://dai.google.com/linear/hls/event/d7DZVmOpRQmPysTzLvkgcQ/master.m3u8",
-            "streaming_options": [
-                {
-                    "label": "English Stream",
-                    "url": "https://in-mc-fdlive.fancode.com/mumbai/132361_english_hls_75c67fcb9123457ta-di_h264/index.m3u8"
-                },
-                {
-                    "label": "Hindi AI Stream",
-                    "url": "https://in-mc-fdlive.fancode.com/mumbai/132361_hindi_hls_62f932e94986383ta-di_h264/index.m3u8"
-                }
+                // You can add other matches here
             ]
-        },
-        {
-            "category": "Cricket",
-            "title": "Kochi Blue Tigers Vs Adani Trivandrum Royals",
-            "tournament": "Kerala Cricket League, 2025",
-            "match_id": 133890,
-            "status": "LIVE",
-            "streamingStatus": "STARTED",
-            "startTime": "28 August 2025 02:30 PM",
-            "startDate": "01 January 1970 05:30 AM",
-            "image": "https://www.fancode.com/skillup-uploads/cms-media/133890_5600_KBT_TR_fc-Web_1756275176751.jpg",
-            "image_cdn": {
-                "TATAPLAY": "https://images.fancode.com/aig/match/v1/133890_CASACARDS_PARTNER_16_9_1920_1080.png",
-                "APP": "https://www.fancode.com/skillup-uploads/cms-media/133890_5600_KBT_TR_fc-Web_1756275176751.jpg",
-                "PLAYBACK": "https://www.fancode.com/skillup-uploads/cms-media/133890_5600_KBT_TR_fc-Web_1756275176751.jpg",
-                "LOGO": "https://www.fancode.com/skillup-uploads/cms-media/Kerala-Cricket-League-Tour-Logo-(1).png",
-                "SPORTS": "https://www.fancode.com/skillup-uploads/cms-media/Cricket_Fallback_Old_match-card.jpg",
-                "BG_IMAGE": "https://www.fancode.com/skillup-uploads/cms-media/133890_5600_KBT_TR_fc-Web_1756275176751.jpg",
-                "SPORT_BY_IMAGE": "https://www.fancode.com/skillup-uploads/cms-media/133890_5600_KBT_TR_fc-App_1755807588935.jpg",
-                "CLOUDFARE": "https://d229kpbsb5jevy.cloudfront.net/vffancode2/aig/match/v1/133890_CASACARDS_PARTNER_16_9_1920_1080.png"
-            },
-            "teams": [
-                {
-                    "name": "Kochi Blue Tigers",
-                    "shortName": "KBT",
-                    "flag": {
-                        "src": "https://d13ir53smqqeyp.cloudfront.net/flags/cr-flags/FC-KBT@2x.png"
-                    },
-                    "isWinner": null,
-                    "color": "#01c0f6",
-                    "cricketScore": [
-                        {
-                            "runs": 39,
-                            "overs": "3.4",
-                            "balls": "22",
-                            "status": "IN_PROGRESS",
-                            "wickets": 0
-                        }
-                    ],
-                    "kabaddiScore": null,
-                    "footballScore": null,
-                    "basketBallScore": null,
-                    "hockeyScore": null,
-                    "status": {
-                        "cricket": {
-                            "isBatting": true
-                        }
-                    }
-                },
-                {
-                    "name": "Adani Trivandrum Royals",
-                    "shortName": "TR",
-                    "flag": {
-                        "src": "https://d13ir53smqqeyp.cloudfront.net/flags/cr-flags/FC-TRK@2x.png"
-                    },
-                    "isWinner": null,
-                    "color": "#74B8E1",
-                    "cricketScore": [],
-                    "kabaddiScore": null,
-                    "footballScore": null,
-                    "basketBallScore": null,
-                    "hockeyScore": null,
-                    "status": {
-                        "cricket": {
-                            "isBatting": false
-                        }
-                    }
-                }
-            ],
-            "language": "MALAYALAM",
-            "adfree_stream": "https://in-mc-fdlive.fancode.com/mumbai/133890_malayalam_hls_69606395a164394ta-di_h264/index.m3u8",
-            "dai_stream": "https://dai.google.com/linear/hls/event/8f_tTEKKRXq6JBby5r3TZA/master.m3u8",
-            "STREAMING_CDN": {
-                "Primary_Playback_URL": "https://in-mc-fdlive.fancode.com/mumbai/133890_malayalam_hls_69606395a164394ta-di_h264/index.m3u8",
-                "fancode_cdn": "https://in-mc-fdlive.fancode.com/mumbai/133890_malayalam_hls_69606395a164394ta-di_h264/index.m3u8",
-                "dai_google_cdn": "https://dai.google.com/linear/hls/event/8f_tTEKKRXq6JBby5r3TZA/master.m3u8",
-                "cloudfront_cdn": "Unavailable",
-                "language": "MALAYALAM"
-            }
-        },
-        {
-            "category": "Cricket",
-            "title": "Chandigarh Kings Vs Altruistian",
-            "tournament": "Chandigarh Premier League T20 Tournament, 2025",
-            "match_id": 136207,
-            "status": "LIVE",
-            "streamingStatus": "STARTED",
-            "startTime": "28 August 2025 10:00 AM",
-            "startDate": "01 January 1970 05:30 AM",
-            "image": "https://images.fancode.com/aig/match/v1/136207_CASACARDS_APP.png",
-            "image_cdn": {
-                "TATAPLAY": "https://images.fancode.com/aig/match/v1/136207_CASACARDS_PARTNER_16_9_1920_1080.png",
-                "APP": "https://images.fancode.com/aig/match/v1/136207_CASACARDS_APP.png",
-                "PLAYBACK": "https://images.fancode.com/aig/match/v1/136207_CASACARDS_APP.png",
-                "LOGO": "https://www.fancode.com/skillup-uploads/cms-media/Chandigarh-premier-league.png",
-                "SPORTS": "https://www.fancode.com/skillup-uploads/cms-media/Cricket_Fallback_Old_match-card.jpg",
-                "BG_IMAGE": "https://images.fancode.com/aig/match/v1/136207_CASACARDS_APP.png",
-                "SPORT_BY_IMAGE": "https://images.fancode.com/aig/match/v1/136207_CASACARDS_SPORTY_APP.png",
-                "CLOUDFARE": "https://d229kpbsb5jevy.cloudfront.net/vffancode2/aig/match/v1/136207_CASACARDS_PARTNER_16_9_1920_1080.png"
-            },
-            "teams": [
-                {
-                    "name": "Chandigarh Kings",
-                    "shortName": "CST",
-                    "flag": {
-                        "src": "https://d13ir53smqqeyp.cloudfront.net/flags/cr-flags/FC-CCST@2x.png"
-                    },
-                    "isWinner": true,
-                    "color": "#B8142D",
-                    "cricketScore": [
-                        {
-                            "runs": 158,
-                            "overs": "15",
-                            "balls": "90",
-                            "status": "COMPLETED",
-                            "wickets": 4
-                        }
-                    ],
-                    "kabaddiScore": null,
-                    "footballScore": null,
-                    "basketBallScore": null,
-                    "hockeyScore": null,
-                    "status": {
-                        "cricket": {
-                            "isBatting": false
-                        }
-                    }
-                },
-                {
-                    "name": "Altruistian",
-                    "shortName": "ALT",
-                    "flag": {
-                        "src": "https://d13ir53smqqeyp.cloudfront.net/flags/cr-flags/FC-ALT@2x.png"
-                    },
-                    "isWinner": false,
-                    "color": "#B8142D",
-                    "cricketScore": [
-                        {
-                            "runs": 140,
-                            "overs": "15",
-                            "balls": "90",
-                            "status": "IN_PROGRESS",
-                            "wickets": 6
-                        }
-                    ],
-                    "kabaddiScore": null,
-                    "footballScore": null,
-                    "basketBallScore": null,
-                    "hockeyScore": null,
-                    "status": {
-                        "cricket": {
-                            "isBatting": true
-                        }
-                    }
-                }
-            ],
-            "language": "ENGLISH",
-            "adfree_stream": "https://in-mc-fdlive.fancode.com/mumbai/136207_english_hls_574928817b94826ta-di_h264/index.m3u8",
-            "dai_stream": "https://dai.google.com/linear/hls/event/FX5siArUT1mWzJGLc75anw/master.m3u8",
-            "STREAMING_CDN": {
-                "Primary_Playback_URL": "https://in-mc-fdlive.fancode.com/mumbai/136207_english_hls_574928817b94826ta-di_h264/index.m3u8",
-                "fancode_cdn": "https://in-mc-fdlive.fancode.com/mumbai/136207_english_hls_574928817b94826ta-di_h264/index.m3u8",
-                "dai_google_cdn": "https://dai.google.com/linear/hls/event/FX5siArUT1mWzJGLc75anw/master.m3u8",
-                "cloudfront_cdn": "Unavailable",
-                "language": "ENGLISH"
-            }
-        },
-        {
-            "category": "Cricket",
-            "title": "Dr Morepen Dazzlers Vs Capital Strikers",
-            "tournament": "Chandigarh Premier League T20 Tournament, 2025",
-            "match_id": 136208,
-            "status": "LIVE",
-            "streamingStatus": "STARTED",
-            "startTime": "28 August 2025 02:15 PM",
-            "startDate": "01 January 1970 05:30 AM",
-            "image": "https://www.fancode.com/skillup-uploads/cms-media/Cricket_Fallback_Old_match-card.jpg",
-            "image_cdn": {
-                "TATAPLAY": "https://images.fancode.com/aig/match/v1/136208_CASACARDS_PARTNER_16_9_1920_1080.png",
-                "APP": "https://www.fancode.com/skillup-uploads/cms-media/Cricket_Fallback_Old_match-card.jpg",
-                "PLAYBACK": "https://www.fancode.com/skillup-uploads/cms-media/Cricket_Fallback_Old_match-card.jpg",
-                "LOGO": "https://www.fancode.com/skillup-uploads/cms-media/Chandigarh-premier-league.png",
-                "SPORTS": "https://www.fancode.com/skillup-uploads/cms-media/Cricket_Fallback_Old_match-card.jpg",
-                "BG_IMAGE": "https://www.fancode.com/skillup-uploads/cms-media/Cricket_Fallback_Old_match-card.jpg",
-                "SPORT_BY_IMAGE": "https://fancode.com/skillup-uploads/prod-images/2023/08/FC_Sports_Default_cricket.jpg",
-                "CLOUDFARE": "https://d229kpbsb5jevy.cloudfront.net/vffancode2/aig/match/v1/136208_CASACARDS_PARTNER_16_9_1920_1080.png"
-            },
-            "teams": [
-                {
-                    "name": "Dr Morepen Dazzlers",
-                    "shortName": "DMD",
-                    "flag": {
-                        "src": "https://d13ir53smqqeyp.cloudfront.net/flags/cr-flags/FC-DMD@2x.png"
-                    },
-                    "isWinner": null,
-                    "color": "#ABD5FF",
-                    "cricketScore": [],
-                    "kabaddiScore": null,
-                    "footballScore": null,
-                    "basketBallScore": null,
-                    "hockeyScore": null,
-                    "status": {
-                        "cricket": {
-                            "isBatting": false
-                        }
-                    }
-                },
-                {
-                    "name": "Capital Strikers",
-                    "shortName": "CST",
-                    "flag": {
-                        "src": "https://d13ir53smqqeyp.cloudfront.net/flags/cr-flags/FC-CTS@2x.png"
-                    },
-                    "isWinner": null,
-                    "color": "#B8142D",
-                    "cricketScore": [],
-                    "kabaddiScore": null,
-                    "footballScore": null,
-                    "basketBallScore": null,
-                    "hockeyScore": null,
-                    "status": {
-                        "cricket": {
-                            "isBatting": false
-                        }
-                    }
-                }
-            ],
-            "language": "ENGLISH",
-            "adfree_stream": "https://in-mc-fdlive.fancode.com/mumbai/136208_english_hls_8ff98f68db26014ta-di_h264/index.m3u8",
-            "dai_stream": "https://dai.google.com/linear/hls/event/JGcXbby6Sua40SkBq1WE3Q/master.m3u8",
-            "STREAMING_CDN": {
-                "Primary_Playback_URL": "https://in-mc-fdlive.fancode.com/mumbai/136208_english_hls_8ff98f68db26014ta-di_h264/index.m3u8",
-                "fancode_cdn": "https://in-mc-fdlive.fancode.com/mumbai/136208_english_hls_8ff98f68db26014ta-di_h264/index.m3u8",
-                "dai_google_cdn": "https://dai.google.com/linear/hls/event/JGcXbby6Sua40SkBq1WE3Q/master.m3u8",
-                "cloudfront_cdn": "Unavailable",
-                "language": "ENGLISH"
-            }
-        },
-        {
-            "category": "Cricket",
-            "title": "University Of Queensland Vs Wynnum Manly",
-            "tournament": "KFC T20 Max, 2025",
-            "match_id": 134899,
-            "status": "LIVE",
-            "streamingStatus": "STARTED",
-            "startTime": "28 August 2025 02:00 PM",
-            "startDate": "01 January 1970 05:30 AM",
-            "image": "https://www.fancode.com/skillup-uploads/cms-media/134899_5623_UOQ_WYN_Fc-Web_1755807575943.jpg",
-            "image_cdn": {
-                "TATAPLAY": "https://images.fancode.com/aig/match/v1/134899_CASACARDS_PARTNER_16_9_1920_1080.png",
-                "APP": "https://www.fancode.com/skillup-uploads/cms-media/134899_5623_UOQ_WYN_Fc-Web_1755807575943.jpg",
-                "PLAYBACK": "https://www.fancode.com/skillup-uploads/cms-media/134899_5623_UOQ_WYN_Fc-Web_1755807575943.jpg",
-                "LOGO": "https://fancode.com/skillup-uploads/prod-images/2024/08/KFC-T20-Max-Competition-2024-Tour-Logo.png",
-                "SPORTS": "https://www.fancode.com/skillup-uploads/cms-media/Cricket_Fallback_Old_match-card.jpg",
-                "BG_IMAGE": "https://www.fancode.com/skillup-uploads/cms-media/134899_5623_UOQ_WYN_Fc-Web_1755807575943.jpg",
-                "SPORT_BY_IMAGE": "https://www.fancode.com/skillup-uploads/cms-media/134899_5623_UOQ_WYN_FC-App_1755807588935.jpg",
-                "CLOUDFARE": "https://d229kpbsb5jevy.cloudfront.net/vffancode2/aig/match/v1/134899_CASACARDS_PARTNER_16_9_1920_1080.png"
-            },
-            "teams": [
-                {
-                    "name": "University Of Queensland",
-                    "shortName": "UOQ",
-                    "flag": {
-                        "src": "https://d13ir53smqqeyp.cloudfront.net/flags/cr-flags/FC-UOQ@2x.png"
-                    },
-                    "isWinner": null,
-                    "color": "#dfa61e",
-                    "cricketScore": [],
-                    "kabaddiScore": null,
-                    "footballScore": null,
-                    "basketBallScore": null,
-                    "hockeyScore": null,
-                    "status": {
-                        "cricket": {
-                            "isBatting": false
-                        }
-                    }
-                },
-                {
-                    "name": "Wynnum-Manly",
-                    "shortName": "WYN",
-                    "flag": {
-                        "src": "https://d13ir53smqqeyp.cloudfront.net/flags/cr-flags/FC-WYN@2x.png"
-                    },
-                    "isWinner": null,
-                    "color": "#FFFFFF",
-                    "cricketScore": [],
-                    "kabaddiScore": null,
-                    "footballScore": null,
-                    "basketBallScore": null,
-                    "hockeyScore": null,
-                    "status": {
-                        "cricket": {
-                            "isBatting": false
-                        }
-                    }
-                }
-            ],
-            "language": "ENGLISH",
-            "adfree_stream": "https://in-mc-fdlive.fancode.com/mumbai/134899_english_hls_88bef0bf1c63714ta-di_h264/index.m3u8",
-            "dai_stream": "Unavailable",
-            "STREAMING_CDN": {
-                "Primary_Playback_URL": "https://in-mc-fdlive.fancode.com/mumbai/134899_english_hls_88bef0bf1c63714ta-di_h264/index.m3u8",
-                "fancode_cdn": "https://in-mc-fdlive.fancode.com/mumbai/134899_english_hls_88bef0bf1c63714ta-di_h264/index.m3u8",
-                "dai_google_cdn": "Unavailable",
-                "cloudfront_cdn": "Unavailable",
-                "language": "ENGLISH"
-            }
-        },
-        {
-            "category": "Cricket",
-            "title": "Hubli Tigers Vs Mangaluru Dragons",
-            "tournament": "Maharaja T20 Trophy, 2025",
-            "match_id": 132818,
-            "status": "NOT_STARTED",
-            "streamingStatus": "NOT_STARTED",
-            "startTime": "28 August 2025 06:30 PM",
-            "startDate": "01 January 1970 05:30 AM",
-            "image": "https://www.fancode.com/skillup-uploads/cms-media/132794_5530_HT_MD_fc-Web_1755374792921.jpg",
-            "image_cdn": {
-                "TATAPLAY": "https://images.fancode.com/aig/match/v1/132818_CASACARDS_PARTNER_16_9_1920_1080.png",
-                "APP": "https://www.fancode.com/skillup-uploads/cms-media/132794_5530_HT_MD_fc-Web_1755374792921.jpg",
-                "PLAYBACK": null,
-                "LOGO": "https://fancode.com/skillup-uploads/prod-images/2024/07/Maharaja-Trophy-KSCA-T20-Tour-Logo.png",
-                "SPORTS": "https://www.fancode.com/skillup-uploads/cms-media/Cricket_Fallback_Old_match-card.jpg",
-                "BG_IMAGE": "https://www.fancode.com/skillup-uploads/cms-media/132794_5530_HT_MD_fc-Web_1755374792921.jpg",
-                "SPORT_BY_IMAGE": "https://www.fancode.com/skillup-uploads/cms-media/132794_5530_HT_MD_fc-App_1755374802483.jpg",
-                "CLOUDFARE": "https://d229kpbsb5jevy.cloudfront.net/vffancode2/aig/match/v1/132818_CASACARDS_PARTNER_16_9_1920_1080.png"
-            },
-            "teams": [
-                {
-                    "name": "Hubli Tigers",
-                    "shortName": "HT",
-                    "flag": {
-                        "src": "https://d13ir53smqqeyp.cloudfront.net/flags/cr-flags/FC-HBT@2x.png"
-                    },
-                    "isWinner": null,
-                    "color": "#272993",
-                    "cricketScore": [],
-                    "kabaddiScore": null,
-                    "footballScore": null,
-                    "basketBallScore": null,
-                    "hockeyScore": null,
-                    "status": {
-                        "cricket": {
-                            "isBatting": false
-                        }
-                    }
-                },
-                {
-                    "name": "Mangaluru Dragons",
-                    "shortName": "MD",
-                    "flag": {
-                        "src": "https://d13ir53smqqeyp.cloudfront.net/flags/cr-flags/FC-MDR@2x.png"
-                    },
-                    "isWinner": null,
-                    "color": "#fea129",
-                    "cricketScore": [],
-                    "kabaddiScore": null,
-                    "footballScore": null,
-                    "basketBallScore": null,
-                    "hockeyScore": null,
-                    "status": {
-                        "cricket": {
-                            "isBatting": false
-                        }
-                    }
-                }
-            ],
-            "language": "BLOODY_SWEET",
-            "adfree_stream": null,
-            "dai_stream": null,
-            "STREAMING_CDN": {
-                "language": "BLOODY_SWEET",
-                "Primary_Playback_URL": null
-            }
-        },
-        {
-            "category": "Cricket",
-            "title": "Aries Kollam Sailors Vs Alleppey Ripples",
-            "tournament": "Kerala Cricket League, 2025",
-            "match_id": 133891,
-            "status": "NOT_STARTED",
-            "streamingStatus": "NOT_STARTED",
-            "startTime": "28 August 2025 06:45 PM",
-            "startDate": "01 January 1970 05:30 AM",
-            "image": "https://www.fancode.com/skillup-uploads/cms-media/133891_5600_AKS_AP_fc-Web_1756275176709.jpg",
-            "image_cdn": {
-                "TATAPLAY": "https://images.fancode.com/aig/match/v1/133891_CASACARDS_PARTNER_16_9_1920_1080.png",
-                "APP": "https://www.fancode.com/skillup-uploads/cms-media/133891_5600_AKS_AP_fc-Web_1756275176709.jpg",
-                "PLAYBACK": null,
-                "LOGO": "https://www.fancode.com/skillup-uploads/cms-media/Kerala-Cricket-League-Tour-Logo-(1).png",
-                "SPORTS": "https://www.fancode.com/skillup-uploads/cms-media/Cricket_Fallback_Old_match-card.jpg",
-                "BG_IMAGE": "https://www.fancode.com/skillup-uploads/cms-media/133891_5600_AKS_AP_fc-Web_1756275176709.jpg",
-                "SPORT_BY_IMAGE": "https://www.fancode.com/skillup-uploads/cms-media/133891_5600_AKS_AP_fc-App_1756275182366.jpg",
-                "CLOUDFARE": "https://d229kpbsb5jevy.cloudfront.net/vffancode2/aig/match/v1/133891_CASACARDS_PARTNER_16_9_1920_1080.png"
-            },
-            "teams": [
-                {
-                    "name": "Aries Kollam Sailors",
-                    "shortName": "AKS",
-                    "flag": {
-                        "src": "https://d13ir53smqqeyp.cloudfront.net/flags/cr-flags/FC-AKS@2x.png"
-                    },
-                    "isWinner": null,
-                    "color": "#b7e330",
-                    "cricketScore": [],
-                    "kabaddiScore": null,
-                    "footballScore": null,
-                    "basketBallScore": null,
-                    "hockeyScore": null,
-                    "status": {
-                        "cricket": {
-                            "isBatting": false
-                        }
-                    }
-                },
-                {
-                    "name": "Alleppey Ripples",
-                    "shortName": "AP",
-                    "flag": {
-                        "src": "https://d13ir53smqqeyp.cloudfront.net/flags/cr-flags/FC-APK@2x.png"
-                    },
-                    "isWinner": null,
-                    "color": "#8e5bf0",
-                    "cricketScore": [],
-                    "kabaddiScore": null,
-                    "footballScore": null,
-                    "basketBallScore": null,
-                    "hockeyScore": null,
-                    "status": {
-                        "cricket": {
-                            "isBatting": false
-                        }
-                    }
-                }
-            ],
-            "language": "BLOODY_SWEET",
-            "adfree_stream": null,
-            "dai_stream": null,
-            "STREAMING_CDN": {
-                "language": "BLOODY_SWEET",
-                "Primary_Playback_URL": null
-            }
-        },
-        {
-            "category": "Cricket",
-            "title": "North Delhi Strikers Vs New Delhi Tigers",
-            "tournament": "Delhi Premier League, 2025",
-            "match_id": 132503,
-            "status": "NOT_STARTED",
-            "streamingStatus": "NOT_STARTED",
-            "startTime": "28 August 2025 07:00 PM",
-            "startDate": "01 January 1970 05:30 AM",
-            "image": "https://www.fancode.com/skillup-uploads/cms-media/132503_5521_NDS_NDT_fc-Web.jpg",
-            "image_cdn": {
-                "TATAPLAY": "https://images.fancode.com/aig/match/v1/132503_CASACARDS_PARTNER_16_9_1920_1080.png",
-                "APP": "https://www.fancode.com/skillup-uploads/cms-media/132503_5521_NDS_NDT_fc-Web.jpg",
-                "PLAYBACK": null,
-                "LOGO": "https://www.fancode.com/skillup-uploads/cms-media/DPL_Tour_Logo.png",
-                "SPORTS": "https://www.fancode.com/skillup-uploads/cms-media/Cricket_Fallback_Old_match-card.jpg",
-                "BG_IMAGE": "https://www.fancode.com/skillup-uploads/cms-media/132503_5521_NDS_NDT_fc-Web.jpg",
-                "SPORT_BY_IMAGE": "https://www.fancode.com/skillup-uploads/cms-media/132503_5521_NDS_NDT_fc-App.jpg",
-                "CLOUDFARE": "https://d229kpbsb5jevy.cloudfront.net/vffancode2/aig/match/v1/132503_CASACARDS_PARTNER_16_9_1920_1080.png"
-            },
-            "teams": [
-                {
-                    "name": "North Delhi Strikers",
-                    "shortName": "NDS",
-                    "flag": {
-                        "src": "https://d13ir53smqqeyp.cloudfront.net/flags/cr-flags/FC-NDS@2x.png"
-                    },
-                    "isWinner": null,
-                    "color": "#4686c7",
-                    "cricketScore": [],
-                    "kabaddiScore": null,
-                    "footballScore": null,
-                    "basketBallScore": null,
-                    "hockeyScore": null,
-                    "status": {
-                        "cricket": {
-                            "isBatting": false
-                        }
-                    }
-                },
-                {
-                    "name": "New Delhi Tigers",
-                    "shortName": "NDT",
-                    "flag": {
-                        "src": "https://d13ir53smqqeyp.cloudfront.net/flags/cr-flags/NDT-CR2@2x.png"
-                    },
-                    "isWinner": null,
-                    "color": "#B8142D",
-                    "cricketScore": [],
-                    "kabaddiScore": null,
-                    "footballScore": null,
-                    "basketBallScore": null,
-                    "hockeyScore": null,
-                    "status": {
-                        "cricket": {
-                            "isBatting": false
-                        }
-                    }
-                }
-            ],
-            "language": "BLOODY_SWEET",
-            "adfree_stream": null,
-            "dai_stream": null,
-            "STREAMING_CDN": {
-                "language": "BLOODY_SWEET",
-                "Primary_Playback_URL": null
-            }
-        },
-        {
-            "category": "Cricket",
-            "title": "Southern Brave Women Vs Welsh Fire Women",
-            "tournament": "The Hundred Women, 2025",
-            "match_id": 136190,
-            "status": "NOT_STARTED",
-            "streamingStatus": "NOT_STARTED",
-            "startTime": "28 August 2025 07:30 PM",
-            "startDate": "01 January 1970 05:30 AM",
-            "image": "https://www.fancode.com/skillup-uploads/cms-media/132287_5506_SOB-W_WEF-W_Fc-Web.jpg",
-            "image_cdn": {
-                "TATAPLAY": "https://images.fancode.com/aig/match/v1/136190_CASACARDS_PARTNER_16_9_1920_1080.png",
-                "APP": "https://www.fancode.com/skillup-uploads/cms-media/132287_5506_SOB-W_WEF-W_Fc-Web.jpg",
-                "PLAYBACK": null,
-                "LOGO": "https://fancode.com/skillup-uploads/prod-images/2024/06/The-Hundred_Tour-Logo.png",
-                "SPORTS": "https://www.fancode.com/skillup-uploads/cms-media/Cricket_Fallback_Old_match-card.jpg",
-                "BG_IMAGE": "https://www.fancode.com/skillup-uploads/cms-media/132287_5506_SOB-W_WEF-W_Fc-Web.jpg",
-                "SPORT_BY_IMAGE": "https://www.fancode.com/skillup-uploads/cms-media/132287_5506_SOB-W_WEF-W_Fc-App.jpg",
-                "CLOUDFARE": "https://d229kpbsb5jevy.cloudfront.net/vffancode2/aig/match/v1/136190_CASACARDS_PARTNER_16_9_1920_1080.png"
-            },
-            "teams": [
-                {
-                    "name": "Southern Brave Women",
-                    "shortName": "SOB-W",
-                    "flag": {
-                        "src": "https://d13ir53smqqeyp.cloudfront.net/flags/cr-flags/FC-SOUTHB@2x.png"
-                    },
-                    "isWinner": null,
-                    "color": "#97c8a5",
-                    "cricketScore": [],
-                    "kabaddiScore": null,
-                    "footballScore": null,
-                    "basketBallScore": null,
-                    "hockeyScore": null,
-                    "status": {
-                        "cricket": {
-                            "isBatting": false
-                        }
-                    }
-                },
-                {
-                    "name": "Welsh Fire Women",
-                    "shortName": "WEF-W",
-                    "flag": {
-                        "src": "https://d13ir53smqqeyp.cloudfront.net/flags/cr-flags/FC-WEF@2x.png"
-                    },
-                    "isWinner": null,
-                    "color": "#e0544f",
-                    "cricketScore": [],
-                    "kabaddiScore": null,
-                    "footballScore": null,
-                    "basketBallScore": null,
-                    "hockeyScore": null,
-                    "status": {
-                        "cricket": {
-                            "isBatting": false
-                        }
-                    }
-                }
-            ],
-            "language": "BLOODY_SWEET",
-            "adfree_stream": null,
-            "dai_stream": null,
-            "STREAMING_CDN": {
-                "language": "BLOODY_SWEET",
-                "Primary_Playback_URL": null
-            }
-        }
-    ]
-}
+        };
 
         const liveMatchesContainer = document.getElementById('live-matches-container');
         const upcomingMatchesContainer = document.getElementById('upcoming-matches-container');
         const playerSection = document.getElementById('player-section');
         const playerElement = document.getElementById('video-player');
         const playerPlaceholder = document.getElementById('player-placeholder');
-        
+
         let hlsInstance = null;
 
         function toggleNav() {
@@ -993,9 +381,10 @@
             const matchCard = document.createElement('div');
             matchCard.className = 'match-card';
 
+            // Generate team info HTML
             const teams = match.teams.map(team => `
                 <div class="team-info">
-                    <img src="${team.flag.src}" alt="${team.shortName} Flag" class="team-logo">
+                    <img src="${team.flag.src}" alt="${team.shortName} Flag" class="team-logo" />
                     <p>${team.shortName}</p>
                 </div>
             `).join('');
@@ -1003,20 +392,14 @@
             const statusClass = match.status === 'LIVE' ? 'live' : 'upcoming';
 
             let liveButtons = '';
-            if (match.status === 'LIVE' && match.streaming_options && match.streaming_options.length > 0) {
-                liveButtons = match.streaming_options.map(option => {
-                    return `<button class="watch-btn" onclick="playMatch('${option.url}', event)">Watch Now (${option.label})</button>`;
-                }).join('');
-                liveButtons = `<div class="watch-btn-group">${liveButtons}</div>`;
-            } else if (match.status === 'LIVE' && match.STREAMING_CDN && match.STREAMING_CDN.Primary_Playback_URL) {
-                // Fallback for matches with a single STREAMING_CDN object
-                liveButtons = `<button class="watch-btn" onclick="playMatch('${match.STREAMING_CDN.Primary_Playback_URL}', event)">Watch Now</button>`;
+            if (match.status === 'LIVE' && match.adfree_stream) {
+                liveButtons = `<button class="watch-btn" onclick="playMatch('${match.adfree_stream}', event)">Watch Now</button>`;
             } else if (match.status === 'NOT_STARTED') {
                 liveButtons = `<p class="upcoming-text">Coming Soon</p>`;
             }
 
             matchCard.innerHTML = `
-                <img src="${match.image}" alt="${match.title}" class="match-image">
+                <img src="${match.image}" alt="${match.title}" class="match-image" />
                 <div class="match-content">
                     <p class="match-info">${match.tournament}</p>
                     <h3 class="match-title">${match.title}</h3>
@@ -1033,40 +416,27 @@
         }
 
         async function playMatch(url, event) {
-            event.preventDefault(); // Prevent default link behavior
-            
-            // Hide match lists and show the player
+            event.preventDefault();
+
+            // Show player
             liveMatchesContainer.style.display = 'none';
             upcomingMatchesContainer.style.display = 'none';
             playerSection.style.display = 'block';
             playerPlaceholder.style.display = 'block';
 
-            // Ensure Vidstack is loaded and ready
             await customElements.whenDefined('media-player');
-            const mediaProvider = playerElement.querySelector('media-provider');
 
             if (Hls.isSupported() && url.endsWith('.m3u8')) {
-                // If there's an existing HLS instance, destroy it first
                 if (hlsInstance) {
                     hlsInstance.destroy();
                 }
-
-                hlsInstance = new Hls({
-                    pLoader: function(config) {
-                        const loader = new Hls.DefaultConfig.loader(config);
-                        loader.load = function(context, callbacks, data) {
-                            context.headers = apiData.headers;
-                            return Hls.DefaultConfig.loader.prototype.load.call(this, context, callbacks, data);
-                        };
-                        return loader;
-                    }
-                });
-
+                hlsInstance = new Hls();
+                // Add headers if needed
                 hlsInstance.loadSource(url);
-                hlsInstance.attachMedia(mediaProvider.media);
+                hlsInstance.attachMedia(playerElement.media);
                 playerElement.src = url;
 
-                hlsInstance.on(Hls.Events.MANIFEST_PARSED, function() {
+                hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
                     playerElement.play();
                 });
             } else {
@@ -1088,7 +458,6 @@
                 playerElement.pause();
                 playerElement.src = '';
             }
-            
             playerSection.style.display = 'none';
             playerPlaceholder.style.display = 'none';
             liveMatchesContainer.style.display = 'grid';
@@ -1096,6 +465,7 @@
         }
 
         function renderMatches() {
+            // Clear containers
             liveMatchesContainer.innerHTML = '';
             upcomingMatchesContainer.innerHTML = '';
 
