@@ -1,531 +1,540 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
- <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JUST A DEMON..</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg-primary: #121212;
-      --bg-secondary: #1e1e1e;
-      --text-primary: #e0e0e0;
-      --text-secondary: #b0b0b0;
-      --accent: #FF5722; /* Deep Orange */
-      --accent-hover: #FF7043; /* Lighter Orange */
-      --card-bg: #2b2b2b;
-      --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    }
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--bg-primary);
-      color: var(--text-primary);
-      line-height: 1.6;
-      min-height: 100vh;
-      padding: 0;
-    }
-    .container {
-      max-width: 1500px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    header {
-      position: sticky;
-      top: 0;
-      background: linear-gradient(to bottom, #121212, rgba(18, 18, 18, 0.95));
-      backdrop-filter: blur(8px);
-      z-index: 10;
-      padding: 15px 20px;
-      border-bottom: 1px solid #333;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 20px;
-    }
-    h1 {
-      font-size: 2.8rem;
-      font-weight: 700;
-      background: linear-gradient(90deg, #FF9800, #FF5722);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-    .search-container {
-      flex: 1;
-      max-width: 600px;
-      position: relative;
-    }
-    #searchInput {
-      width: 100%;
-      padding: 14px 20px;
-      border-radius: 30px;
-      border: 2px solid #333;
-      background: var(--bg-secondary);
-      color: var(--text-primary);
-      font-size: 1.1rem;
-      transition: all 0.3s ease;
-      padding-left: 50px;
-    }
-    #searchInput:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 10px rgba(255, 87, 34, 0.5);
-    }
-    #searchInput::placeholder {
-      color: var(--text-secondary);
-      opacity: 0.8;
-    }
-    .search-icon {
-      position: absolute;
-      left: 20px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-secondary);
-      font-size: 1.5rem;
-    }
-    .category-filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      padding: 25px 0 10px;
-      justify-content: center;
-    }
-    .category-btn {
-      padding: 10px 20px;
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--text-secondary);
-      background-color: var(--bg-secondary);
-      border: 2px solid #333;
-      border-radius: 20px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-    .category-btn:hover {
-      color: var(--text-primary);
-      background-color: #333;
-      transform: translateY(-2px);
-    }
-    .category-btn.active {
-      color: #fff;
-      background-color: var(--accent);
-      border-color: var(--accent-hover);
-      box-shadow: 0 0 10px rgba(255, 87, 34, 0.5);
-    }
-    .channels-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 30px;
-      margin-top: 20px;
-    }
-    .channel-card {
-      background: var(--card-bg);
-      border-radius: 20px;
-      overflow: hidden;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      box-shadow: var(--card-shadow);
-      border: 2px solid transparent;
-      animation: fadeIn 0.5s ease-in;
-      cursor: pointer;
-      text-decoration: none;
-      color: inherit;
-      position: relative;
-    }
-    .channel-card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 15px 30px rgba(0,0,0,0.6);
-      border-color: var(--accent);
-    }
-    .channel-image {
-      height: 120px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #222;
-      padding: 15px;
-      position: relative;
-    }
-    .channel-image img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
-      transition: transform 0.5s ease;
-    }
-    .channel-card:hover .channel-image img {
-      transform: scale(1.05);
-    }
-    .channel-info {
-      padding: 20px;
-      text-align: center;
-    }
-    .channel-name {
-      font-size: 1.2rem;
-      font-weight: 600;
-      margin-bottom: 8px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .channel-category {
-      font-size: 0.95rem;
-      color: var(--text-secondary);
-      margin-bottom: 15px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-    .play-btn {
-      display: block;
-      width: 100%;
-      padding: 14px;
-      background: var(--accent);
-      color: white;
-      text-align: center;
-      border-radius: 15px;
-      font-weight: 600;
-      text-decoration: none;
-      transition: all 0.3s ease;
-      transform: scale(0.95);
-      opacity: 0;
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%) scale(0.95);
-    }
-    .channel-card:hover .play-btn {
-      opacity: 1;
-      transform: translateX(-50%) scale(1);
-    }
-    .play-btn:hover {
-      background: var(--accent-hover);
-    }
-    .loading-container, .load-more-container {
-      display: flex;
-      justify-content: center;
-      padding: 40px 0;
-    }
-    .spinner {
-      width: 60px;
-      height: 60px;
-      border: 6px solid rgba(255,255,255,0.1);
-      border-radius: 50%;
-      border-top-color: var(--accent);
-      animation: spin 1s ease-in-out infinite;
-    }
-    .message {
-      text-align: center;
-      padding: 30px;
-      color: var(--text-secondary);
-      font-size: 1.1rem;
-    }
-    .error-message {
-      color: #ef4444;
-      background: rgba(239, 68, 68, 0.1);
-      padding: 15px;
-      border-radius: 12px;
-      margin: 20px 0;
-      text-align: center;
-      font-size: 1rem;
-    }
-    .load-more-btn {
-      padding: 14px 28px;
-      border-radius: 30px;
-      background-color: var(--accent);
-      color: white;
-      font-weight: 600;
-      border: none;
-      cursor: pointer;
-      transition: background-color 0.3s, transform 0.3s;
-    }
-    .load-more-btn:hover {
-      background-color: var(--accent-hover);
-      transform: translateY(-2px);
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(15px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @media (max-width: 768px) {
-      .container { padding: 15px; }
-      header { flex-direction: column; padding: 10px 15px; }
-      h1 { font-size: 2.2rem; }
-      .search-container { max-width: 100%; }
-      .channels-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
-    }
-    @media (max-width: 480px) {
-      .container { padding: 10px; }
-      .channels-grid { grid-template-columns: 1fr; }
-      h1 { font-size: 1.8rem; }
-    }
-    .modal {
-      display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%;
-      background-color: rgba(0, 0, 0, 0.7); justify-content: center; align-items: center;
-    }
-    .modal-content {
-      background-color: var(--bg-secondary); padding: 30px; border-radius: 12px; text-align: center;
-      position: relative; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); width: 90%; max-width: 400px;
-    }
-    .modal-close-button {
-      position: absolute; top: 10px; right: 15px; color: var(--text-secondary);
-      font-size: 28px; font-weight: bold; cursor: pointer; transition: color 0.2s;
-    }
-    .modal-close-button:hover { color: var(--accent); }
-    .modal-title { color: var(--text-primary); font-size: 20px; margin-bottom: 20px; }
-    .modal-buttons { display: flex; flex-direction: column; gap: 15px; }
-    .modal-button {
-      text-decoration: none; color: #fff; background-color: #333; padding: 12px 20px;
-      border-radius: 20px; font-size: 16px; font-weight: 600; transition: background-color 0.2s, transform 0.2s;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    .modal-button:hover { transform: translateY(-2px); background-color: #555; }
-    .modal-button.og { background-color: var(--accent); }
-    .modal-button.og:hover { background-color: #ff6d40; }
-  </style>
- </head>
- <body>
-  <div class="container">
-   <header>
-    <h1>MAC BY DEMONJI</h1>
-    <div class="search-container">
-     <div class="search-icon">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search">
-       <circle cx="11" cy="11" r="8"></circle>
-       <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-      </svg>
-     </div>
-     <input type="text" id="searchInput" placeholder="Search current category..." autocomplete="off">
-    </div>
-   </header>
-   <div id="categoryFilters" class="category-filters"></div>
-   <main>
-    <div id="channelGrid" class="channels-grid"></div>
-    <div id="loadingSpinner" class="loading-container" style="display: none;">
-     <div class="spinner"></div>
-    </div>
-    <div id="messageContainer" class="message"></div>
-    <div id="errorContainer" class="error-message" style="display: none;"></div>
-    <div id="loadMoreContainer" class="load-more-container" style="display: none;">
-     <button id="loadMoreBtn" class="load-more-btn">Load More Channels</button>
-    </div>
-   </main>
-  </div>
-  <div id="playerModal" class="modal">
-   <div class="modal-content">
-    <span class="modal-close-button">×</span>
-    <h2 class="modal-title">Choose Player</h2>
-    <div class="modal-buttons">
-     <a id="ogPlayerLink" href="#" class="modal-button og">Original Player</a>
-     <a id="simplePlayerLink" href="#" class="modal-button">Simple Player</a>
-    </div>
-   </div>
-  </div>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // Updated PLAYLIST_URL as per your request
-      const PLAYLIST_URL = 'https://spoo.me/elitebyrahul';
-      const CORS_PROXY_URL = 'https://proxy-js.onrender.com/';
-      const CHANNELS_PER_PAGE = 30;
-      
-      const channelGrid = document.getElementById('channelGrid');
-      const loadingSpinner = document.getElementById('loadingSpinner');
-      const searchInput = document.getElementById('searchInput');
-      const messageContainer = document.getElementById('messageContainer');
-      const errorContainer = document.getElementById('errorContainer');
-      const loadMoreBtn = document.getElementById('loadMoreBtn');
-      const loadMoreContainer = document.getElementById('loadMoreContainer');
-      const modal = document.getElementById('playerModal');
-      const ogPlayerLink = document.getElementById('ogPlayerLink');
-      const simplePlayerLink = document.getElementById('simplePlayerLink');
-      const closeButton = document.querySelector('.modal-close-button');
-      const categoryFiltersContainer = document.getElementById('categoryFilters');
-      
-      let allChannels = [];
-      let currentlyVisibleChannels = [];
-      let renderedChannelCount = 0;
-      
-      let selectedCategory = 'All';
-      let currentSearchTerm = '';
-
-      async function fetchAndPrepareChannels() {
-        try {
-          showLoading();
-          const proxiedUrl = `${CORS_PROXY_URL}${PLAYLIST_URL}`;
-          const response = await fetch(proxiedUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest', 'Referer': 'http://demonji.onrender.com/' } });
-          if (!response.ok) throw new Error(`Failed to fetch playlist: ${response.status} ${response.statusText}`);
-          
-          const data = await response.text();
-          allChannels = parseM3uData(data);
-          
-          if (allChannels.length === 0) {
-            showMessage('No channels found.');
-          } else {
-            displayCategories();
-            applyFiltersAndRender();
-          }
-        } catch (error) {
-          console.error('Error loading channels:', error);
-          showError(`Error loading channels: ${error.message}`);
-        } finally {
-          hideLoading();
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JUST A DEMON..</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --accent: #FF5722; /* Deep Orange */
+            --accent-hover: #FF7043; /* Lighter Orange */
+            --card-bg: #2b2b2b;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
         }
-      }
-      
-      function parseM3uData(data) {
-        const channels = [];
-        const lines = data.split('\n');
-        let currentChannel = {};
-        for (const line of lines) {
-          const trimmedLine = line.trim();
-          if (trimmedLine.startsWith('#EXTINF')) {
-            const match = /#EXTINF:-1\s+(.*),(.+)/.exec(trimmedLine);
-            if (match) {
-              const attrsString = match[1];
-              const name = match[2];
-              const attributes = {};
-              const attrsArray = attrsString.match(/\s*(.*?)=["'](.*?)["']/g) || [];
-              attrsArray.forEach(attr => {
-                const [key, value] = attr.trim().split('=');
-                attributes[key] = value.replace(/['"]/g, '');
-              });
-              currentChannel = {
-                name: name,
-                icon: attributes['tvg-logo'] || 'https://placehold.co/120x60/222/e0e0e0?text=Logo',
-                category: attributes['group-title'] || 'General',
-              };
-            }
-          } else if (trimmedLine.startsWith('http')) {
-            currentChannel.url = trimmedLine;
-            channels.push(currentChannel);
-            currentChannel = {};
-          }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        return channels;
-      }
-
-      function displayCategories() {
-        const categories = ['All', ...new Set(allChannels.map(channel => channel.category).sort())];
-        categoryFiltersContainer.innerHTML = categories.map(category => 
-          `<button class="category-btn ${category === 'All' ? 'active' : ''}" data-category="${category}">${category}</button>`
-        ).join('');
-      }
-      
-      function applyFiltersAndRender() {
-        hideMessage();
-        let filteredChannels = allChannels;
-
-        if (selectedCategory !== 'All') {
-          filteredChannels = allChannels.filter(channel => channel.category === selectedCategory);
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 0;
         }
-
-        if (currentSearchTerm) {
-          const searchTerm = currentSearchTerm.toLowerCase();
-          filteredChannels = filteredChannels.filter(channel => 
-            channel.name.toLowerCase().includes(searchTerm)
-          );
+        .container {
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 20px;
         }
+        header {
+            position: sticky;
+            top: 0;
+            background: linear-gradient(to bottom, #121212, rgba(18, 18, 18, 0.95));
+            backdrop-filter: blur(8px);
+            z-index: 10;
+            padding: 15px 20px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #FF9800, #FF5722);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .search-container {
+            flex: 1;
+            max-width: 600px;
+            position: relative;
+        }
+        #searchInput {
+            width: 100%;
+            padding: 14px 20px;
+            border-radius: 30px;
+            border: 2px solid #333;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            padding-left: 50px;
+        }
+        #searchInput:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 10px rgba(255, 87, 34, 0.5);
+        }
+        #searchInput::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.8;
+        }
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+        }
+        .category-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 25px 0 10px;
+            justify-content: center;
+        }
+        .category-btn {
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            background-color: var(--bg-secondary);
+            border: 2px solid #333;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .category-btn:hover {
+            color: var(--text-primary);
+            background-color: #333;
+            transform: translateY(-2px);
+        }
+        .category-btn.active {
+            color: #fff;
+            background-color: var(--accent);
+            border-color: var(--accent-hover);
+            box-shadow: 0 0 10px rgba(255, 87, 34, 0.5);
+        }
+        .channels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+        .channel-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: var(--card-shadow);
+            border: 2px solid transparent;
+            animation: fadeIn 0.5s ease-in;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            position: relative;
+        }
+        .channel-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.6);
+            border-color: var(--accent);
+        }
+        .channel-image {
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #222;
+            padding: 15px;
+            position: relative;
+        }
+        .channel-image img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: transform 0.5s ease;
+        }
+        .channel-card:hover .channel-image img {
+            transform: scale(1.05);
+        }
+        .channel-info {
+            padding: 20px;
+            text-align: center;
+        }
+        .channel-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .channel-category {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .play-btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background: var(--accent);
+            color: white;
+            text-align: center;
+            border-radius: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            transform: scale(0.95);
+            opacity: 0;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) scale(0.95);
+        }
+        .channel-card:hover .play-btn {
+            opacity: 1;
+            transform: translateX(-50%) scale(1);
+        }
+        .play-btn:hover {
+            background: var(--accent-hover);
+        }
+        .loading-container, .load-more-container {
+            display: flex;
+            justify-content: center;
+            padding: 40px 0;
+        }
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            border-top-color: var(--accent);
+            animation: spin 1s ease-in-out infinite;
+        }
+        .message {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+        .error-message {
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 1rem;
+        }
+        .load-more-btn {
+            padding: 14px 28px;
+            border-radius: 30px;
+            background-color: var(--accent);
+            color: white;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .load-more-btn:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 768px) {
+            .container { padding: 15px; }
+            header { flex-direction: column; padding: 10px 15px; }
+            h1 { font-size: 2.2rem; }
+            .search-container { max-width: 100%; }
+            .channels-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+        }
+        @media (max-width: 480px) {
+            .container { padding: 10px; }
+            .channels-grid { grid-template-columns: 1fr; }
+            h1 { font-size: 1.8rem; }
+        }
+        .modal {
+            display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.7); justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background-color: var(--bg-secondary); padding: 30px; border-radius: 12px; text-align: center;
+            position: relative; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); width: 90%; max-width: 400px;
+        }
+        .modal-close-button {
+            position: absolute; top: 10px; right: 15px; color: var(--text-secondary);
+            font-size: 28px; font-weight: bold; cursor: pointer; transition: color 0.2s;
+        }
+        .modal-close-button:hover { color: var(--accent); }
+        .modal-title { color: var(--text-primary); font-size: 20px; margin-bottom: 20px; }
+        .modal-buttons { display: flex; flex-direction: column; gap: 15px; }
+        .modal-button {
+            text-decoration: none; color: #fff; background-color: #333; padding: 12px 20px;
+            border-radius: 20px; font-size: 16px; font-weight: 600; transition: background-color 0.2s, transform 0.2s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .modal-button:hover { transform: translateY(-2px); background-color: #555; }
+        .modal-button.og { background-color: var(--accent); }
+        .modal-button.og:hover { background-color: #ff6d40; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>MAC BY DEMONJI</h1>
+            <div class="search-container">
+                <div class="search-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </div>
+                <input type="text" id="searchInput" placeholder="Search current category..." autocomplete="off">
+            </div>
+        </header>
         
-        currentlyVisibleChannels = filteredChannels;
-        renderChannels(true);
-      }
+        <div id="categoryFilters" class="category-filters"></div>
 
-      function renderChannels(isNewRender) {
-        if (isNewRender) {
-          channelGrid.innerHTML = '';
-          renderedChannelCount = 0;
-          if (currentlyVisibleChannels.length === 0) {
-            showMessage('No channels match your selection.');
-            hideLoadMore();
-            return;
-          }
-        }
-
-        const startIndex = renderedChannelCount;
-        const endIndex = Math.min(startIndex + CHANNELS_PER_PAGE, currentlyVisibleChannels.length);
-
-        for (let i = startIndex; i < endIndex; i++) {
-          const channel = currentlyVisibleChannels[i];
-          const card = document.createElement('a');
-          card.className = 'channel-card';
-          card.href = `#`;
-          card.dataset.stream = btoa(channel.url);
-          card.dataset.name = channel.name;
-          card.dataset.icon = channel.icon;
-          card.innerHTML = `
-            <div class="channel-image">
-              <img src="${channel.icon}" alt="${channel.name}" onerror="this.src='https://placehold.co/120x60/222/e0e0e0?text=Logo'">
+        <main>
+            <div id="channelGrid" class="channels-grid"></div>
+            <div id="loadingSpinner" class="loading-container" style="display: none;"><div class="spinner"></div></div>
+            <div id="messageContainer" class="message"></div>
+            <div id="errorContainer" class="error-message" style="display: none;"></div>
+            <div id="loadMoreContainer" class="load-more-container" style="display: none;">
+                <button id="loadMoreBtn" class="load-more-btn">Load More Channels</button>
             </div>
-            <div class="channel-info">
-              <h3 class="channel-name" title="${channel.name}">${channel.name}</h3>
-              <div class="channel-category">
-                <span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect><polyline points="17 2 12 7 7 2"></polyline></svg></span> ${channel.category}
-              </div>
+        </main>
+    </div>
+
+    <div id="playerModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close-button">×</span>
+            <h2 class="modal-title">Choose Player</h2>
+            <div class="modal-buttons">
+                <a id="ogPlayerLink" href="#" class="modal-button og">Original Player</a>
+                <a id="simplePlayerLink" href="#" class="modal-button">Simple Player</a>
             </div>
-            <div class="play-btn">Play Now</div>
-          `;
-          card.addEventListener('click', handleChannelClick);
-          channelGrid.appendChild(card);
-        }
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const PLAYLIST_URL = 'http://demonji.onrender.com/multiple/playlist.php?server=server1&categories=43%2C860%2C859%2C856%2C861%2C857%2C862%2C774%2C863%2C858%2C826';
+            const CORS_PROXY_URL = 'https://proxy-js.onrender.com/';
+            const CHANNELS_PER_PAGE = 30;
+            
+            const channelGrid = document.getElementById('channelGrid');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const searchInput = document.getElementById('searchInput');
+            const messageContainer = document.getElementById('messageContainer');
+            const errorContainer = document.getElementById('errorContainer');
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            const loadMoreContainer = document.getElementById('loadMoreContainer');
+            const modal = document.getElementById('playerModal');
+            const ogPlayerLink = document.getElementById('ogPlayerLink');
+            const simplePlayerLink = document.getElementById('simplePlayerLink');
+            const closeButton = document.querySelector('.modal-close-button');
+            const categoryFiltersContainer = document.getElementById('categoryFilters');
+            
+            let allChannels = [];
+            let currentlyVisibleChannels = []; // Holds the full list of currently filtered channels
+            let renderedChannelCount = 0;
+            
+            // --- UPDATED STATE MANAGEMENT ---
+            let selectedCategory = 'All';
+            let currentSearchTerm = '';
 
-        renderedChannelCount = endIndex;
-        if (renderedChannelCount < currentlyVisibleChannels.length) showLoadMore();
-        else hideLoadMore();
-      }
+            async function fetchAndPrepareChannels() {
+                try {
+                    showLoading();
+                    const proxiedUrl = `${CORS_PROXY_URL}${PLAYLIST_URL}`;
+                    const response = await fetch(proxiedUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest', 'Referer': 'http://demonji.onrender.com/' } });
+                    if (!response.ok) throw new Error(`Failed to fetch playlist: ${response.status} ${response.statusText}`);
+                    
+                    const data = await response.text();
+                    allChannels = parseM3uData(data);
+                    
+                    if (allChannels.length === 0) {
+                        showMessage('No channels found.');
+                    } else {
+                        displayCategories();
+                        applyFiltersAndRender();
+                    }
+                } catch (error) {
+                    console.error('Error loading channels:', error);
+                    showError(`Error loading channels: ${error.message}`);
+                } finally {
+                    hideLoading();
+                }
+            }
+            
+            function parseM3uData(data) {
+                const channels = [];
+                const lines = data.split('\n');
+                let currentChannel = {};
+                for (const line of lines) {
+                    const trimmedLine = line.trim();
+                    if (trimmedLine.startsWith('#EXTINF')) {
+                        const match = /#EXTINF:-1\s+(.*),(.+)/.exec(trimmedLine);
+                        if (match) {
+                            const attrsString = match[1];
+                            const name = match[2];
+                            const attributes = {};
+                            const attrsArray = attrsString.match(/\s*(.*?)=["'](.*?)["']/g) || [];
+                            attrsArray.forEach(attr => {
+                                const [key, value] = attr.trim().split('=');
+                                attributes[key] = value.replace(/['"]/g, '');
+                            });
+                            currentChannel = {
+                                name: name,
+                                icon: attributes['tvg-logo'] || 'https://placehold.co/120x60/222/e0e0e0?text=Logo',
+                                category: attributes['group-title'] || 'General',
+                            };
+                        }
+                    } else if (trimmedLine.startsWith('http')) {
+                        currentChannel.url = trimmedLine;
+                        channels.push(currentChannel);
+                        currentChannel = {};
+                    }
+                }
+                return channels;
+            }
 
-      function handleChannelClick(e) {
-        e.preventDefault();
-        const item = e.currentTarget;
-        const streamUrl = item.dataset.stream;
-        const channelName = item.dataset.name;
-        const channelIcon = item.dataset.icon;
-        const backUrl = window.location.pathname;
-        ogPlayerLink.href = `player.html?s=${encodeURIComponent(streamUrl)}&name=${encodeURIComponent(channelName)}&icon=${encodeURIComponent(channelIcon)}&back=${encodeURIComponent(backUrl)}`;
-        simplePlayerLink.href = `simple-player.html?s=${encodeURIComponent(streamUrl)}&name=${encodeURIComponent(channelName)}&back=${encodeURIComponent(backUrl)}`;
-        modal.style.display = 'flex';
-      }
+            function displayCategories() {
+                const categories = ['All', ...new Set(allChannels.map(channel => channel.category).sort())];
+                categoryFiltersContainer.innerHTML = categories.map(category => 
+                    `<button class="category-btn ${category === 'All' ? 'active' : ''}" data-category="${category}">${category}</button>`
+                ).join('');
+            }
+            
+            // --- REWRITTEN FILTERING LOGIC ---
+            function applyFiltersAndRender() {
+                hideMessage();
+                let filteredChannels = allChannels;
 
-      loadMoreBtn.addEventListener('click', () => {
-        renderChannels(false);
-      });
+                // 1. Filter by the selected category first
+                if (selectedCategory !== 'All') {
+                    filteredChannels = allChannels.filter(channel => channel.category === selectedCategory);
+                }
 
-      searchInput.addEventListener('input', function() {
-        currentSearchTerm = this.value.trim();
-        applyFiltersAndRender();
-      });
+                // 2. Then, filter the result by the search term
+                if (currentSearchTerm) {
+                    const searchTerm = currentSearchTerm.toLowerCase();
+                    // Only search by channel name, since the category is already filtered
+                    filteredChannels = filteredChannels.filter(channel => 
+                        channel.name.toLowerCase().includes(searchTerm)
+                    );
+                }
+                
+                // Store the full filtered list for the "Load More" button
+                currentlyVisibleChannels = filteredChannels;
+                renderChannels(true); // Pass true to reset the view
+            }
 
-      categoryFiltersContainer.addEventListener('click', (e) => {
-        if (e.target.classList.contains('category-btn')) {
-          selectedCategory = e.target.dataset.category;
-          
-          document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
-          e.target.classList.add('active');
-          
-          applyFiltersAndRender();
-        }
-      });
+            function renderChannels(isNewRender) {
+                if (isNewRender) {
+                    channelGrid.innerHTML = '';
+                    renderedChannelCount = 0;
+                    if (currentlyVisibleChannels.length === 0) {
+                        showMessage('No channels match your selection.');
+                        hideLoadMore();
+                        return;
+                    }
+                }
 
-      closeButton.addEventListener('click', () => { modal.style.display = 'none'; });
-      window.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
-      
-      function showLoading() { loadingSpinner.style.display = 'flex'; }
-      function hideLoading() { loadingSpinner.style.display = 'none'; }
-      function showMessage(message) { messageContainer.textContent = message; messageContainer.style.display = 'block'; }
-      function hideMessage() { messageContainer.style.display = 'none'; }
-      function showError(message) { errorContainer.textContent = message; errorContainer.style.display = 'block'; }
-      function showLoadMore() { loadMoreContainer.style.display = 'flex'; }
-      function hideLoadMore() { loadMoreContainer.style.display = 'none'; }
+                const startIndex = renderedChannelCount;
+                const endIndex = Math.min(startIndex + CHANNELS_PER_PAGE, currentlyVisibleChannels.length);
 
-      fetchAndPrepareChannels();
-    });
-  </script>
- </body>
+                for (let i = startIndex; i < endIndex; i++) {
+                    const channel = currentlyVisibleChannels[i];
+                    const card = document.createElement('a');
+                    card.className = 'channel-card';
+                    card.href = `#`;
+                    card.dataset.stream = btoa(channel.url);
+                    card.dataset.name = channel.name;
+                    card.dataset.icon = channel.icon;
+                    card.innerHTML = `
+                        <div class="channel-image">
+                            <img src="${channel.icon}" alt="${channel.name}" onerror="this.src='https://placehold.co/120x60/222/e0e0e0?text=Logo'">
+                        </div>
+                        <div class="channel-info">
+                            <h3 class="channel-name" title="${channel.name}">${channel.name}</h3>
+                            <div class="channel-category">
+                                <span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect><polyline points="17 2 12 7 7 2"></polyline></svg></span> ${channel.category}
+                            </div>
+                        </div>
+                        <div class="play-btn">Play Now</div>
+                    `;
+                    card.addEventListener('click', handleChannelClick);
+                    channelGrid.appendChild(card);
+                }
+
+                renderedChannelCount = endIndex;
+                if (renderedChannelCount < currentlyVisibleChannels.length) showLoadMore();
+                else hideLoadMore();
+            }
+
+            function handleChannelClick(e) {
+                e.preventDefault();
+                const item = e.currentTarget;
+                const streamUrl = item.dataset.stream;
+                const channelName = item.dataset.name;
+                const channelIcon = item.dataset.icon;
+                const backUrl = window.location.pathname;
+                ogPlayerLink.href = `player.html?s=${encodeURIComponent(streamUrl)}&name=${encodeURIComponent(channelName)}&icon=${encodeURIComponent(channelIcon)}&back=${encodeURIComponent(backUrl)}`;
+                simplePlayerLink.href = `simple-player.html?s=${encodeURIComponent(streamUrl)}&name=${encodeURIComponent(channelName)}&back=${encodeURIComponent(backUrl)}`;
+                modal.style.display = 'flex';
+            }
+
+            // --- UPDATED EVENT LISTENERS ---
+
+            loadMoreBtn.addEventListener('click', () => {
+                // Now correctly loads more from the already filtered list
+                renderChannels(false);
+            });
+
+            searchInput.addEventListener('input', function() {
+                currentSearchTerm = this.value.trim();
+                applyFiltersAndRender();
+            });
+
+            categoryFiltersContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('category-btn')) {
+                    selectedCategory = e.target.dataset.category;
+                    
+                    // Update active button style
+                    document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+                    
+                    // Re-run the filter and render logic
+                    applyFiltersAndRender();
+                }
+            });
+
+            closeButton.addEventListener('click', () => { modal.style.display = 'none'; });
+            window.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+            
+            function showLoading() { loadingSpinner.style.display = 'flex'; }
+            function hideLoading() { loadingSpinner.style.display = 'none'; }
+            function showMessage(message) { messageContainer.textContent = message; messageContainer.style.display = 'block'; }
+            function hideMessage() { messageContainer.style.display = 'none'; }
+            function showError(message) { errorContainer.textContent = message; errorContainer.style.display = 'block'; }
+            function showLoadMore() { loadMoreContainer.style.display = 'flex'; }
+            function hideLoadMore() { loadMoreContainer.style.display = 'none'; }
+
+            fetchAndPrepareChannels();
+        });
+    </script>
+</body>
 </html>
