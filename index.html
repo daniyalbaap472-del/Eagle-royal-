@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+l<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JUST A DEMON..</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ROYAL A Eagle 🦅..</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet">
+  <style>
         :root {
             --bg-primary: #121212;
             --bg-secondary: #1e1e1e;
@@ -39,6 +39,7 @@
             top: 0;
             background: linear-gradient(to bottom, #121212, rgba(18, 18, 18, 0.95));
             backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             z-index: 10;
             padding: 15px 20px;
             border-bottom: 1px solid #333;
@@ -87,7 +88,6 @@
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-secondary);
-            font-size: 1.5rem;
         }
         .category-filters {
             display: flex;
@@ -136,6 +136,8 @@
             text-decoration: none;
             color: inherit;
             position: relative;
+            display: flex;
+            flex-direction: column;
         }
         .channel-card:hover {
             transform: translateY(-10px);
@@ -150,6 +152,7 @@
             background: #222;
             padding: 15px;
             position: relative;
+            flex-shrink: 0;
         }
         .channel-image img {
             max-width: 100%;
@@ -163,6 +166,10 @@
         .channel-info {
             padding: 20px;
             text-align: center;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
         .channel-name {
             font-size: 1.2rem;
@@ -183,7 +190,7 @@
         }
         .play-btn {
             display: block;
-            width: 100%;
+            width: calc(100% - 40px);
             padding: 14px;
             background: var(--accent);
             color: white;
@@ -192,12 +199,11 @@
             font-weight: 600;
             text-decoration: none;
             transition: all 0.3s ease;
-            transform: scale(0.95);
-            opacity: 0;
             position: absolute;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%) scale(0.95);
+            opacity: 0;
         }
         .channel-card:hover .play-btn {
             opacity: 1;
@@ -270,10 +276,13 @@
         .modal {
             display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%;
             background-color: rgba(0, 0, 0, 0.7); justify-content: center; align-items: center;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
         }
         .modal-content {
             background-color: var(--bg-secondary); padding: 30px; border-radius: 12px; text-align: center;
             position: relative; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); width: 90%; max-width: 400px;
+            animation: fadeIn 0.3s ease-out;
         }
         .modal-close-button {
             position: absolute; top: 10px; right: 15px; color: var(--text-secondary);
@@ -291,49 +300,50 @@
         .modal-button.og { background-color: var(--accent); }
         .modal-button.og:hover { background-color: #ff6d40; }
     </style>
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>MAC BY DEMONJI</h1>
-            <div class="search-container">
-                <div class="search-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                </div>
-                <input type="text" id="searchInput" placeholder="Search current category..." autocomplete="off">
-            </div>
-        </header>
-        
-        <div id="categoryFilters" class="category-filters"></div>
-
-        <main>
-            <div id="channelGrid" class="channels-grid"></div>
-            <div id="loadingSpinner" class="loading-container" style="display: none;"><div class="spinner"></div></div>
-            <div id="messageContainer" class="message"></div>
-            <div id="errorContainer" class="error-message" style="display: none;"></div>
-            <div id="loadMoreContainer" class="load-more-container" style="display: none;">
-                <button id="loadMoreBtn" class="load-more-btn">Load More Channels</button>
-            </div>
-        </main>
+ </head>
+ <body>
+  <div class="container">
+   <header>
+    <h1>MAC BY DEMONJI</h1>
+    <div class="search-container">
+     <div class="search-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search">
+       <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+     </div>
+     <input type="text" id="searchInput" placeholder="Search current category..." autocomplete="off">
     </div>
-
-    <div id="playerModal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close-button">×</span>
-            <h2 class="modal-title">Choose Player</h2>
-            <div class="modal-buttons">
-                <a id="ogPlayerLink" href="#" class="modal-button og">Original Player</a>
-                <a id="simplePlayerLink" href="#" class="modal-button">Simple Player</a>
-            </div>
-        </div>
+   </header>
+   <div id="categoryFilters" class="category-filters"></div>
+   <main>
+    <div id="channelGrid" class="channels-grid"></div>
+    <div id="loadingSpinner" class="loading-container" style="display: none;">
+     <div class="spinner"></div>
     </div>
-    
-    <script>
+    <div id="messageContainer" class="message"></div>
+    <div id="errorContainer" class="error-message" style="display: none;"></div>
+    <div id="loadMoreContainer" class="load-more-container" style="display: none;">
+     <button id="loadMoreBtn" class="load-more-btn">Load More Channels</button>
+    </div>
+   </main>
+  </div>
+  <div id="playerModal" class="modal">
+   <div class="modal-content">
+    <span class="modal-close-button">×</span>
+    <h2 class="modal-title">Choose Player</h2>
+    <div class="modal-buttons">
+     <a id="ogPlayerLink" href="#" target="_blank" class="modal-button og">Original Player</a> <a id="simplePlayerLink" href="#" target="_blank" class="modal-button">Simple Player</a>
+    </div>
+   </div>
+  </div>
+  <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const PLAYLIST_URL = 'http://demonji.onrender.com/multiple/playlist.php?server=server1&categories=43%2C860%2C859%2C856%2C861%2C857%2C862%2C774%2C863%2C858%2C826';
+            const PLAYLIST_URL = 'http://demonji.onrender.com/multiple/playlist.php?server=server4&categories=354%2C353%2C355%2C356%2C357%2C358%2C359%2C360%2C361%2C363%2C364%2C420';
             const CORS_PROXY_URL = 'https://proxy-js.onrender.com/';
             const CHANNELS_PER_PAGE = 30;
+            const MAX_RETRIES = 3; // Maximum number of times to retry fetching
             
+            // UI Element references
             const channelGrid = document.getElementById('channelGrid');
             const loadingSpinner = document.getElementById('loadingSpinner');
             const searchInput = document.getElementById('searchInput');
@@ -347,33 +357,68 @@
             const closeButton = document.querySelector('.modal-close-button');
             const categoryFiltersContainer = document.getElementById('categoryFilters');
             
+            // State variables
             let allChannels = [];
-            let currentlyVisibleChannels = []; // Holds the full list of currently filtered channels
+            let currentlyVisibleChannels = [];
             let renderedChannelCount = 0;
-            
-            // --- UPDATED STATE MANAGEMENT ---
             let selectedCategory = 'All';
             let currentSearchTerm = '';
+
+            /**
+             * NEW: Fetches a URL with a retry mechanism.
+             * This function attempts to fetch a resource and, if it fails,
+             * it will retry several times with an increasing delay between attempts.
+             * @param {string} url - The URL to fetch.
+             * @param {number} retries - The number of remaining retries.
+             * @param {number} delay - The delay in ms before the next retry.
+             * @returns {Promise<Response>} - A promise that resolves with the fetch response.
+             */
+            async function fetchWithRetries(url, retries = MAX_RETRIES, delay = 1000) {
+                try {
+                    // Attempt the fetch
+                    return await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest', 'Referer': 'http://demonji.onrender.com/' } });
+                } catch (error) {
+                    if (retries > 0) {
+                        // If there are retries left, wait and try again
+                        console.warn(`Fetch failed. Retrying in ${delay / 1000}s... (${retries} retries left)`);
+                        showMessage(`Could not load channels. Retrying... (${MAX_RETRIES - retries + 1}/${MAX_RETRIES})`);
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        // Recursively call with one less retry and double the delay (exponential backoff)
+                        return fetchWithRetries(url, retries - 1, delay * 2);
+                    } else {
+                        // If no retries are left, throw the final error
+                        console.error("Max retries reached. Fetch failed.", error);
+                        throw new Error("Failed to fetch playlist after multiple attempts.");
+                    }
+                }
+            }
 
             async function fetchAndPrepareChannels() {
                 try {
                     showLoading();
+                    hideError();
+                    showMessage('Loading channels, please wait...');
+                    
                     const proxiedUrl = `${CORS_PROXY_URL}${PLAYLIST_URL}`;
-                    const response = await fetch(proxiedUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest', 'Referer': 'http://demonji.onrender.com/' } });
-                    if (!response.ok) throw new Error(`Failed to fetch playlist: ${response.status} ${response.statusText}`);
+                    const response = await fetchWithRetries(proxiedUrl);
+
+                    if (!response.ok) {
+                        throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
+                    }
                     
                     const data = await response.text();
                     allChannels = parseM3uData(data);
                     
                     if (allChannels.length === 0) {
-                        showMessage('No channels found.');
+                        showMessage('No channels were found in the playlist.');
                     } else {
+                        hideMessage();
                         displayCategories();
                         applyFiltersAndRender();
                     }
                 } catch (error) {
-                    console.error('Error loading channels:', error);
-                    showError(`Error loading channels: ${error.message}`);
+                    console.error('Error during channel preparation:', error);
+                    showError(`Error loading channels: ${error.message}. Please try refreshing the page later.`);
                 } finally {
                     hideLoading();
                 }
@@ -383,29 +428,30 @@
                 const channels = [];
                 const lines = data.split('\n');
                 let currentChannel = {};
+
                 for (const line of lines) {
                     const trimmedLine = line.trim();
                     if (trimmedLine.startsWith('#EXTINF')) {
-                        const match = /#EXTINF:-1\s+(.*),(.+)/.exec(trimmedLine);
-                        if (match) {
-                            const attrsString = match[1];
-                            const name = match[2];
-                            const attributes = {};
-                            const attrsArray = attrsString.match(/\s*(.*?)=["'](.*?)["']/g) || [];
-                            attrsArray.forEach(attr => {
-                                const [key, value] = attr.trim().split('=');
-                                attributes[key] = value.replace(/['"]/g, '');
-                            });
+                        const infoMatch = /#EXTINF:-1\s+(.*),(.*)/.exec(trimmedLine);
+                        if (infoMatch) {
+                            const attributesString = infoMatch[1];
+                            const name = infoMatch[2].trim();
+                            
+                            const logoMatch = /tvg-logo="([^"]*)"/.exec(attributesString);
+                            const groupMatch = /group-title="([^"]*)"/.exec(attributesString);
+
                             currentChannel = {
                                 name: name,
-                                icon: attributes['tvg-logo'] || 'https://placehold.co/120x60/222/e0e0e0?text=Logo',
-                                category: attributes['group-title'] || 'General',
+                                icon: logoMatch ? logoMatch[1] : 'https://placehold.co/120x60/222/e0e0e0?text=Logo',
+                                category: groupMatch ? groupMatch[1] : 'General',
                             };
                         }
                     } else if (trimmedLine.startsWith('http')) {
-                        currentChannel.url = trimmedLine;
-                        channels.push(currentChannel);
-                        currentChannel = {};
+                        if (currentChannel.name) { // Ensure we have channel info before adding
+                            currentChannel.url = trimmedLine;
+                            channels.push(currentChannel);
+                        }
+                        currentChannel = {}; // Reset for the next entry
                     }
                 }
                 return channels;
@@ -418,28 +464,23 @@
                 ).join('');
             }
             
-            // --- REWRITTEN FILTERING LOGIC ---
             function applyFiltersAndRender() {
                 hideMessage();
                 let filteredChannels = allChannels;
 
-                // 1. Filter by the selected category first
                 if (selectedCategory !== 'All') {
                     filteredChannels = allChannels.filter(channel => channel.category === selectedCategory);
                 }
 
-                // 2. Then, filter the result by the search term
                 if (currentSearchTerm) {
                     const searchTerm = currentSearchTerm.toLowerCase();
-                    // Only search by channel name, since the category is already filtered
                     filteredChannels = filteredChannels.filter(channel => 
                         channel.name.toLowerCase().includes(searchTerm)
                     );
                 }
                 
-                // Store the full filtered list for the "Load More" button
                 currentlyVisibleChannels = filteredChannels;
-                renderChannels(true); // Pass true to reset the view
+                renderChannels(true); // Reset the view with the new filtered list
             }
 
             function renderChannels(isNewRender) {
@@ -461,17 +502,20 @@
                     const card = document.createElement('a');
                     card.className = 'channel-card';
                     card.href = `#`;
-                    card.dataset.stream = btoa(channel.url);
+                    card.dataset.stream = btoa(channel.url); // Base64 encode URL
                     card.dataset.name = channel.name;
                     card.dataset.icon = channel.icon;
                     card.innerHTML = `
                         <div class="channel-image">
-                            <img src="${channel.icon}" alt="${channel.name}" onerror="this.src='https://placehold.co/120x60/222/e0e0e0?text=Logo'">
+                            <img src="${channel.icon}" alt="${channel.name} logo" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/120x60/222/e0e0e0?text=Logo';">
                         </div>
                         <div class="channel-info">
-                            <h3 class="channel-name" title="${channel.name}">${channel.name}</h3>
-                            <div class="channel-category">
-                                <span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect><polyline points="17 2 12 7 7 2"></polyline></svg></span> ${channel.category}
+                            <div>
+                                <h3 class="channel-name" title="${channel.name}">${channel.name}</h3>
+                                <div class="channel-category">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect><polyline points="17 2 12 7 7 2"></polyline></svg>
+                                    <span>${channel.category}</span>
+                                </div>
                             </div>
                         </div>
                         <div class="play-btn">Play Now</div>
@@ -491,33 +535,33 @@
                 const streamUrl = item.dataset.stream;
                 const channelName = item.dataset.name;
                 const channelIcon = item.dataset.icon;
-                const backUrl = window.location.pathname;
+                const backUrl = window.location.href; // Use full href
+                
                 ogPlayerLink.href = `player.html?s=${encodeURIComponent(streamUrl)}&name=${encodeURIComponent(channelName)}&icon=${encodeURIComponent(channelIcon)}&back=${encodeURIComponent(backUrl)}`;
                 simplePlayerLink.href = `simple-player.html?s=${encodeURIComponent(streamUrl)}&name=${encodeURIComponent(channelName)}&back=${encodeURIComponent(backUrl)}`;
+                
                 modal.style.display = 'flex';
             }
 
-            // --- UPDATED EVENT LISTENERS ---
+            // --- EVENT LISTENERS ---
+            loadMoreBtn.addEventListener('click', () => renderChannels(false));
 
-            loadMoreBtn.addEventListener('click', () => {
-                // Now correctly loads more from the already filtered list
-                renderChannels(false);
-            });
-
+            let searchTimeout;
             searchInput.addEventListener('input', function() {
-                currentSearchTerm = this.value.trim();
-                applyFiltersAndRender();
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    currentSearchTerm = this.value.trim();
+                    applyFiltersAndRender();
+                }, 300); // Debounce search input
             });
 
             categoryFiltersContainer.addEventListener('click', (e) => {
                 if (e.target.classList.contains('category-btn')) {
                     selectedCategory = e.target.dataset.category;
                     
-                    // Update active button style
                     document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
                     e.target.classList.add('active');
                     
-                    // Re-run the filter and render logic
                     applyFiltersAndRender();
                 }
             });
@@ -525,16 +569,19 @@
             closeButton.addEventListener('click', () => { modal.style.display = 'none'; });
             window.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
             
+            // --- UI HELPER FUNCTIONS ---
             function showLoading() { loadingSpinner.style.display = 'flex'; }
             function hideLoading() { loadingSpinner.style.display = 'none'; }
             function showMessage(message) { messageContainer.textContent = message; messageContainer.style.display = 'block'; }
             function hideMessage() { messageContainer.style.display = 'none'; }
             function showError(message) { errorContainer.textContent = message; errorContainer.style.display = 'block'; }
+            function hideError() { errorContainer.style.display = 'none'; }
             function showLoadMore() { loadMoreContainer.style.display = 'flex'; }
             function hideLoadMore() { loadMoreContainer.style.display = 'none'; }
 
+            // Initial fetch
             fetchAndPrepareChannels();
         });
     </script>
-</body>
+ </body>
 </html>
