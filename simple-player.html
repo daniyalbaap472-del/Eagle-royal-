@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>...simple demons player...</title>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <style>
+        body {
+            margin: 0; padding: 0;
+            background-color: #000;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background-color: #000;
+        }
+        .status-message {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            display: none;
+            text-align: center;
+            z-index: 20;
+            max-width: 80%;
+        }
+        .controls-overlay {
+            position: absolute;
+            top: 20px; left: 20px; right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+        .back-button {
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            width: 40px; height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .back-button:hover { background-color: rgba(0, 0, 0, 0.8); }
+        .back-button svg { fill: #fff; width: 20px; height: 20px; }
+        .video-fit-controls { display: flex; gap: 10px; }
+        .video-fit-button {
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 15px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            font-size: 14px;
+        }
+        .video-fit-button:hover { background-color: rgba(0, 0, 0, 0.8); }
+        .video-fit-button.active { background-color: #FF5722; color: #fff; }
+    </style>
+ </head>
+ <body>
+  <video id="player" controls playsinline></video>
+  <div id="statusMessage" class="status-message"></div>
+  <div class="controls-overlay">
+   <a id="backButton" href="#" class="back-button"> 
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+     <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z" fill="#fff" />
+    </svg> 
+   </a>
+   <div class="video-fit-controls">
+    <button class="video-fit-button active" data-fit-type="contain">Fit</button>
+    <button class="video-fit-button" data-fit-type="cover">Fill</button>
+    <button class="video-fit-button" data-fit-type="fill">Stretch</button>
+   </div>
+  </div>
+  <script>
+        (function() {
+            const CORS_PROXY_URL = 'https://proxy-js.onrender.com/';
+            const urlParams = new URLSearchParams(window.location.search);
+            const streamUrlParam = urlParams.get('s');
+            const backUrl = urlParams.get('back');
+            const player = document.getElementById('player');
+            const statusMessage = document.getElementById('statusMessage');
+            const backButton = document.getElementById('backButton');
+            const fitButtons = document.querySelectorAll('.video-fit-button');
+
+            let hls;
+            let decodedUrl = '';
+            let reconnectAttempts = 0;
+            const MAX_RECONNECT_ATTEMPTS = 10;
+            const RECONNECT_DELAY = 3000;
+            let stallDetector = null;
+
+            if (backUrl) {
+                try { backButton.href = decodeURIComponent(backUrl); } catch (e) { backButton.style.display = 'none'; }
+            } else {
+                backButton.style.display = 'none';
+            }
+
+            fitButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    fitButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    player.style.objectFit = button.dataset.fitType;
+                });
+            });
+
+            function showStatus(message) {
+                statusMessage.textContent = message;
+                statusMessage.style.display = 'block';
+            }
+
+            function initializePlayer() {
+                if (hls) hls.destroy();
+                clearTimeout(stallDetector);
+
+                if (Hls.isSupported()) {
+                    // --- UPDATED: Large Buffer Configuration ---
+                    hls = new Hls({
+                        maxBufferLength: 300,         // Target buffer of 300s (5 minutes)
+                        maxMaxBufferLength: 600,      // Hard cap buffer of 600s (10 minutes)
+                        maxBufferSize: 500 * 1024 * 1024, // 500MB memory buffer
+                        fragLoadingMaxRetry: 8,
+                        lowLatencyMode: true,
+                        enableWorker: true,
+                        xhrSetup: (xhr, url) => { xhr.open('GET', CORS_PROXY_URL + url, true); }
+                    });
+                    
+                    hls.loadSource(CORS_PROXY_URL + decodedUrl);
+                    hls.attachMedia(player);
+
+                    hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                        statusMessage.style.display = 'none';
+                        reconnectAttempts = 0;
+                        player.play().catch(e => showStatus('Tap to play.'));
+                        startStalDetector();
+                    });
+                    
+                    hls.on(Hls.Events.ERROR, function(event, data) {
+                        if (data.fatal) {
+                            handleStreamError();
+                        }
+                    });
+
+                } else if (player.canPlayType('application/vnd.apple.mpegurl')) {
+                    player.src = CORS_PROXY_URL + decodedUrl;
+                    player.addEventListener('loadedmetadata', () => player.play());
+                    startStallDetector();
+                } else {
+                    showStatus('Video format not supported on this device.');
+                }
+            }
+            
+            function startStallDetector() {
+                stallDetector = setTimeout(() => {
+                    if (player.currentTime > 0.1 && player.videoWidth === 0) {
+                        if (hls) hls.destroy();
+                        clearTimeout(stallDetector);
+                        showStatus('Error: This stream uses a format (like HEVC/H.265) that your browser cannot play.', true);
+                    }
+                }, 4000); 
+            }
+
+            function handleStreamError() {
+                clearTimeout(stallDetector);
+                if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+                    reconnectAttempts++;
+                    showStatus(`Stream lost. Reconnecting... (${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`);
+                    setTimeout(initializePlayer, RECONNECT_DELAY);
+                } else {
+                    showStatus('Could not reconnect to the stream.');
+                }
+            }
+
+            if (!streamUrlParam) {
+                showStatus('Error: No stream URL provided.');
+                return;
+            }
+
+            try {
+                decodedUrl = atob(decodeURIComponent(streamUrlParam));
+                showStatus('Loading...');
+                initializePlayer();
+            } catch (e) {
+                showStatus('Error: Invalid stream URL.');
+            }
+        })();
+    </script>
+ </body>
+</html>
