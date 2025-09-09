@@ -1,26 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
- <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EAGLE ROYAL 🦅 - Premium Streaming</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet">
-  <style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EAGLE ROYAL 🦅 - Premium Streaming</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
         :root {
             --bg-primary: #121212;
             --bg-secondary: #1e1e1e;
             --text-primary: #e0e0e0;
             --text-secondary: #b0b0b0;
-            --accent: #FF5722; /* Deep Orange */
-            --accent-hover: #FF7043; /* Lighter Orange */
+            --accent: #FF5722;
+            --accent-hover: #FF7043;
             --card-bg: #2b2b2b;
             --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            
+            /* Rainbow colors for animation */
+            --rainbow-1: #ff0000;
+            --rainbow-2: #ff8c00;
+            --rainbow-3: #ffff00;
+            --rainbow-4: #008000;
+            --rainbow-5: #0000ff;
+            --rainbow-6: #4b0082;
+            --rainbow-7: #9400d3;
         }
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+        
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-primary);
@@ -28,16 +39,53 @@
             line-height: 1.6;
             min-height: 100vh;
             padding: 0;
+            overflow-x: hidden;
+            position: relative;
         }
+        
+        /* Rainbow Background Animation */
+        .rainbow-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+            background: linear-gradient(124deg, 
+                var(--rainbow-1), var(--rainbow-2), var(--rainbow-3), 
+                var(--rainbow-4), var(--rainbow-5), var(--rainbow-6), var(--rainbow-7));
+            background-size: 1800% 1800%;
+            animation: rainbow 18s ease infinite;
+        }
+        
+        @keyframes rainbow { 
+            0% { background-position: 0% 82% }
+            50% { background-position: 100% 19% }
+            100% { background-position: 0% 82% }
+        }
+        
+        /* Light Particles */
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
         .container {
             max-width: 1500px;
             margin: 0 auto;
             padding: 20px;
+            position: relative;
+            z-index: 1;
         }
+        
+        /* Rainbow Header */
         header {
             position: sticky;
             top: 0;
-            background: linear-gradient(to bottom, #121212, rgba(18, 18, 18, 0.95));
+            background: linear-gradient(to bottom, rgba(18, 18, 18, 0.98), rgba(18, 18, 18, 0.92));
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
             z-index: 10;
@@ -48,7 +96,28 @@
             justify-content: space-between;
             align-items: center;
             gap: 20px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
         }
+        
+        .header-rainbow {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                var(--rainbow-1), var(--rainbow-2), var(--rainbow-3), 
+                var(--rainbow-4), var(--rainbow-5), var(--rainbow-6), var(--rainbow-7));
+            background-size: 1000% 1000%;
+            animation: rainbow-flow 8s ease infinite;
+        }
+        
+        @keyframes rainbow-flow {
+            0% { background-position: 0% 50% }
+            50% { background-position: 100% 50% }
+            100% { background-position: 0% 50% }
+        }
+        
         h1 {
             font-size: 2.8rem;
             font-weight: 700;
@@ -59,15 +128,26 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            position: relative;
+            text-shadow: 0 0 10px rgba(255, 152, 0, 0.3);
         }
+        
         .eagle-icon {
             font-size: 2.5rem;
+            animation: eagle-flap 3s ease-in-out infinite;
         }
+        
+        @keyframes eagle-flap {
+            0%, 100% { transform: translateY(0) rotate(0); }
+            50% { transform: translateY(-5px) rotate(2deg); }
+        }
+        
         .search-container {
             flex: 1;
             max-width: 600px;
             position: relative;
         }
+        
         #searchInput {
             width: 100%;
             padding: 14px 20px;
@@ -79,15 +159,18 @@
             transition: all 0.3s ease;
             padding-left: 50px;
         }
+        
         #searchInput:focus {
             outline: none;
             border-color: var(--accent);
-            box-shadow: 0 0 10px rgba(255, 87, 34, 0.5);
+            box-shadow: 0 0 15px rgba(255, 87, 34, 0.5);
         }
+        
         #searchInput::placeholder {
             color: var(--text-secondary);
             opacity: 0.8;
         }
+        
         .search-icon {
             position: absolute;
             left: 20px;
@@ -95,6 +178,113 @@
             transform: translateY(-50%);
             color: var(--text-secondary);
         }
+        
+        /* Light Banner */
+        .banner {
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.8), rgba(45, 45, 45, 0.8));
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            border: 2px solid #333;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        .banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: banner-light 3s linear infinite;
+        }
+        
+        @keyframes banner-light {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .banner-title {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, #FF9800, #FF5722);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 10px rgba(255, 152, 0, 0.3);
+        }
+        
+        .banner-features {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .feature {
+            background: var(--card-bg);
+            padding: 12px 20px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .feature:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .join-button {
+            display: inline-block;
+            padding: 14px 28px;
+            background: var(--accent);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .join-button::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(255, 255, 255, 0.2),
+                rgba(255, 255, 255, 0)
+            );
+            transform: rotate(30deg);
+            animation: button-light 3s linear infinite;
+        }
+        
+        @keyframes button-light {
+            0% { transform: translateX(-100%) rotate(30deg); }
+            100% { transform: translateX(100%) rotate(30deg); }
+        }
+        
+        .join-button:hover {
+            background: var(--accent-hover);
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(255, 87, 34, 0.4);
+        }
+        
+        /* Category Filters */
         .category-filters {
             display: flex;
             flex-wrap: wrap;
@@ -102,6 +292,7 @@
             padding: 25px 0 10px;
             justify-content: center;
         }
+        
         .category-btn {
             padding: 10px 20px;
             font-size: 1rem;
@@ -112,29 +303,57 @@
             border-radius: 20px;
             cursor: pointer;
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
+        
+        .category-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: translateX(-100%);
+        }
+        
+        .category-btn:hover::before {
+            animation: category-light 1.5s linear;
+        }
+        
+        @keyframes category-light {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
         .category-btn:hover {
             color: var(--text-primary);
             background-color: #333;
             transform: translateY(-2px);
         }
+        
         .category-btn.active {
             color: #fff;
             background-color: var(--accent);
             border-color: var(--accent-hover);
-            box-shadow: 0 0 10px rgba(255, 87, 34, 0.5);
+            box-shadow: 0 0 15px rgba(255, 87, 34, 0.5);
         }
+        
+        /* 3D Channel Cards */
         .channels-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             gap: 30px;
             margin-top: 20px;
+            perspective: 1000px;
         }
+        
         .channel-card {
             background: var(--card-bg);
             border-radius: 20px;
             overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.5s ease, box-shadow 0.5s ease, filter 0.5s ease;
             box-shadow: var(--card-shadow);
             border: 2px solid transparent;
             animation: fadeIn 0.5s ease-in;
@@ -144,12 +363,16 @@
             position: relative;
             display: flex;
             flex-direction: column;
+            transform-style: preserve-3d;
         }
+        
         .channel-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.6);
+            transform: translateY(-10px) rotateX(5deg) rotateY(5deg) scale(1.03);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
             border-color: var(--accent);
+            filter: brightness(1.1);
         }
+        
         .channel-image {
             height: 120px;
             display: flex;
@@ -159,16 +382,37 @@
             padding: 15px;
             position: relative;
             flex-shrink: 0;
+            overflow: hidden;
         }
+        
+        .channel-image::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.5));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .channel-card:hover .channel-image::after {
+            opacity: 1;
+        }
+        
         .channel-image img {
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
             transition: transform 0.5s ease;
+            z-index: 1;
         }
+        
         .channel-card:hover .channel-image img {
-            transform: scale(1.05);
+            transform: scale(1.1);
         }
+        
         .channel-info {
             padding: 20px;
             text-align: center;
@@ -177,6 +421,7 @@
             flex-direction: column;
             justify-content: space-between;
         }
+        
         .channel-name {
             font-size: 1.2rem;
             font-weight: 600;
@@ -185,6 +430,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+        
         .channel-category {
             font-size: 0.95rem;
             color: var(--text-secondary);
@@ -194,6 +440,7 @@
             justify-content: center;
             gap: 8px;
         }
+        
         .play-btn {
             display: block;
             width: calc(100% - 40px);
@@ -210,19 +457,26 @@
             left: 50%;
             transform: translateX(-50%) scale(0.95);
             opacity: 0;
+            z-index: 2;
         }
+        
         .channel-card:hover .play-btn {
             opacity: 1;
             transform: translateX(-50%) scale(1);
         }
+        
         .play-btn:hover {
             background: var(--accent-hover);
+            box-shadow: 0 0 15px rgba(255, 87, 34, 0.7);
         }
+        
+        /* Loading and UI Elements */
         .loading-container, .load-more-container {
             display: flex;
             justify-content: center;
             padding: 40px 0;
         }
+        
         .spinner {
             width: 60px;
             height: 60px;
@@ -231,12 +485,14 @@
             border-top-color: var(--accent);
             animation: spin 1s ease-in-out infinite;
         }
+        
         .message {
             text-align: center;
             padding: 30px;
             color: var(--text-secondary);
             font-size: 1.1rem;
         }
+        
         .error-message {
             color: #ef4444;
             background: rgba(239, 68, 68, 0.1);
@@ -246,6 +502,7 @@
             text-align: center;
             font-size: 1rem;
         }
+        
         .load-more-btn {
             padding: 14px 28px;
             border-radius: 30px;
@@ -255,66 +512,133 @@
             border: none;
             cursor: pointer;
             transition: background-color 0.3s, transform 0.3s;
+            position: relative;
+            overflow: hidden;
         }
+        
+        .load-more-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: translateX(-100%);
+        }
+        
+        .load-more-btn:hover::before {
+            animation: button-light 1.5s linear;
+        }
+        
         .load-more-btn:hover {
             background-color: var(--accent-hover);
             transform: translateY(-2px);
         }
         
-        /* Banner Styles */
-        .banner {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            border-radius: 15px;
-            padding: 25px;
-            margin: 25px 0;
-            border: 2px solid #333;
-            text-align: center;
-        }
-        .banner-title {
-            font-size: 2rem;
-            margin-bottom: 15px;
-            color: #FF9800;
-        }
-        .banner-features {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 15px;
-            margin: 20px 0;
-        }
-        .feature {
-            background: var(--card-bg);
-            padding: 12px 20px;
-            border-radius: 20px;
-            display: flex;
+        /* Modal Styles */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 100; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7); 
+            justify-content: center; 
             align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
-        }
-        .join-button {
-            display: inline-block;
-            padding: 14px 28px;
-            background: var(--accent);
-            color: white;
-            text-decoration: none;
-            border-radius: 30px;
-            font-weight: 600;
-            margin-top: 15px;
-            transition: all 0.3s ease;
-        }
-        .join-button:hover {
-            background: var(--accent-hover);
-            transform: translateY(-3px);
-            box-shadow: 0 7px 15px rgba(255, 87, 34, 0.4);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
         }
         
+        .modal-content {
+            background-color: var(--bg-secondary); 
+            padding: 30px; 
+            border-radius: 12px; 
+            text-align: center;
+            position: relative; 
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6); 
+            width: 90%; 
+            max-width: 400px;
+            animation: modal-appear 0.3s ease-out;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        @keyframes modal-appear {
+            from { 
+                opacity: 0; 
+                transform: translateY(30px) scale(0.95); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1); 
+            }
+        }
+        
+        .modal-close-button {
+            position: absolute; 
+            top: 10px; 
+            right: 15px; 
+            color: var(--text-secondary);
+            font-size: 28px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: color 0.2s;
+        }
+        
+        .modal-close-button:hover { 
+            color: var(--accent); 
+        }
+        
+        .modal-title { 
+            color: var(--text-primary); 
+            font-size: 20px; 
+            margin-bottom: 20px; 
+        }
+        
+        .modal-buttons { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+        }
+        
+        .modal-button {
+            text-decoration: none; 
+            color: #fff; 
+            background-color: #333; 
+            padding: 12px 20px;
+            border-radius: 20px; 
+            font-size: 16px; 
+            font-weight: 600; 
+            transition: background-color 0.2s, transform 0.2s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .modal-button:hover { 
+            transform: translateY(-2px); 
+            background-color: #555; 
+        }
+        
+        .modal-button.og { 
+            background-color: var(--accent); 
+        }
+        
+        .modal-button.og:hover { 
+            background-color: #ff6d40; 
+        }
+        
+        /* Animations */
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+        
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        
+        /* Responsive Design */
         @media (max-width: 768px) {
             .container { padding: 15px; }
             header { flex-direction: column; padding: 10px 15px; }
@@ -324,103 +648,141 @@
             .banner-title { font-size: 1.6rem; }
             .banner-features { flex-direction: column; }
         }
+        
         @media (max-width: 480px) {
             .container { padding: 10px; }
             .channels-grid { grid-template-columns: 1fr; }
             h1 { font-size: 1.8rem; }
         }
-        .modal {
-            display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.7); justify-content: center; align-items: center;
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-        }
-        .modal-content {
-            background-color: var(--bg-secondary); padding: 30px; border-radius: 12px; text-align: center;
-            position: relative; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); width: 90%; max-width: 400px;
-            animation: fadeIn 0.3s ease-out;
-        }
-        .modal-close-button {
-            position: absolute; top: 10px; right: 15px; color: var(--text-secondary);
-            font-size: 28px; font-weight: bold; cursor: pointer; transition: color 0.2s;
-        }
-        .modal-close-button:hover { color: var(--accent); }
-        .modal-title { color: var(--text-primary); font-size: 20px; margin-bottom: 20px; }
-        .modal-buttons { display: flex; flex-direction: column; gap: 15px; }
-        .modal-button {
-            text-decoration: none; color: #fff; background-color: #333; padding: 12px 20px;
-            border-radius: 20px; font-size: 16px; font-weight: 600; transition: background-color 0.2s, transform 0.2s;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        .modal-button:hover { transform: translateY(-2px); background-color: #555; }
-        .modal-button.og { background-color: var(--accent); }
-        .modal-button.og:hover { background-color: #ff6d40; }
     </style>
- </head>
- <body>
-  <div class="container">
-   <header>
-    <h1><span class="eagle-icon">🦅</span> EAGLE ROYAL</h1>
-    <div class="search-container">
-     <div class="search-icon">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search">
-       <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-      </svg>
-     </div>
-     <input type="text" id="searchInput" placeholder="Search current category..." autocomplete="off">
-    </div>
-   </header>
-   
-   <!-- Promotional Banner -->
-   <div class="banner">
-        <h2 class="banner-title">Join Our Premium Telegram Group</h2>
-        <p>Get access to exclusive content and features</p>
+</head>
+<body>
+    <div class="rainbow-bg"></div>
+    <div id="particles-js"></div>
+    
+    <div class="container">
+        <header>
+            <h1><span class="eagle-icon">🦅</span> EAGLE ROYAL</h1>
+            <div class="header-rainbow"></div>
+            <div class="search-container">
+                <div class="search-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search">
+                        <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </div>
+                <input type="text" id="searchInput" placeholder="Search current category..." autocomplete="off">
+            </div>
+        </header>
         
-        <div class="banner-features">
-            <div class="feature">
-                <span>✅</span> 3D Lock Favourite Channel
+        <!-- Promotional Banner -->
+        <div class="banner">
+            <h2 class="banner-title">Join Our Premium Telegram Group</h2>
+            <p>Get access to exclusive content and features</p>
+            
+            <div class="banner-features">
+                <div class="feature">
+                    <span>✅</span> 3D Lock Favourite Channel
+                </div>
+                <div class="feature">
+                    <span>✅</span> All Future Updates
+                </div>
+                <div class="feature">
+                    <span>✅</span> Professional Website
+                </div>
+                <div class="feature">
+                    <span>✅</span> Rainbow Effects
+                </div>
+                <div class="feature">
+                    <span>✅</span> Dynamic Lighting
+                </div>
             </div>
-            <div class="feature">
-                <span>✅</span> All Future Updates
-            </div>
-            <div class="feature">
-                <span>✅</span> Professional Website
-            </div>
+            
+            <a href="https://t.me/EAGLEROYALM3u8" class="join-button" target="_blank">
+                Join Telegram Group
+            </a>
         </div>
         
-        <a href="https://t.me/EAGLEROYALM3u8" class="join-button" target="_blank">
-            Join Telegram Group
-        </a>
+        <div id="categoryFilters" class="category-filters"></div>
+        
+        <main>
+            <div id="channelGrid" class="channels-grid"></div>
+            <div id="loadingSpinner" class="loading-container" style="display: none;">
+                <div class="spinner"></div>
+            </div>
+            <div id="messageContainer" class="message"></div>
+            <div id="errorContainer" class="error-message" style="display: none;"></div>
+            <div id="loadMoreContainer" class="load-more-container" style="display: none;">
+                <button id="loadMoreBtn" class="load-more-btn">Load More Channels</button>
+            </div>
+        </main>
     </div>
-   
-   <div id="categoryFilters" class="category-filters"></div>
-   <main>
-    <div id="channelGrid" class="channels-grid"></div>
-    <div id="loadingSpinner" class="loading-container" style="display: none;">
-     <div class="spinner"></div>
+    
+    <div id="playerModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close-button">×</span>
+            <h2 class="modal-title">Choose Player</h2>
+            <div class="modal-buttons">
+                <a id="ogPlayerLink" href="#" target="_blank" class="modal-button og">Original Player</a>
+                <a id="simplePlayerLink" href="#" target="_blank" class="modal-button">Simple Player</a>
+            </div>
+        </div>
     </div>
-    <div id="messageContainer" class="message"></div>
-    <div id="errorContainer" class="error-message" style="display: none;"></div>
-    <div id="loadMoreContainer" class="load-more-container" style="display: none;">
-     <button id="loadMoreBtn" class="load-more-btn">Load More Channels</button>
-    </div>
-   </main>
-  </div>
-  <div id="playerModal" class="modal">
-   <div class="modal-content">
-    <span class="modal-close-button">×</span>
-    <h2 class="modal-title">Choose Player</h2>
-    <div class="modal-buttons">
-     <a id="ogPlayerLink" href="#" target="_blank" class="modal-button og">Original Player</a> <a id="simplePlayerLink" href="#" target="_blank" class="modal-button">Simple Player</a>
-    </div>
-   </div>
-  </div>
-  <script>
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Initialize particles.js for background light effects
+            particlesJS('particles-js', {
+                particles: {
+                    number: { value: 80, density: { enable: true, value_area: 800 } },
+                    color: { value: "#ffffff" },
+                    shape: { type: "circle" },
+                    opacity: { 
+                        value: 0.2, 
+                        random: true,
+                        anim: { enable: true, speed: 1, opacity_min: 0.1, sync: false }
+                    },
+                    size: { 
+                        value: 3, 
+                        random: true,
+                        anim: { enable: true, speed: 2, size_min: 0.1, sync: false }
+                    },
+                    line_linked: {
+                        enable: true,
+                        distance: 150,
+                        color: "#ffffff",
+                        opacity: 0.1,
+                        width: 1
+                    },
+                    move: {
+                        enable: true,
+                        speed: 1,
+                        direction: "none",
+                        random: true,
+                        straight: false,
+                        out_mode: "out",
+                        bounce: false
+                    }
+                },
+                interactivity: {
+                    detect_on: "canvas",
+                    events: {
+                        onhover: { enable: true, mode: "bubble" },
+                        onclick: { enable: true, mode: "push" },
+                        resize: true
+                    },
+                    modes: {
+                        bubble: { distance: 100, size: 5, duration: 2, opacity: 0.2, speed: 3 },
+                        push: { particles_nb: 4 }
+                    }
+                },
+                retina_detect: true
+            });
+
             const PLAYLIST_URL = 'http://demonji.onrender.com/multiple/playlist.php?server=server4&categories=354%2C353%2C355%2C356%2C357%2C358%2C359%2C360%2C361%2C363%2C364%2C420';
             const CORS_PROXY_URL = 'https://proxy-js.onrender.com/';
             const CHANNELS_PER_PAGE = 30;
-            const MAX_RETRIES = 3; // Maximum number of times to retry fetching
+            const MAX_RETRIES = 3;
             
             // UI Element references
             const channelGrid = document.getElementById('channelGrid');
@@ -443,29 +805,16 @@
             let selectedCategory = 'All';
             let currentSearchTerm = '';
 
-            /**
-             * NEW: Fetches a URL with a retry mechanism.
-             * This function attempts to fetch a resource and, if it fails,
-             * it will retry several times with an increasing delay between attempts.
-             * @param {string} url - The URL to fetch.
-             * @param {number} retries - The number of remaining retries.
-             * @param {number} delay - The delay in ms before the next retry.
-             * @returns {Promise<Response>} - A promise that resolves with the fetch response.
-             */
             async function fetchWithRetries(url, retries = MAX_RETRIES, delay = 1000) {
                 try {
-                    // Attempt the fetch
                     return await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest', 'Referer': 'http://demonji.onrender.com/' } });
                 } catch (error) {
                     if (retries > 0) {
-                        // If there are retries left, wait and try again
                         console.warn(`Fetch failed. Retrying in ${delay / 1000}s... (${retries} retries left)`);
                         showMessage(`Could not load channels. Retrying... (${MAX_RETRIES - retries + 1}/${MAX_RETRIES})`);
                         await new Promise(resolve => setTimeout(resolve, delay));
-                        // Recursively call with one less retry and double the delay (exponential backoff)
                         return fetchWithRetries(url, retries - 1, delay * 2);
                     } else {
-                        // If no retries are left, throw the final error
                         console.error("Max retries reached. Fetch failed.", error);
                         throw new Error("Failed to fetch playlist after multiple attempts.");
                     }
@@ -526,11 +875,11 @@
                             };
                         }
                     } else if (trimmedLine.startsWith('http')) {
-                        if (currentChannel.name) { // Ensure we have channel info before adding
+                        if (currentChannel.name) {
                             currentChannel.url = trimmedLine;
                             channels.push(currentChannel);
                         }
-                        currentChannel = {}; // Reset for the next entry
+                        currentChannel = {};
                     }
                 }
                 return channels;
@@ -559,7 +908,7 @@
                 }
                 
                 currentlyVisibleChannels = filteredChannels;
-                renderChannels(true); // Reset the view with the new filtered list
+                renderChannels(true);
             }
 
             function renderChannels(isNewRender) {
@@ -581,7 +930,7 @@
                     const card = document.createElement('a');
                     card.className = 'channel-card';
                     card.href = `#`;
-                    card.dataset.stream = btoa(channel.url); // Base64 encode URL
+                    card.dataset.stream = btoa(channel.url);
                     card.dataset.name = channel.name;
                     card.dataset.icon = channel.icon;
                     card.innerHTML = `
@@ -614,7 +963,7 @@
                 const streamUrl = item.dataset.stream;
                 const channelName = item.dataset.name;
                 const channelIcon = item.dataset.icon;
-                const backUrl = window.location.href; // Use full href
+                const backUrl = window.location.href;
                 
                 ogPlayerLink.href = `player.html?s=${encodeURIComponent(streamUrl)}&name=${encodeURIComponent(channelName)}&icon=${encodeURIComponent(channelIcon)}&back=${encodeURIComponent(backUrl)}`;
                 simplePlayerLink.href = `simple-player.html?s=${encodeURIComponent(streamUrl)}&name=${encodeURIComponent(channelName)}&back=${encodeURIComponent(backUrl)}`;
@@ -622,7 +971,7 @@
                 modal.style.display = 'flex';
             }
 
-            // --- EVENT LISTENERS ---
+            // Event Listeners
             loadMoreBtn.addEventListener('click', () => renderChannels(false));
 
             let searchTimeout;
@@ -631,7 +980,7 @@
                 searchTimeout = setTimeout(() => {
                     currentSearchTerm = this.value.trim();
                     applyFiltersAndRender();
-                }, 300); // Debounce search input
+                }, 300);
             });
 
             categoryFiltersContainer.addEventListener('click', (e) => {
@@ -648,7 +997,7 @@
             closeButton.addEventListener('click', () => { modal.style.display = 'none'; });
             window.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
             
-            // --- UI HELPER FUNCTIONS ---
+            // UI Helper Functions
             function showLoading() { loadingSpinner.style.display = 'flex'; }
             function hideLoading() { loadingSpinner.style.display = 'none'; }
             function showMessage(message) { messageContainer.textContent = message; messageContainer.style.display = 'block'; }
@@ -662,5 +1011,5 @@
             fetchAndPrepareChannels();
         });
     </script>
- </body>
+</body>
 </html>
