@@ -1,63 +1,61 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vidstack Player</title>
-    
-    <link rel="stylesheet" href="https://cdn.vidstack.io/player/theme.css" />
-    <link rel="stylesheet" href="https://cdn.vidstack.io/player/video.css" />
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.5.2/shaka-player.ui.js"></script>
-    
-    <style>
-        body {
-            background-color: #121212;
-            color: #e0e0e0;
-            font-family: sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-        }
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Shaka Player Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Shaka Player UI library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/shaka-player.ui.min.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/controls.min.css" />
+    <style>
+      body {
+        margin: 0;
+        background: #000;
+        color: white;
+      }
+      #video-container {
+        width: 100vw;
+        height: 100vh;
+        position: relative;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="video-container">
+      <video autoplay muted controls data-shaka-player id="video" style="width: 100%; height: 100%;"></video>
+    </div>
 
-        .player-container {
-            width: 100%;
-            max-width: 900px;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
-        }
-        
-        /* Optional: Custom styling for the player */
-        media-player {
-            --media-brand: #FF5722;
-        }
-    </style>
-</head>
-<body>
-    <div class="player-container">
-        <media-player
-            playsinline
-            load="visible"
-            poster-load="idle"
-            title="My Stream"
-            crossorigin
-        >
-            <media-provider>
-                <source src="https://dash.akamaized.net/akamai/bbb_30fps/bbb_30fps.mpd" type="application/dash+xml" />
-            </media-provider>
+    <script>
+      document.addEventListener('shaka-ui-loaded', async () => {
+        const video = document.getElementById('video');
+        const ui = video['ui'];
+        const player = ui.getControls().getPlayer();
 
-            <media-poster src="https://files.vidstack.io/sprite-fight/poster.webp" alt="Video poster"></media-poster>
+        // Optional: Listen for errors
+        player.addEventListener('error', (e) => {
+          console.error('Error code', e.detail.code, 'object', e.detail);
+        });
 
-            <media-video-layout></media-video-layout>
-        </media-player>
-    </div>
+        // DRM config (optional: use if your stream is encrypted with ClearKey)
+        await player.configure({
+          drm: {
+            clearKeys: {
+              // Replace with your own key ID and key
+              '1a2b3c4d5e6f77889900aabbccddeeff': '0123456789abcdef0123456789abcdef'
+            }
+          }
+        });
 
-    <script src="https://cdn.vidstack.io/player" type="module"></script>
-    
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-</body>
+        // Load a DASH manifest URL
+        const manifestUri = 'https://storage.googleapis.com/shaka-demo-assets/angel-one/dash.mpd'; // or your own
+
+        try {
+          await player.load(manifestUri);
+          console.log('The video has now been loaded!');
+        } catch (e) {
+          console.error('Error loading video:', e);
+        }
+      });
+    </script>
+  </body>
 </html>
