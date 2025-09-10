@@ -66,10 +66,10 @@
             crossorigin
         >
             <media-provider>
-                <source src="" type="application/dash+xml" />
+                <source src="https://dash.akamaized.net/akamai/bbb_30fps/bbb_30fps.mpd" type="application/dash+xml" />
             </media-provider>
 
-            <media-poster src="" alt="Video poster"></media-poster>
+            <media-poster src="https://files.vidstack.io/sprite-fight/poster.webp" alt="Video poster"></media-poster>
 
             <media-video-layout></media-video-layout>
         </media-player>
@@ -91,8 +91,8 @@
             
             // Yahan par apni stream ka naya URL aur type daalein.
             // Ek aisi URL daalein jo CORS proxy se kaam karti ho.
-            const newMpdUrl = 'https://dash.akamaized.net/akamai/bbb_30fps/bbb_30fps.mpd';
-            const newM3u8Url = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8';
+            const newMpdUrl = '';
+            const newM3u8Url = '';
             
             // Example: Switch between two different sources
             if (provider.src.includes('bbb_30fps')) {
