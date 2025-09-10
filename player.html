@@ -3,12 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multi-Format Player</title>
+    <title>Vidstack Player with Logo & MPD/M3U8 Support</title>
     
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
+    <!-- Vidstack Player Styles -->
+    <link rel="stylesheet" href="https://cdn.vidstack.io/player/theme.css" />
+    <link rel="stylesheet" href="https://cdn.vidstack.io/player/video.css" />
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Shaka Player for MPD support -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.5.2/shaka-player.ui.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.5.2/controls.css">
     
     <style>
         :root {
@@ -19,15 +22,15 @@
             --accent: #FF5722;
             --card-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
         }
-
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background-color: var(--bg-primary);
             color: var(--text-primary);
             min-height: 100vh;
@@ -36,165 +39,95 @@
             flex-direction: column;
             align-items: center;
         }
-
+        
         .container {
             width: 100%;
             max-width: 900px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
         }
-
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+        
+        .player-container {
             width: 100%;
-        }
-
-        .back-button {
-            background-color: var(--bg-secondary);
-            color: var(--text-primary);
-            border: none;
-            padding: 12px 24px;
-            border-radius: 30px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s, transform 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .back-button:hover {
-            background-color: #333;
-            transform: translateY(-2px);
-        }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .logo-container img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 2px solid var(--accent);
-        }
-
-        .logo-container h2 {
-            font-size: 20px;
-            color: var(--text-primary);
-        }
-
-        .player-wrapper {
-            width: 100%;
-            background-color: #000;
             border-radius: 12px;
             overflow: hidden;
             box-shadow: var(--card-shadow);
+            margin-bottom: 20px;
             position: relative;
         }
         
-        #video-player {
-            width: 100%;
-            height: auto;
-            max-height: 70vh;
-            display: block;
+        .channel-info {
+            background-color: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
         }
         
-        .controls {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
+        .channel-info img {
+            width: 80px;
+            height: 45px;
+            object-fit: contain;
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+        
+        .channel-details h2 {
+            font-size: 18px;
+            margin-bottom: 5px;
+            color: var(--accent);
+        }
+        
+        .channel-details p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .source-selector {
+            background-color: var(--bg-secondary);
             padding: 15px;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(5px);
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 20px;
+        }
+        
+        .source-selector h3 {
+            margin-bottom: 10px;
+            color: var(--accent);
+        }
+        
+        .source-buttons {
             display: flex;
             flex-wrap: wrap;
-            align-items: center;
-            gap: 15px;
-            transition: opacity 0.3s;
-            opacity: 1;
-        }
-        
-        .player-wrapper:hover .controls {
-            opacity: 1;
-        }
-        
-        .controls .control-btn {
-            background: none;
-            border: none;
-            color: var(--text-primary);
-            cursor: pointer;
-            font-size: 20px;
-            padding: 8px;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.2s, transform 0.2s;
-        }
-        
-        .controls .control-btn:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-            transform: scale(1.1);
-        }
-
-        .progress-container {
-            flex-grow: 1;
-            height: 5px;
-            background-color: #555;
-            border-radius: 5px;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background-color: var(--accent);
-            border-radius: 5px;
-            width: 0%;
-        }
-
-        .time-display {
-            font-size: 14px;
-            color: var(--text-secondary);
-            min-width: 100px;
-            text-align: center;
-        }
-
-        .volume-control {
-            display: flex;
-            align-items: center;
             gap: 10px;
         }
-
-        .volume-slider {
-            width: 80px;
-            -webkit-appearance: none;
-            height: 4px;
-            border-radius: 2px;
-            background: #555;
-            outline: none;
-        }
-
-        .volume-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: var(--accent);
+        
+        .source-btn {
+            background-color: #333;
+            border: none;
+            color: var(--text-primary);
+            padding: 8px 15px;
+            border-radius: 6px;
             cursor: pointer;
+            transition: background-color 0.2s;
         }
-
+        
+        .source-btn:hover {
+            background-color: #444;
+        }
+        
+        .source-btn.active {
+            background-color: var(--accent);
+            color: white;
+        }
+        
         .status-message {
             text-align: center;
             padding: 15px;
@@ -203,340 +136,321 @@
             background-color: rgba(239, 68, 68, 0.1);
             color: #ef4444;
             display: none;
-            font-weight: 600;
         }
         
-        .channel-info {
-            background-color: var(--bg-secondary);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: var(--card-shadow);
-            display: flex;
-            align-items: center;
-            gap: 20px;
+        /* Custom Vidstack styling */
+        media-player {
+            --media-brand: var(--accent);
+            --media-control-hover: rgba(255, 255, 255, 0.1);
+            --media-control-background: rgba(0, 0, 0, 0.6);
         }
-
-        .channel-info img {
-            width: 80px;
-            height: 45px;
+        
+        .channel-logo {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            z-index: 10;
+            width: 60px;
+            height: 34px;
             object-fit: contain;
-            border-radius: 8px;
-            border: 1px solid #333;
+            border-radius: 4px;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 4px;
         }
-
-        .channel-details h2 {
-            font-size: 22px;
-            margin-bottom: 5px;
-            background: linear-gradient(90deg, #FF9800, #FF5722);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .channel-details p {
-            color: var(--text-secondary);
-            font-size: 16px;
-        }
-
+        
         @media (max-width: 768px) {
-            .controls {
-                padding: 10px;
-                gap: 10px;
-            }
-            .controls .control-btn {
-                width: 36px;
-                height: 36px;
-                font-size: 16px;
-            }
-            .volume-control {
-                display: none;
-            }
-            .time-display {
-                font-size: 12px;
-                min-width: 80px;
-            }
             .channel-info {
                 flex-direction: column;
-                align-items: flex-start;
+                text-align: center;
+                gap: 10px;
+            }
+            
+            .channel-info img {
+                width: 60px;
+                height: 34px;
+            }
+            
+            .channel-logo {
+                width: 50px;
+                height: 28px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <button class="back-button">Back</button>
-            <div class="logo-container">
-                <img src="https://placehold.co/40x40/FF5722/e0e0e0?text=P" alt="Player Logo">
-                <h2>Multi-Format Player</h2>
-            </div>
-        </div>
+        <h1>Vidstack Player with Logo & MPD/M3U8 Support</h1>
         
         <div class="channel-info">
             <img id="channel-logo" src="https://placehold.co/80x45/222/e0e0e0?text=LOGO" alt="Channel Logo">
             <div class="channel-details">
                 <h2 id="channel-name">Channel Name</h2>
-                <p id="channel-status">Loading...</p>
+                <p id="channel-status">Select a stream source below</p>
+            </div>
+        </div>
+        
+        <div class="source-selector">
+            <h3>Select Stream Type</h3>
+            <div class="source-buttons">
+                <button class="source-btn active" data-type="mp4">MP4 (Default)</button>
+                <button class="source-btn" data-type="hls">HLS (m3u8)</button>
+                <button class="source-btn" data-type="dash">MPEG-DASH (mpd)</button>
             </div>
         </div>
         
         <div id="status-message" class="status-message"></div>
         
-        <div class="player-wrapper">
-            <video id="video-player" playsinline></video>
+        <div class="player-container">
+            <img src="https://placehold.co/80x45/222/e0e0e0?text=LOGO" class="channel-logo" alt="Channel Logo">
             
-            <div class="controls">
-                <button id="play-pause" class="control-btn">▶</button>
-                <div class="progress-container" id="progress-container">
-                    <div class="progress-bar" id="progress-bar"></div>
-                </div>
-                <div class="time-display" id="time-display">0:00 / 0:00</div>
-                <div class="volume-control">
-                    <button id="mute" class="control-btn">🔊</button>
-                    <input type="range" class="volume-slider" id="volume-slider" min="0" max="1" step="0.01" value="1">
-                </div>
-                <button id="fullscreen" class="control-btn">⛶</button>
-            </div>
+            <media-player 
+                playsinline 
+                load="visible" 
+                poster-load="idle" 
+                title="Stream Player"
+            >
+                <media-provider>
+                    <source src="https://files.vidstack.io/sprite-fight/720p.mp4" type="video/mp4" />
+                    <track kind="captions" label="English" srclang="en-US" 
+                           src="https://files.vidstack.io/sprite-fight/subs/english.vtt" default />
+                </media-provider>
+                
+                <!-- Poster Image -->
+                <media-poster class="vds-poster" 
+                             src="https://files.vidstack.io/sprite-fight/poster.webp" 
+                             alt="Girl walks into campfire with gnomes surrounding her friend ready for their next meal!">
+                </media-poster>
+                
+                <!-- Player UI Layout -->
+                <media-video-layout></media-video-layout>
+            </media-player>
         </div>
     </div>
 
+    <!-- Vidstack Player Script -->
+    <script src="https://cdn.vidstack.io/player" type="module"></script>
+    
+    <!-- HLS.js for HLS support -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Configuration & Elements
-            const CORS_PROXY_URL = 'https://proxy-js.onrender.com/';
-            const urlParams = new URLSearchParams(window.location.search);
-            const streamParam = urlParams.get('s') || '';
-            const channelNameParam = urlParams.get('name') || 'Unknown Channel';
-            const channelIconParam = urlParams.get('icon') || '';
-            const backUrlParam = urlParams.get('back') || 'MaC.html';
+            // Configuration
+            const CORS_PROXY_URL = 'https://corsproxy.io/?';
+            const STREAM_SOURCES = {
+                mp4: {
+                    src: 'https://files.vidstack.io/sprite-fight/720p.mp4',
+                    type: 'video/mp4'
+                },
+                hls: {
+                    src: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+                    type: 'application/x-mpegURL'
+                },
+                dash: {
+                    src: 'https://dash.akamaized.net/akamai/bbb_30fps/bbb_30fps.mpd',
+                    type: 'application/dash+xml'
+                }
+            };
             
-            const videoPlayer = document.getElementById('video-player');
-            const playPauseBtn = document.getElementById('play-pause');
-            const muteBtn = document.getElementById('mute');
-            const fullscreenBtn = document.getElementById('fullscreen');
-            const progressBar = document.getElementById('progress-bar');
-            const progressContainer = document.getElementById('progress-container');
-            const timeDisplay = document.getElementById('time-display');
-            const volumeSlider = document.getElementById('volume-slider');
+            // Elements
+            const player = document.querySelector('media-player');
+            const provider = document.querySelector('media-provider');
+            const sourceButtons = document.querySelectorAll('.source-btn');
             const statusMessage = document.getElementById('status-message');
             const channelStatus = document.getElementById('channel-status');
             const channelName = document.getElementById('channel-name');
             const channelLogo = document.getElementById('channel-logo');
-            const backButton = document.querySelector('.back-button');
-
+            
+            // Variables
+            let currentSource = 'mp4';
             let hls = null;
-            let dash = null;
-            let reconnectAttempts = 0;
-            const MAX_RECONNECT_ATTEMPTS = 10;
-            const RECONNECT_DELAY = 3000;
-            let stallDetector = null;
-
-            // Initialize the player
+            let shakaPlayer = null;
+            
+            // Initialize player
             initPlayer();
-
+            
             function initPlayer() {
-                setChannelInfo();
-                try {
-                    const decodedStreamUrl = atob(decodeURIComponent(streamParam));
-                    const proxiedUrl = CORS_PROXY_URL + decodedStreamUrl;
-                    
-                    if (decodedStreamUrl.endsWith('.mpd')) {
-                        setupDash(proxiedUrl);
-                    } else if (Hls.isSupported() && decodedStreamUrl.endsWith('.m3u8')) {
-                        setupHls(proxiedUrl);
-                    } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl') && decodedStreamUrl.endsWith('.m3u8')) {
-                        setupNativeHls(proxiedUrl);
-                    } else {
-                        showStatus('Stream format not supported by this browser.', true);
-                    }
-
-                    setupEventListeners();
-                } catch (e) {
-                    showStatus('Error: Invalid stream URL format.', true);
-                }
-            }
-            
-            function setupHls(streamUrl) {
-                if (hls) hls.destroy();
-                hls = new Hls({
-                    lowLatencyMode: true,
-                    enableWorker: true,
-                    xhrSetup: (xhr, url) => {
-                         // The CORS proxy is a single entry point, so we just use it directly
-                        xhr.open('GET', url, true); 
-                    }
-                });
-
-                hls.loadSource(streamUrl);
-                hls.attachMedia(videoPlayer);
-
-                hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                    hideStatus();
-                    channelStatus.textContent = 'Playing';
-                    reconnectAttempts = 0;
-                    videoPlayer.play().catch(err => {
-                        showStatus('Autoplay blocked. Tap to play.', true);
-                    });
-                    startStallDetector();
-                });
-
-                hls.on(Hls.Events.ERROR, (event, data) => {
-                    console.error('HLS error:', data);
-                    if (data.fatal) {
-                        handleStreamError();
-                    }
-                });
-            }
-
-            function setupDash(streamUrl) {
-                if (dash) dash.reset();
-                dash = dashjs.MediaPlayer().create();
-                dash.initialize(videoPlayer, streamUrl, true);
-                dash.on(dashjs.MediaPlayer.events.STREAM_INITIALIZED, () => {
-                    hideStatus();
-                    channelStatus.textContent = 'Playing';
-                    reconnectAttempts = 0;
-                });
-                dash.on(dashjs.MediaPlayer.events.ERROR, (e) => {
-                    console.error('DASH error:', e);
-                    handleStreamError();
-                });
-            }
-
-            function setupNativeHls(streamUrl) {
-                videoPlayer.src = streamUrl;
-                videoPlayer.addEventListener('loadedmetadata', () => {
-                    hideStatus();
-                    channelStatus.textContent = 'Playing';
-                    videoPlayer.play().catch(() => showStatus('Autoplay blocked. Tap to play.', true));
-                });
-                videoPlayer.addEventListener('error', handleStreamError);
-            }
-
-            function startStallDetector() {
-                clearTimeout(stallDetector);
-                stallDetector = setTimeout(() => {
-                    if (videoPlayer.currentTime > 0.1 && videoPlayer.videoWidth === 0) {
-                        if (hls) hls.destroy();
-                        if (dash) dash.reset();
-                        showStatus('Error: Video format (likely HEVC/H.265) or Audio (AC3) is not supported by your browser.', true);
-                    }
-                }, 4000);
-            }
-
-            function handleStreamError() {
-                clearTimeout(stallDetector);
-                if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
-                    reconnectAttempts++;
-                    showStatus(`Stream lost. Reconnecting... (Attempt ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`, true);
-                    channelStatus.textContent = 'Reconnecting...';
-                    setTimeout(initPlayer, RECONNECT_DELAY);
-                } else {
-                    showStatus('Could not reconnect to the stream.', true);
-                    channelStatus.textContent = 'Connection failed';
-                }
-            }
-
-            function setChannelInfo() {
-                try {
-                    const decodedName = decodeURIComponent(channelNameParam);
-                    const decodedIcon = decodeURIComponent(channelIconParam);
-                    channelName.textContent = decodedName;
-                    if (decodedIcon) {
-                        channelLogo.src = decodedIcon;
-                        channelLogo.alt = decodedName + ' Logo';
-                    }
-                } catch(e) {
-                    console.error('Failed to decode URL parameters', e);
-                }
-            }
-            
-            // Player Controls Functions
-            function togglePlay() {
-                if (videoPlayer.paused) {
-                    videoPlayer.play().catch(() => showStatus('Playback failed. Trying to reconnect...', true));
-                } else {
-                    videoPlayer.pause();
-                }
-            }
-            
-            function updatePlayButton() {
-                playPauseBtn.textContent = videoPlayer.paused ? '▶' : '⏸';
-            }
-            
-            function toggleMute() {
-                videoPlayer.muted = !videoPlayer.muted;
-                updateVolumeUI();
-            }
-            
-            function setVolume() {
-                videoPlayer.volume = volumeSlider.value;
-                videoPlayer.muted = (volumeSlider.value === 0);
-                updateVolumeUI();
-            }
-            
-            function updateVolumeUI() {
-                volumeSlider.value = videoPlayer.volume;
-                muteBtn.textContent = videoPlayer.muted || videoPlayer.volume === 0 ? '🔇' : '🔊';
-            }
-            
-            function updateProgress() {
-                const percent = (videoPlayer.currentTime / videoPlayer.duration) * 100;
-                progressBar.style.width = `${percent}%`;
+                // Set up source selection
+                setupSourceSelection();
                 
-                const currentTime = formatTime(videoPlayer.currentTime);
-                const duration = formatTime(videoPlayer.duration);
-                timeDisplay.textContent = `${currentTime} / ${duration}`;
+                // Set sample channel info
+                channelName.textContent = 'Demo Channel';
+                channelLogo.src = 'https://placehold.co/80x45/222/e0e0e0?text=DEMO';
+                
+                // Set up event listeners for player
+                player.addEventListener('can-play', () => {
+                    hideStatus();
+                    channelStatus.textContent = 'Playing';
+                });
+                
+                player.addEventListener('error', (e) => {
+                    console.error('Player error:', e.detail);
+                    showStatus('Error loading stream. Trying another source might help.', true);
+                    channelStatus.textContent = 'Error';
+                });
+                
+                player.addEventListener('waiting', () => {
+                    channelStatus.textContent = 'Buffering...';
+                });
             }
             
-            function formatTime(seconds) {
-                if (isNaN(seconds) || !isFinite(seconds)) return 'Live';
-                const minutes = Math.floor(seconds / 60);
-                seconds = Math.floor(seconds % 60);
-                return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-            }
-            
-            function seek(e) {
-                const rect = progressContainer.getBoundingClientRect();
-                const percent = (e.clientX - rect.left) / rect.width;
-                videoPlayer.currentTime = percent * videoPlayer.duration;
-            }
-            
-            function toggleFullscreen() {
-                if (!document.fullscreenElement) {
-                    videoPlayer.requestFullscreen().catch(err => {
-                        console.error('Fullscreen request failed:', err);
+            function setupSourceSelection() {
+                sourceButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        const sourceType = button.dataset.type;
+                        
+                        // Don't do anything if already active
+                        if (button.classList.contains('active')) return;
+                        
+                        // Update UI
+                        sourceButtons.forEach(btn => btn.classList.remove('active'));
+                        button.classList.add('active');
+                        
+                        // Load the new source
+                        loadSource(sourceType);
                     });
-                } else {
-                    document.exitFullscreen();
+                });
+            }
+            
+            function loadSource(sourceType) {
+                currentSource = sourceType;
+                const source = STREAM_SOURCES[sourceType];
+                
+                showStatus(`Loading ${sourceType.toUpperCase()} stream...`, false);
+                channelStatus.textContent = 'Loading...';
+                
+                // Clean up previous technology if needed
+                if (hls) {
+                    hls.destroy();
+                    hls = null;
+                }
+                
+                if (shakaPlayer) {
+                    shakaPlayer.destroy();
+                    shakaPlayer = null;
+                }
+                
+                // Reset provider to default state
+                provider.src = '';
+                
+                // Load based on source type
+                if (sourceType === 'mp4') {
+                    loadMp4Source(source);
+                } else if (sourceType === 'hls') {
+                    loadHlsSource(source);
+                } else if (sourceType === 'dash') {
+                    loadDashSource(source);
                 }
             }
-
+            
+            function loadMp4Source(source) {
+                try {
+                    provider.src = source.src;
+                    provider.type = source.type;
+                    player.load();
+                } catch (error) {
+                    console.error('Error loading MP4:', error);
+                    showStatus('Error loading MP4 stream', true);
+                }
+            }
+            
+            function loadHlsSource(source) {
+                if (Hls.isSupported()) {
+                    try {
+                        hls = new Hls({
+                            xhrSetup: (xhr, url) => {
+                                xhr.open('GET', CORS_PROXY_URL + encodeURIComponent(url), true);
+                            }
+                        });
+                        
+                        hls.loadSource(CORS_PROXY_URL + encodeURIComponent(source.src));
+                        hls.attachMedia(provider.video);
+                        
+                        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                            player.play().catch(err => {
+                                showStatus('Autoplay blocked. Click play to start.', true);
+                            });
+                        });
+                        
+                        hls.on(Hls.Events.ERROR, (event, data) => {
+                            console.error('HLS error:', data);
+                            if (data.fatal) {
+                                switch(data.type) {
+                                    case Hls.ErrorTypes.NETWORK_ERROR:
+                                        showStatus('Network error loading HLS stream', true);
+                                        break;
+                                    case Hls.ErrorTypes.MEDIA_ERROR:
+                                        showStatus('Media error loading HLS stream', true);
+                                        break;
+                                    default:
+                                        showStatus('Error loading HLS stream', true);
+                                        break;
+                                }
+                            }
+                        });
+                    } catch (error) {
+                        console.error('Error loading HLS:', error);
+                        showStatus('Error loading HLS stream', true);
+                    }
+                } else if (provider.video.canPlayType('application/vnd.apple.mpegurl')) {
+                    // Native HLS support (Safari)
+                    try {
+                        provider.src = CORS_PROXY_URL + encodeURIComponent(source.src);
+                        provider.type = source.type;
+                        player.load();
+                    } catch (error) {
+                        console.error('Error loading native HLS:', error);
+                        showStatus('Error loading HLS stream', true);
+                    }
+                } else {
+                    showStatus('HLS is not supported on this browser', true);
+                }
+            }
+            
+            function loadDashSource(source) {
+                // Check if Shaka Player is available
+                if (typeof shaka === 'undefined') {
+                    showStatus('Shaka Player not loaded. Cannot play DASH stream.', true);
+                    return;
+                }
+                
+                try {
+                    // Initialize Shaka Player
+                    shakaPlayer = new shaka.Player(provider.video);
+                    shakaPlayer.configure({
+                        streaming: {
+                            bufferingGoal: 30,
+                            rebufferingGoal: 2,
+                            bufferingGoal: 10
+                        }
+                    });
+                    
+                    // Load the DASH stream
+                    shakaPlayer.load(CORS_PROXY_URL + encodeURIComponent(source.src)).then(() => {
+                        player.play().catch(err => {
+                            showStatus('Autoplay blocked. Click play to start.', true);
+                        });
+                    }).catch(error => {
+                        console.error('Error loading DASH:', error);
+                        showStatus('Error loading DASH stream', true);
+                    });
+                } catch (error) {
+                    console.error('Error initializing Shaka Player:', error);
+                    showStatus('Error loading DASH stream', true);
+                }
+            }
+            
             function showStatus(message, isError = false) {
                 statusMessage.textContent = message;
                 statusMessage.style.display = 'block';
-                statusMessage.style.background = isError ? 'rgba(239, 68, 68, 0.1)' : 'var(--bg-secondary)';
-                statusMessage.style.color = isError ? '#ef4444' : 'var(--text-primary)';
+                statusMessage.style.background = isError ? 
+                    'rgba(239, 68, 68, 0.1)' : 'var(--bg-secondary)';
+                statusMessage.style.color = isError ? 
+                    '#ef4444' : 'var(--text-primary)';
             }
             
             function hideStatus() {
                 statusMessage.style.display = 'none';
-            }
-            
-            function setupEventListeners() {
-                playPauseBtn.addEventListener('click', togglePlay);
-                videoPlayer.addEventListener('click', togglePlay);
-                muteBtn.addEventListener('click', toggleMute);
-                volumeSlider.addEventListener('input', setVolume);
-                videoPlayer.addEventListener('timeupdate', updateProgress);
-                progressContainer.addEventListener('click', seek);
-                fullscreenBtn.addEventListener('click', toggleFullscreen);
-                videoPlayer.addEventListener('play', updatePlayButton);
-                videoPlayer.addEventListener('pause', updatePlayButton);
-                videoPlayer.addEventListener('volumechange', updateVolumeUI);
-                backButton.addEventListener('click', () => {
-                    window.location.href = decodeURIComponent(backUrlParam);
-                });
             }
         });
     </script>
