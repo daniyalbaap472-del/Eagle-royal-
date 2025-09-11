@@ -311,12 +311,8 @@
      Back
     </button>
     <div class="header-controls">
-        <button class="header-button" id="statsToggle">
-            <i class="fas fa-chart-bar"></i> Stats
-        </button>
-        <button class="header-button" id="reloadStream">
-            <i class="fas fa-sync-alt"></i> Reload
-        </button>
+     <button class="header-button" id="statsToggle"><i class="fas fa-chart-bar"></i> Stats</button>
+     <button class="header-button" id="reloadStream"><i class="fas fa-sync-alt"></i> Reload</button>
     </div>
    </div>
    <div class="channels-info">
@@ -328,69 +324,60 @@
    </div>
    <div id="statusMessage" class="status-message"></div>
    <div class="player-container">
-        <div class="loading-spinner" id="loadingSpinner"></div>
-        <div class="error-overlay" id="errorOverlay">
-            <h3 id="errorTitle">Stream Error</h3>
-            <p id="errorMessage">An error occurred while loading the stream.</p>
-            <button id="retryButton">Retry</button>
-        </div>
-        <media-theme-yt>
-            <video id="player" slot="media" playsinline crossorigin="anonymous"></video>
-        </media-theme-yt>
-        <button class="pip-button" id="pipButton" title="Picture-in-Picture">
-            <i class="fas fa-compress"></i>
-        </button>
+    <div class="loading-spinner" id="loadingSpinner"></div>
+    <div class="error-overlay" id="errorOverlay">
+     <h3 id="errorTitle">Stream Error</h3>
+     <p id="errorMessage">An error occurred while loading the stream.</p>
+     <button id="retryButton">Retry</button>
+    </div>
+    <media-theme-yt>
+     <video id="player" slot="media" playsinline crossorigin="anonymous"></video>
+    </media-theme-yt>
+    <button class="pip-button" id="pipButton" title="Picture-in-Picture"><i class="fas fa-compress"></i></button>
    </div>
    <div class="video-controls">
-        <div class="control-group">
-            <span>Video Fit:</span>
-            <button class="fit-button active" data-fit="fit">Fit</button>
-            <button class="fit-button" data-fit="fill">Fill</button>
-            <button class="fit-button" data-fit="stretch">Stretch</button>
-        </div>
-        <div class="control-group">
-            <span>Quality:</span>
-            <select class="quality-selector" id="qualitySelector">
-                <option value="auto">Auto</option>
-            </select>
-        </div>
-        <div class="control-group">
-            <button class="fit-button" id="muteButton">
-                <i class="fas fa-volume-up"></i> Mute
-            </button>
-            <button class="fit-button" id="fullscreenButton">
-                <i class="fas fa-expand"></i> Fullscreen
-            </button>
-        </div>
+    <div class="control-group">
+     <span>Video Fit:</span>
+     <button class="fit-button active" data-fit="fit">Fit</button>
+     <button class="fit-button" data-fit="fill">Fill</button>
+     <button class="fit-button" data-fit="stretch">Stretch</button>
+    </div>
+    <div class="control-group">
+     <span>Quality:</span> <select class="quality-selector" id="qualitySelector"> <option value="auto">Auto</option> </select>
+    </div>
+    <div class="control-group">
+     <button class="fit-button" id="muteButton"><i class="fas fa-volume-up"></i> Mute</button>
+     <button class="fit-button" id="fullscreenButton"><i class="fas fa-expand"></i> Fullscreen</button>
+    </div>
    </div>
    <div class="stats-panel" id="statsPanel">
-        <h3>Stream Statistics</h3>
-        <div class="stats-grid">
-            <div class="stat-item">
-                <div class="stat-label">Buffer Length</div>
-                <div class="stat-value" id="statBuffer">0 s</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">Bitrate</div>
-                <div class="stat-value" id="statBitrate">0 Mbps</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">Resolution</div>
-                <div class="stat-value" id="statResolution">0x0</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">Dropped Frames</div>
-                <div class="stat-value" id="statDropped">0</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">Volume</div>
-                <div class="stat-value" id="statVolume">100%</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">Connection Speed</div>
-                <div class="stat-value" id="statSpeed">0 Mbps</div>
-            </div>
-        </div>
+    <h3>Stream Statistics</h3>
+    <div class="stats-grid">
+     <div class="stat-item">
+      <div class="stat-label">Buffer Length</div>
+      <div class="stat-value" id="statBuffer">0 s</div>
+     </div>
+     <div class="stat-item">
+      <div class="stat-label">Bitrate</div>
+      <div class="stat-value" id="statBitrate">0 Mbps</div>
+     </div>
+     <div class="stat-item">
+      <div class="stat-label">Resolution</div>
+      <div class="stat-value" id="statResolution">0x0</div>
+     </div>
+     <div class="stat-item">
+      <div class="stat-label">Dropped Frames</div>
+      <div class="stat-value" id="statDropped">0</div>
+     </div>
+     <div class="stat-item">
+      <div class="stat-label">Volume</div>
+      <div class="stat-value" id="statVolume">100%</div>
+     </div>
+     <div class="stat-item">
+      <div class="stat-label">Connection Speed</div>
+      <div class="stat-value" id="statSpeed">0 Mbps</div>
+     </div>
+    </div>
    </div>
   </div>
   <script type="module">
