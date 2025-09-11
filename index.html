@@ -222,12 +222,24 @@
         channelsData = [];
 
         for (let i = 0; i < lines.length; i++) {
-          if (lines[i].startsWith('#KODIPROP:inputstream.adaptive.license_key')) {
-            const info = lines[i + 1];
-            const match = info.match(/tvg-id="([^"]+)" tvg-logo="([^"]+)"(?:.*?group-title="([^"]+)")?.*?,\s*(.*)/);
-            if (match) {
-              const [_, tvgId, logo, groupTitle = "Uncategorized", name] = match;
-              channelsData.push({ tvgId, logo, name, groupTitle });
+          if (lines[i].startsWith('#EXTINF')) {
+            const info = lines[i];
+            const url = lines[i + 1];
+            const nameMatch = info.match(/,(.*)/);
+            const name = nameMatch ? nameMatch[1].trim() : 'Unknown';
+            
+            const tvgIdMatch = info.match(/tvg-id="([^"]+)"/);
+            const tvgId = tvgIdMatch ? tvgIdMatch[1] : name; // Use name as fallback ID
+            
+            const logoMatch = info.match(/tvg-logo="([^"]+)"/);
+            const logo = logoMatch ? logoMatch[1] : '';
+
+            const groupTitleMatch = info.match(/group-title="([^"]+)"/);
+            const groupTitle = groupTitleMatch ? groupTitleMatch[1] : 'Uncategorized';
+            
+            if (url && url.startsWith('http')) {
+              channelsData.push({ id: tvgId, logo, name, groupTitle, url });
+              i++; // Skip the URL line
             }
           }
         }
@@ -269,17 +281,17 @@
         filtered.sort((a, b) => a.name.localeCompare(b.name));
       } else if (sortSelect.value === 'favorites') {
         const favs = getFavorites();
-        filtered.sort((a, b) => isFavorite(b.tvgId) - isFavorite(a.tvgId));
+        filtered.sort((a, b) => isFavorite(b.id) - isFavorite(a.id));
       }
 
       channelList.innerHTML = '';
 
-      filtered.forEach(({ tvgId, logo, name }) => {
+      filtered.forEach(({ id, logo, name, url }) => {
         const channel = document.createElement('div');
         channel.className = 'channel';
         channel.innerHTML = `
-          <button class="fav-btn ${isFavorite(tvgId) ? 'active' : ''}" onclick="toggleFavorite('${tvgId}')">★</button>
-          <a href="play.html?id=${encodeURIComponent(tvgId)}">
+          <button class="fav-btn ${isFavorite(id) ? 'active' : ''}" onclick="toggleFavorite('${id}')">★</button>
+          <a href="${url}" target="_blank">
             <img src="${logo}" alt="${name}" />
             <div class="channel-name">${name}</div>
           </a>
@@ -294,7 +306,7 @@
     loadPlaylist();
   </script>
 </body>
-  <script>
+<script>
   // Disable Right Click
   document.addEventListener('contextmenu', e => e.preventDefault());
 
