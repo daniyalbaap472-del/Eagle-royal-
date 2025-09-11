@@ -1,178 +1,206 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Watch Live – Zee5</title>
-  <meta name="theme-color" content="#e11d48" />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.6/shaka-player.compiled.min.js"></script>
-  <style>
-    #customLogoWrapper {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      width: 100px;
-      height: 100px;
-      border-radius: 16px;
-      background: rgba(255, 255, 255, 0.2);
-      backdrop-filter: blur(6px);
-      padding: 8px;
-      z-index: 10;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      pointer-events: none;
-    }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Watch Live – IPTV07INDIA</title>
+  <meta name="theme-color" content="#e11d48" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.6/shaka-player.compiled.min.js"></script>
+  <style>
+    /* Improved custom logo styling for better responsiveness and centering */
+    #customLogoWrapper {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 80px; /* Reduced size for smaller screens */
+      height: 80px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(6px);
+      padding: 0.5rem;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
 
-    #customLogo {
-      width: 100%;
-      height: auto;
-      border-radius: 12px;
-      opacity: 0.9;
-    }
-  </style>
+    #customLogo {
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 8px;
+      opacity: 0.9;
+    }
+  </style>
 </head>
 
 <body class="bg-gray-100 text-gray-900 min-h-screen font-sans">
 
-  <!-- Navigation -->
-  <nav class="bg-white shadow-md">
-    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-      <a href="index.html" class="text-xl font-bold text-red-600">IPTV07INDIA</a>
-      <div class="flex space-x-4 text-sm">
-        <a href="index.html" class="text-gray-700 hover:text-red-600">Home</a>
-        <a href="#" class="text-gray-700 hover:text-red-600">Live TV</a>
-        <a href="#" class="text-gray-700 hover:text-red-600">Search</a>
-      </div>
-    </div>
-  </nav>
+    <nav class="bg-white shadow-md">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <a href="index.html" class="text-xl font-bold text-red-600">IPTV07INDIA</a>
+      <div class="flex space-x-4 text-sm">
+        <a href="index.html" class="text-gray-700 hover:text-red-600">Home</a>
+        <a href="#" class="text-gray-700 hover:text-red-600">Live TV</a>
+        <a href="#" class="text-gray-700 hover:text-red-600">Search</a>
+      </div>
+    </div>
+  </nav>
 
-  <!-- Video Player -->
-  <div class="relative max-w-5xl mx-auto mt-6 rounded-xl overflow-hidden shadow-lg">
-    <div id="customLogoWrapper">
-      <img id="customLogo" src="https://via.placeholder.com/150" alt="Overlay Logo" />
-    </div>
-    <video id="video" controls autoplay class="w-full bg-black aspect-video"></video>
-  </div>
+    <div class="relative max-w-5xl mx-auto mt-6 rounded-xl overflow-hidden shadow-lg">
+    <div id="customLogoWrapper">
+      <img id="customLogo" src="https://via.placeholder.com/150" alt="Overlay Logo" />
+    </div>
+    <video id="video" controls autoplay class="w-full bg-black aspect-video"></video>
+  </div>
 
-  <!-- Program Info Card -->
-  <div class="max-w-4xl mx-auto mt-6 bg-white p-6 rounded-xl shadow-md">
-    <div class="flex items-center gap-4">
-      <div class="w-20 h-20 bg-gray-200 rounded-full overflow-hidden">
-        <img id="channel-logo" src="https://iili.io/Jn2BLen.gif" alt="Channel Logo" class="w-full h-full object-cover" />
-      </div>
-      <div class="flex-1">
-        <h2 id="program-title" class="text-lg font-bold">Loading...</h2>
-        <p id="channel-name" class="text-md text-gray-600 font-bold">Loading...</p>
-        <p id="program-time" class="text-sm text-gray-500">Loading...</p>
-      </div>
-    </div>
-  </div>
+    <div class="max-w-4xl mx-auto mt-6 bg-white p-6 rounded-xl shadow-md">
+    <div class="flex items-center gap-4">
+      <div class="w-20 h-20 bg-gray-200 rounded-full overflow-hidden">
+        <img id="channel-logo" src="https://iili.io/Jn2BLen.gif" alt="Channel Logo" class="w-full h-full object-cover" />
+      </div>
+      <div class="flex-1">
+        <h2 id="program-title" class="text-lg font-bold">Loading...</h2>
+        <p id="channel-name" class="text-md text-gray-600 font-bold">Loading...</p>
+      </div>
+    </div>
+  </div>
 
-  <!-- Join Buttons -->
-  <div class="flex justify-center gap-4 mt-6">
-    <a href="https://t.me/IPTV07INDIA" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md">
-      Join Telegram
-    </a>
-  </div>
+    <div class="flex justify-center gap-4 mt-6">
+    <a href="https://t.me/IPTV07INDIA" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md">
+      Join Telegram
+    </a>
+  </div>
 
-  <!-- Error Message -->
-  <div id="error" class="text-center mt-4 text-red-600 font-semibold"></div>
+    <div id="error" class="text-center mt-4 text-red-600 font-semibold"></div>
 
-  <!-- Shaka Player Logic -->
-  <script>
-    const tvgId = new URLSearchParams(window.location.search).get('id');
-    const videoElement = document.getElementById('video');
-    const customLogo = document.getElementById('customLogo');
-    const errorEl = document.getElementById('error');
-    const playlistUrl = 'https://tv9899.vercel.app/playlist.m3u';
+    <script>
+    const tvgId = new URLSearchParams(window.location.search).get('id');
+    const videoElement = document.getElementById('video');
+    const customLogo = document.getElementById('customLogo');
+    const channelLogo = document.getElementById('channel-logo');
+    const programTitle = document.getElementById('program-title');
+    const channelName = document.getElementById('channel-name');
+    const errorEl = document.getElementById('error');
+    const playlistUrl = 'https://tv9899.vercel.app/playlist.m3u';
+    const originalTitle = document.title;
+    
+    // Initialize Shaka Player
+    async function initPlayer(streamUrl, licenseKey) {
+      shaka.Player.set
+      const player = new shaka.Player(videoElement);
+      
+      player.configure({
+        drm: {
+          clearKeys: licenseKey,
+        },
+      });
 
-    async function init() {
-      if (!tvgId) {
-        errorEl.textContent = 'No channel ID provided.';
-        return;
-      }
+      try {
+        await player.load(streamUrl);
+      } catch (error) {
+        console.error('Error playing stream:', error);
+        errorEl.textContent = `Error playing stream: ${error.message}`;
+      }
+    }
 
-      try {
-        const res = await fetch(playlistUrl);
-        const text = await res.text();
-        const lines = text.split('\n');
-        let found = false;
+    async function fetchAndPlayChannel() {
+      if (!tvgId) {
+        errorEl.textContent = 'No channel ID provided in the URL.';
+        return;
+      }
 
-        for (let i = 0; i < lines.length; i++) {
-          if (lines[i].startsWith('#KODIPROP') && lines[i + 1]?.includes(`tvg-id="${tvgId}"`)) {
-            const license = lines[i].split('=')[1].trim();
-            const infoLine = lines[i + 1];
-            const streamUrl = lines[i + 2];
-            const match = infoLine.match(/tvg-logo="([^"]+)".*?,\s*(.*)/);
+      try {
+        const res = await fetch(playlistUrl);
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        const text = await res.text();
+        const lines = text.split('\n');
+        
+        let found = false;
+        let streamInfo = {};
 
-            if (match) {
-              const logo = match[1];
-              const name = match[2];
-              const [keyId, key] = license.split(':');
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i].trim();
+          if (line.startsWith('#KODIPROP')) {
+            const licenseMatch = line.match(/#KODIPROP:\s*license_key=([a-f0-9]+:[a-f0-9]+)/);
+            if (licenseMatch) {
+              const [keyId, key] = licenseMatch[1].split(':');
+              streamInfo.licenseKey = { [keyId]: key };
+            }
+          } else if (line.startsWith('#EXTINF')) {
+            const infoMatch = line.match(/tvg-id="([^"]+)"/);
+            if (infoMatch && infoMatch[1] === tvgId) {
+              const logoMatch = line.match(/tvg-logo="([^"]+)"/);
+              const titleMatch = line.match(/,(.*)/);
+              streamInfo.logo = logoMatch ? logoMatch[1] : '';
+              streamInfo.title = titleMatch ? titleMatch[1].trim() : tvgId;
+              streamInfo.streamUrl = lines[i + 1]?.trim();
+              found = true;
+              break;
+            }
+          }
+        }
 
-              document.getElementById('program-title').textContent = name;
-              document.getElementById('channel-name').textContent = tvgId.toUpperCase();
-              document.getElementById('channel-logo').src = logo;
-              customLogo.src = logo;
+        if (found && streamInfo.streamUrl) {
+          programTitle.textContent = streamInfo.title;
+          channelName.textContent = tvgId.toUpperCase();
+          if (streamInfo.logo) {
+            channelLogo.src = streamInfo.logo;
+            customLogo.src = streamInfo.logo;
+          }
+          document.title = `Watch Live – ${streamInfo.title || tvgId.toUpperCase()}`;
+          
+          initPlayer(streamInfo.streamUrl, streamInfo.licenseKey);
+        } else {
+          errorEl.textContent = 'No matching channel found in the playlist.';
+        }
 
-              const player = new shaka.Player(videoElement);
-              await player.configure({
-                drm: { clearKeys: { [keyId]: key } }
-              });
+      } catch (err) {
+        console.error('Failed to fetch playlist:', err);
+        errorEl.textContent = `Failed to load channel: ${err.message}. Please check your network.`;
+      }
+    }
 
-              await player.load(streamUrl);
-              found = true;
-              break;
-            }
-          }
-        }
+    shaka.polyfill.installAll();
+    document.addEventListener('DOMContentLoaded', fetchAndPlayChannel);
+  </script>
 
-        if (!found) {
-          errorEl.textContent = 'No matching channel found in playlist.';
-        }
-      } catch (err) {
-        console.error(err);
-        errorEl.textContent = 'Failed to load channel. Please check your network or playlist.';
-      }
-    }
+    <script>
+    document.addEventListener('contextmenu', e => e.preventDefault());
 
-    document.addEventListener('DOMContentLoaded', init);
-  </script>
+    document.addEventListener('keydown', function (e) {
+      if (
+        e.key === 'F12' ||
+        (e.ctrlKey && e.shiftKey && ['I', 'C', 'J'].includes(e.key)) ||
+        (e.ctrlKey && e.key === 'U') ||
+        (e.metaKey && e.altKey && ['I', 'C', 'J'].includes(e.key)) // for Mac
+      ) {
+        e.preventDefault();
+      }
+    });
 
-  <!-- Disable Right Click & DevTools -->
-  <script>
-    document.addEventListener('contextmenu', e => e.preventDefault());
-
-    document.addEventListener('keydown', function (e) {
-      if (
-        e.key === 'F12' ||
-        (e.ctrlKey && e.shiftKey && ['I', 'C', 'J'].includes(e.key)) ||
-        (e.ctrlKey && ['U', 'S'].includes(e.key))
-      ) {
-        e.preventDefault();
-        return false;
-      }
-    });
-
-    let devtools = { open: false };
-    const threshold = 160;
-    const emitEvent = (state) => {
-      if (state !== devtools.open) {
-        devtools.open = state;
-        if (state) {
-          document.body.innerHTML = '<h1 style="color:red;text-align:center;margin-top:20%;">DevTools is not allowed!</h1>';
-        }
-      }
-    };
-
-    setInterval(function () {
-      const widthThreshold = window.outerWidth - window.innerWidth > threshold;
-      const heightThreshold = window.outerHeight - window.innerHeight > threshold;
-      emitEvent(widthThreshold || heightThreshold);
-    }, 500);
-  </script>
+    let devtools = { open: false };
+    const threshold = 160;
+    
+    const handleDevtoolsCheck = () => {
+      const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+      const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+      const newDevtoolsState = widthThreshold || heightThreshold;
+      
+      if (newDevtoolsState && !devtools.open) {
+        devtools.open = true;
+        document.body.innerHTML = '<h1 style="color:red;text-align:center;margin-top:20%;">DevTools is not allowed!</h1>';
+      } else if (!newDevtoolsState && devtools.open) {
+        devtools.open = false;
+        // Optional: Reload the page or restore content
+      }
+    };
+    
+    window.addEventListener('resize', handleDevtoolsCheck);
+  </script>
 
 </body>
 </html>
