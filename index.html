@@ -22,12 +22,21 @@
     header {
       text-align: center;
       padding: 30px 20px 10px;
+      background: linear-gradient(90deg, #ff0000, #ff5e00);
+      color: white;
+      border-bottom: 3px solid #ffca28;
     }
 
     header h1 {
       margin: 0;
       font-size: 32px;
-      color: #0072ff;
+      color: white;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .subtitle {
+      font-size: 18px;
+      margin-top: 5px;
     }
 
     .controls, .categories {
@@ -35,9 +44,9 @@
       justify-content: center;
       gap: 10px;
       flex-wrap: wrap;
-      margin: 10px auto 0;
-      padding: 10px 20px;
-      background: rgba(255, 255, 255, 0.6);
+      margin: 20px auto 10px;
+      padding: 15px 20px;
+      background: rgba(255, 255, 255, 0.8);
       backdrop-filter: blur(10px);
       border-radius: 15px;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
@@ -64,6 +73,7 @@
       background: #e0eafc;
       cursor: pointer;
       transition: 0.3s;
+      font-weight: 500;
     }
 
     .categories button.active {
@@ -101,6 +111,7 @@
       object-fit: contain;
       background: #f5f5f5;
       border-bottom: 1px solid #eee;
+      padding: 10px;
     }
 
     .channel-name {
@@ -116,15 +127,27 @@
       top: 8px;
       right: 8px;
       font-size: 20px;
-      background: transparent;
+      background: rgba(255, 255, 255, 0.8);
       border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       color: #999;
       cursor: pointer;
       z-index: 2;
+      transition: all 0.2s;
+    }
+
+    .fav-btn:hover {
+      transform: scale(1.1);
     }
 
     .fav-btn.active {
       color: #ffca28;
+      background: rgba(255, 255, 255, 0.95);
     }
 
     a {
@@ -141,15 +164,24 @@
       color: #333;
       background: rgba(255, 255, 255, 0.7);
       backdrop-filter: blur(6px);
+      border-top: 1px solid #eee;
     }
 
     footer a {
       color: #0072ff;
       text-decoration: none;
+      font-weight: 600;
     }
 
     footer a:hover {
       color: #00bcd4;
+    }
+
+    .status-bar {
+      text-align: center;
+      padding: 10px;
+      font-size: 14px;
+      color: #555;
     }
 
     @media (max-width: 480px) {
@@ -162,12 +194,19 @@
       .controls select {
         width: 100%;
       }
+      
+      .channels {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 15px;
+        padding: 15px;
+      }
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>Zee5 Live Channels</h1>
+    <h1>🚩 जय भवानी 🔥</h1>
+    <div class="subtitle">Zee5 Live Channels</div>
   </header>
 
   <div class="controls">
@@ -181,20 +220,265 @@
 
   <div class="categories" id="categoryTabs"></div>
 
+  <div class="status-bar" id="statusBar">Loaded 28 channels</div>
+
   <div class="channels" id="channelList"></div>
 
   <footer>
-    Join our Telegram: <a href="https://t.me/IPTV07INDIA" target="_blank">@IPTV07INDIA</a>
+    Join our Telegram: <a href="https://t.me/joker_verse" target="_blank">@joker_verse</a>
   </footer>
 
   <script>
-    const playlistUrl = 'https://raw.githubusercontent.com/tiger629/m3u/refs/heads/main/joker.m3u';
+    // Channel data from your M3U playlist
+    const channelsData = [
+      {
+        id: "0-9-aajtak",
+        name: "Aaj Tak",
+        language: "hi",
+        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-aajtak/channel_list/360x2033e789b21dd3c42079af3fa4a4c5a6576b594053e82124268bc5163a45b1126d4",
+        groupTitle: "Zee News",
+        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105503/AAJTAKHDNEWSELE/index-connected.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
+      },
+      {
+        id: "0-9-zeenews",
+        name: "Zee News",
+        language: "hi",
+        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-zeenews/channel_list/360x2031f194601f5104a9c80c7ab9619760098",
+        groupTitle: "Zee News",
+        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105510/ZEENEWSELE/master.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
+      },
+      {
+        id: "0-9-indiatoday",
+        name: "India Today",
+        language: "en",
+        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-indiatoday/channel_list/indiatoday11702d87d227b9dd482a88a0334f10363c11",
+        groupTitle: "Zee News",
+        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105501/INDIATODAYHDNEWSELE/index-connected.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
+      },
+      {
+        id: "0-9-255",
+        name: "Good News Today",
+        language: "hi",
+        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-255/channel_list/360x2034b7d0f587bc34fe6b8f663f9a162e9b7d365bf379a4e40d492bf9c008b51262e",
+        groupTitle: "Zee News",
+        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105499/GOODNEWSTODAYHDNEWSELE/index-connected.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
+      },
+      {
+        id: "0-9-9z5543514",
+        name: "&Prive HD",
+        language: "en",
+        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-9z5543514/channel_list/360x203c829818eda724758a0539e592f3ee8ce",
+        groupTitle: "Zee Movie",
+        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2104969/AndPriveHDELENEW/index-connected.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
+      },
+      {
+        id: "0-9-258",
+        name: "TV9 Telugu",
+        language: "te",
+        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-258/channel_list/360x203254e76adfe5248f1904be9c860c325ea",
+        groupTitle: "Zee News",
+        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2111478/TV9_TELUGU/index-connected.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
+      },
+      {
+        id: "0-9-257",
+        name: "TV9 Marathi",
+        language: "mr",
+        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-257/channel_list/360x203a77a41b9f09a4be68021edce6535c07d",
+        groupTitle: "Zee News",
+        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2111476/TV9_MARATHI/index-connected.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
+      },
+      {
+        id: "0-9-zeepunjabharyanahima",
+        name: "Zee Punjab Haryana Himachal Pradesh",
+        language: "pa",
+        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-zeepunjabharyanahima/channel_list/360x20308630cb38d3d4866a435d90715e656c8",
+        groupTitle: "Zee News",
+        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105493/ZEEPUHRHIELE/master.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
+      },
+      {
+        id: "0-9-251",
+        name: "TV9 Bharatvarsh",
+        language: "hi",
+        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-251/channel_list/360x20352e6393e55854bf68995213ec8f5e9c4",
+        groupTitle: "Zee News",
+        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2111481/TV9_Bharatvarsh/index-connected.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
+      },
+      {
+        id: "0-9-zeebusiness",
+        name: "Zee Business",
+        language: "hi",
+        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-zeebusiness/channel_list/360x2034001e7be91db42bb8ec15b8bd074d20a",
+        groupTitle: "Zee News",
+        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105509/ZEEBUSINESSELE/master.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
+      },
+      {
+        id: "0-9-260",
+        name: "TV9 Gujarati",
+        language: "gu",
+        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-260/channel_list/360x203b9888f81dbd244cbb0fd28ba96b11c3c",
+        groupTitle: "Zee News",
+        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2111482/TV9_GUJURATI/index-connected.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
+      },
+      {
+        id: "0-9-zee24kalak",
+        name: "Zee 24 Kalak",
+        language: "gu",
+        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-zee24kalak/channel_list/zee24zee24kalak360x2034b1001c338f0404b8f1d96ef5ccf7a3d",
+        groupTitle: "Zee News",
+        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105497/ZEE24KALAKELE/master.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
+      },
+      {
+        id: "0-9-259",
+        name: "TV9 Kannada",
+        language: "kn",
+        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-259/channel_list/360x20390e3b4b89ab946e29847b29f9fccb411",
+        groupTitle: "Zee News",
+        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2111477/TV9_KANNADA/index-connected.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
+      },
+      {
+        id: "0-9-zee24taas",
+        name: "Zee 24 Taas",
+        language: "mr",
+        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-zee24taas/channel_list/zee24taas360x20398a45db9f3bb4c29b0fbd1a7f50617ab",
+        groupTitle: "Zee News",
+        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105498/ZEE24TAASNEWSNEWELE/master.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
+      },
+      {
+        id: "0-9-261",
+        name: "News 9",
+        language: "en",
+        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-261/channel_list/360x20362e0ae462ebf4f40859a2776a038186e",
+        groupTitle: "Zee News",
+        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2111479/TV9_News9/index-connected.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
+      },
+      {
+        id: "0-9-wion",
+        name: "WION",
+        language: "en",
+        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-wion/channel_list/360x203e15697a079f244d1b1baf7af2eb964bc",
+        groupTitle: "Zee News",
+        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105506/WIONNEWSELE/master.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
+      },
+      {
+        id: "0-9-zeehindustan",
+        name: "Zee Bharat",
+        language: "hi",
+        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-zeehindustan/channel_list/360x20377941d3cc0bd478bb8db941a1cb4e720",
+        groupTitle: "Zee News",
+        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105262/ZEEBHARATNEWSNEWELE/master.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
+      },
+      {
+        id: "0-9-zeebiharjharkhand",
+        name: "Zee Bihar Jharkhand",
+        language: "hi",
+        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-zeebiharjharkhand/channel_list/360x2033a03ad2c8662458e8e9101fd3e4bc2d9",
+        groupTitle: "Zee News",
+        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105492/ZEEBHJKELE/master.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
+      },
+      {
+        id: "0-9-24ghantatv",
+        name: "Zee 24 Ghanta",
+        language: "bn",
+        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-24ghantatv/channel_list/zee24ghanta360x2039f73eed657d04b6b979a6814ea45a6db",
+        groupTitle: "Zee News",
+        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105511/ZEE24GHANTAELE/master.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
+      },
+      {
+        id: "0-9-zeekalinganews",
+        name: "Zee Delhi NCR Haryana",
+        language: "hi",
+        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-zeekalinganews/channel_list/360x2030f484d95b57b4c7b8484b0423a73eb18",
+        groupTitle: "Zee News",
+        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105507/ZEEDELNCRHRNEWSNEWELE/master.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
+      },
+      {
+        id: "0-9-zeerajasthannews",
+        name: "Zee Rajasthan News",
+        language: "hi",
+        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-zeerajasthannews/channel_list/360x2038b45f2fb59954d5897ccbdcd40717054",
+        groupTitle: "Zee News",
+        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105496/ZEERAJASTHANELE/master.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
+      },
+      {
+        id: "0-9-zeemadhyapradeshchat",
+        name: "Zee Madhya Pradesh Chhattisgarh",
+        language: "hi",
+        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-zeemadhyapradeshchat/channel_list/360x203cacfbcb7b45943dcac37f5e23345477c",
+        groupTitle: "Zee News",
+        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105495/ZEEMPCGELE/master.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
+      },
+      {
+        id: "0-9-zing",
+        name: "Zing",
+        language: "hi",
+        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-zing/channel_list/360x2033bff29dd5f574ea4b36a2269a35a612c",
+        groupTitle: "Zee Music",
+        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105532/ZingELE/master.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
+      },
+      {
+        id: "0-9-bigmagic_1786965389",
+        name: "Big Magic",
+        language: "hi",
+        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-bigmagic_1786965389/channel_list/360x2032d681f33fc1f415a8b027e4913ee884a",
+        groupTitle: "Zee Entertainment",
+        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105176/BigMagicELE/master.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
+      },
+      {
+        id: "0-9-zeetvhd",
+        name: "Zee TV HD",
+        language: "hi",
+        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-zeetvhd/channel_list/360x203ba09ccf2bfcf484c8c6401b014ce263b",
+        groupTitle: "Zee Entertainment",
+        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105531/ZeeTVHDMSLELE/index-connected.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
+      },
+      {
+        id: "0-9-tvhd_0",
+        name: "&TV HD",
+        language: "hi",
+        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-tvhd_0/channel_list/360x203b8aa32da7b8d40e3a88a149166705dc1",
+        groupTitle: "Zee Entertainment",
+        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105504/AndTVHDELE/index-connected.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
+      },
+      {
+        id: "0-9-zeemarathi",
+        name: "Zee Marathi HD",
+        language: "mr",
+        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-zeemarathi/channel_list/360x203b7bd7f7a0b26408fbd0683f4c2f25661",
+        groupTitle: "Zee Entertainment",
+        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105520/ZeeMarathiHDELE/index-connected.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
+      },
+      {
+        id: "0-9-zeeyuva",
+        name: "Zee Yuva",
+        language: "mr",
+        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-zeeyuva/channel_list/zee24yuva360x203b72ac2ae8fbe480a9d51f3d33fe3089a",
+        groupTitle: "Zee Entertainment",
+        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105533/ZeeYuvaELE/master.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
+      },
+      {
+        id: "0-9-zeecafehd",
+        name: "Zee Café HD",
+        language: "en",
+        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-zeecafehd/channel_list/360x2036b29d1698b6640f59cc7bf86eaa51eaf",
+        groupTitle: "Zee Entertainment",
+        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105539/ZeecafeHDELE/index-connected.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
+      },
+      {
+        id: "0-9-bigganga",
+        name: "Anmol Cinema 2",
+        language: "hi",
+        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-bigganga/channel_list/360x20389300d0c5de94cb582c2899511d0dbf1",
+        groupTitle: "Zee Movie",
+        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105176/BigMagicELE/master.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
+      }
+    ];
+
     const channelList = document.getElementById('channelList');
     const searchInput = document.getElementById('searchInput');
     const sortSelect = document.getElementById('sortSelect');
     const categoryTabs = document.getElementById('categoryTabs');
+    const statusBar = document.getElementById('statusBar');
 
-    let channelsData = [];
     let currentCategory = "All";
 
     function getFavorites() {
@@ -214,42 +498,9 @@
       return getFavorites().includes(id);
     }
 
-    async function loadPlaylist() {
-      try {
-        const res = await fetch(playlistUrl);
-        const text = await res.text();
-        const lines = text.split('\n');
-        channelsData = [];
-
-        for (let i = 0; i < lines.length; i++) {
-          if (lines[i].startsWith('#EXTINF')) {
-            const info = lines[i];
-            const url = lines[i + 1];
-            const nameMatch = info.match(/,(.*)/);
-            const name = nameMatch ? nameMatch[1].trim() : 'Unknown';
-            
-            const tvgIdMatch = info.match(/tvg-id="([^"]+)"/);
-            const tvgId = tvgIdMatch ? tvgIdMatch[1] : name; // Use name as fallback ID
-            
-            const logoMatch = info.match(/tvg-logo="([^"]+)"/);
-            const logo = logoMatch ? logoMatch[1] : '';
-
-            const groupTitleMatch = info.match(/group-title="([^"]+)"/);
-            const groupTitle = groupTitleMatch ? groupTitleMatch[1] : 'Uncategorized';
-            
-            if (url && url.startsWith('http')) {
-              channelsData.push({ id: tvgId, logo, name, groupTitle, url });
-              i++; // Skip the URL line
-            }
-          }
-        }
-
-        renderCategoryTabs();
-        renderChannels();
-      } catch (err) {
-        console.error('Failed to load channels:', err);
-        channelList.innerHTML = `<p style="color: red; text-align:center;">Failed to load channels. Please try again later.</p>`;
-      }
+    function loadPlaylist() {
+      renderCategoryTabs();
+      renderChannels();
     }
 
     function renderCategoryTabs() {
@@ -285,6 +536,12 @@
       }
 
       channelList.innerHTML = '';
+      
+      if (filtered.length === 0) {
+        channelList.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #666;">No channels found matching your search.</div>`;
+        statusBar.textContent = `No channels found`;
+        return;
+      }
 
       filtered.forEach(({ id, logo, name, url }) => {
         const channel = document.createElement('div');
@@ -292,52 +549,56 @@
         channel.innerHTML = `
           <button class="fav-btn ${isFavorite(id) ? 'active' : ''}" onclick="toggleFavorite('${id}')">★</button>
           <a href="${url}" target="_blank">
-            <img src="${logo}" alt="${name}" />
+            <img src="${logo}" alt="${name}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYwIiBoZWlnaHQ9IjkwIiB2aWV3Qm94PSIwIDAgMTYwIDkwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxNjAiIGhlaWdodD0iOTAiIGZpbGw9IiNlZWVlZWUiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjOTk5Ij5ObyBMb2dvPC90ZXh0Pjwvc3ZnPg=='"/>
             <div class="channel-name">${name}</div>
           </a>
         `;
         channelList.appendChild(channel);
       });
+      
+      statusBar.textContent = `Showing ${filtered.length} of ${channelsData.length} channels`;
     }
 
     searchInput.addEventListener('input', renderChannels);
     sortSelect.addEventListener('change', renderChannels);
 
+    // Initialize the page
     loadPlaylist();
   </script>
-</body>
-<script>
-  // Disable Right Click
-  document.addEventListener('contextmenu', e => e.preventDefault());
+  
+  <script>
+    // Disable Right Click
+    document.addEventListener('contextmenu', e => e.preventDefault());
 
-  // Disable DevTools Shortcuts
-  document.addEventListener('keydown', function (e) {
-    if (
-      e.key === 'F12' ||
-      (e.ctrlKey && e.shiftKey && ['I', 'C', 'J'].includes(e.key)) ||
-      (e.ctrlKey && ['U', 'S'].includes(e.key))
-    ) {
-      e.preventDefault();
-      return false;
-    }
-  });
-
-  // Detect DevTools by measuring console open
-  let devtools = { open: false };
-  const threshold = 160;
-  const emitEvent = (state) => {
-    if (state !== devtools.open) {
-      devtools.open = state;
-      if (state) {
-        document.body.innerHTML = '<h1 style="color:red;text-align:center;margin-top:20%;">DevTools is not allowed!</h1>';
+    // Disable DevTools Shortcuts
+    document.addEventListener('keydown', function (e) {
+      if (
+        e.key === 'F12' ||
+        (e.ctrlKey && e.shiftKey && ['I', 'C', 'J'].includes(e.key)) ||
+        (e.ctrlKey && ['U', 'S'].includes(e.key))
+      ) {
+        e.preventDefault();
+        return false;
       }
-    }
-  };
+    });
 
-  setInterval(function () {
-    const widthThreshold = window.outerWidth - window.innerWidth > threshold;
-    const heightThreshold = window.outerHeight - window.innerHeight > threshold;
-    emitEvent(widthThreshold || heightThreshold);
-  }, 500);
-</script>
+    // Detect DevTools by measuring console open
+    let devtools = { open: false };
+    const threshold = 160;
+    const emitEvent = (state) => {
+      if (state !== devtools.open) {
+        devtools.open = state;
+        if (state) {
+          document.body.innerHTML = '<h1 style="color:red;text-align:center;margin-top:20%;">DevTools is not allowed!</h1>';
+        }
+      }
+    };
+
+    setInterval(function () {
+      const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+      const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+      emitEvent(widthThreshold || heightThreshold);
+    }, 500);
+  </script>
+</body>
 </html>
