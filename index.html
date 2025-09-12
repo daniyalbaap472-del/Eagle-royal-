@@ -547,56 +547,6 @@
             box-shadow: 0 0 15px rgba(255, 87, 34, 0.7);
         }
         
-        /* 3D Lock Effect for Favorites */
-        .channel-card.locked {
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .channel-card.locked::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, 
-                rgba(255, 87, 34, 0.1), 
-                rgba(255, 152, 0, 0.2));
-            z-index: 2;
-            backdrop-filter: blur(2px);
-        }
-        
-        .channel-card.locked::after {
-            content: '🔒 PREMIUM';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotateX(0) rotateY(0) rotateZ(0);
-            background: linear-gradient(45deg, var(--rainbow-1), var(--rainbow-3), var(--rainbow-5), var(--rainbow-7));
-            padding: 8px 15px;
-            border-radius: 10px;
-            font-weight: bold;
-            color: white;
-            z-index: 3;
-            animation: lock-pulse 2s infinite, lock-3d 5s infinite linear;
-            transform-style: preserve-3d;
-            perspective: 500px;
-        }
-        
-        @keyframes lock-pulse {
-            0%, 100% { opacity: 0.8; }
-            50% { opacity: 1; box-shadow: 0 0 20px rgba(255, 87, 34, 0.7); }
-        }
-        
-        @keyframes lock-3d {
-            0% { transform: translate(-50%, -50%) rotateX(0) rotateY(0); }
-            25% { transform: translate(-50%, -50%) rotateX(5deg) rotateY(5deg); }
-            50% { transform: translate(-50%, -50%) rotateX(0) rotateY(10deg); }
-            75% { transform: translate(-50%, -50%) rotateX(-5deg) rotateY(5deg); }
-            100% { transform: translate(-50%, -50%) rotateX(0) rotateY(0); }
-        }
-        
         /* Loading and UI Elements */
         .loading-container, .load-more-container {
             display: flex;
@@ -663,78 +613,96 @@
             transform: translateY(-2px);
         }
         
-        /* Player Section */
-        #player-section {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
+        /* Modal Styles */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 100; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
             height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 1000;
-            display: none;
-            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.7); 
+            justify-content: center; 
             align-items: center;
-            flex-direction: column;
-            padding: 20px;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
         }
         
-        .player-container {
-            width: 100%;
-            max-width: 1000px;
-            background: var(--bg-secondary);
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        .modal-content {
+            background-color: var(--bg-secondary); 
+            padding: 30px; 
+            border-radius: 12px; 
+            text-align: center;
+            position: relative; 
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6); 
+            width: 90%; 
+            max-width: 400px;
+            animation: modal-appear 0.3s ease-out;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        .player-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            background: rgba(0, 0, 0, 0.5);
-            border-bottom: 1px solid #333;
+        @keyframes modal-appear {
+            from { 
+                opacity: 0; 
+                transform: translateY(30px) scale(0.95); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1); 
+            }
         }
         
-        .player-title {
-            font-size: 1.2rem;
-            font-weight: 600;
+        .modal-close-button {
+            position: absolute; 
+            top: 10px; 
+            right: 15px; 
+            color: var(--text-secondary);
+            font-size: 28px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: color 0.2s;
         }
         
-        .close-player {
-            background: none;
-            border: none;
-            color: var(--text-primary);
-            font-size: 1.5rem;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: background 0.3s;
+        .modal-close-button:hover { 
+            color: var(--accent); 
         }
         
-        .close-player:hover {
-            background: rgba(255, 255, 255, 0.1);
+        .modal-title { 
+            color: var(--text-primary); 
+            font-size: 20px; 
+            margin-bottom: 20px; 
         }
         
-        .video-container {
-            width: 100%;
-            height: 0;
-            padding-bottom: 56.25%; /* 16:9 aspect ratio */
-            position: relative;
+        .modal-buttons { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
         }
         
-        #video-player {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
+        .modal-button {
+            text-decoration: none; 
+            color: #fff; 
+            background-color: #333; 
+            padding: 12px 20px;
+            border-radius: 20px; 
+            font-size: 16px; 
+            font-weight: 600; 
+            transition: background-color 0.2s, transform 0.2s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .modal-button:hover { 
+            transform: translateY(-2px); 
+            background-color: #555; 
+        }
+        
+        .modal-button.og { 
+            background-color: var(--accent); 
+        }
+        
+        .modal-button.og:hover { 
+            background-color: #ff6d40; 
         }
         
         /* Favorites Section */
@@ -805,9 +773,8 @@
             <div class="header-rainbow"></div>
             <div class="search-container">
                 <div class="search-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" view极="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search">
+                        <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
                 </div>
                 <input type="text" id="searchInput" placeholder="Search current category..." autocomplete="off">
@@ -880,25 +847,18 @@
         </main>
     </div>
     
-    <!-- Player Section -->
-    <div id="player-section">
-        <div class="player-container">
-            <div class极="player-header">
-                <div class="player-title" id="player-channel-name">Channel Name</div>
-                <button class="close-player" id="close-player">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="video-container">
-                <video id="video-player" controls playsinline>
-                    Your browser does not support the video tag.
-                </video>
+    <div id="playerModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close-button">×</span>
+            <h2 class="modal-title">Choose Player</h2>
+            <div class="modal-buttons">
+                <a id="ogPlayerLink" href="#" target="_blank" class="modal-button og">Original Player</a>
+                <a id="simplePlayerLink" href="#" target="_blank" class="modal-button">Simple Player</a>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-    
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // Initialize particles.js for background light effects
@@ -949,21 +909,11 @@
                 retina_detect: true
             });
 
-            // Sample data for demonstration
-            const sampleChannels = [
-                { id: 'jio-tv-plus', name: 'JioTV Plus', icon: 'https://i.ibb.co/TMdnTJkK/Screenshot-2025-07-13-131317.png', category: 'India', url: 'https://allinonereborn.github.io/jiotv-plus/', isLocked: false },
-                { id: 'jio-tv-ind', name: 'JioTV IND (CatchUp)', icon: 'https://i.ibb.co/XkGhJp5x/Screenshot-2025-07-13-131317-copy.png', category: 'India', url: 'https://mini.allinonereborn.online/jiotv-in/', isLocked: true },
-                { id: 'jio-tv-ww', name: 'JioTV Worldwide (CatchUp)', icon: 'https://i.ibb.co/XkGhJp5x/Screenshot-2025-07-13-131317-copy.png', category: 'Worldwide', url: 'https://mini.allinonereborn.online/jiotv-ww/', isLocked: false },
-                { id: 'sony-liv', name: 'SonyLiv (Worldwide)', icon: 'https://i.ibb.co/Y43P6Sxn/Screenshot-2025-07-13-131317-copy.png', category: 'Worldwide', url: 'https://allinonereborn.fun/sony/', isLocked: false },
-                { id: 'sony-events', name: 'SonyLiv Events (Worldwide)', icon: 'https://i.ibb.co/FqBtzp0n/Untitled-3.png', category: 'Events', url: 'https://allinonereborn.fun/events/', isLocked: true },
-                { id: 'zee5-hd', name: 'Zee5 HD (WorldWide)', icon: 'https://i.ibb.co/HfmBHLKh/Screenshot-2025-07-13-131317-copy.png', category: 'Worldwide', url: 'https://allinonereborn.fun/zee5-web/', isLocked: false },
-                { id: 'zee5-sd', name: 'Zee5 SD (WorldWide)', icon: 'https://i.ibb.co/HfmBHLKh/Screenshot-2025-07-13-131317-copy.png', category: 'Worldwide', url: 'https://allinonereborn.fun/zee5/', isLocked: true },
-                { id: 'fancode', name: 'Fancode (Worldwide)', icon: 'https://i.ibb.co/FkY6vB0f/Screenshot-2025-07-13-131317-copy.png', category: 'Sports', url: 'https://allinonereborn.fun/fcw/', isLocked: false },
-                { id: 'asia-cup', name: 'ASIA CUP INDIA', icon: 'https://i.ibb.co/67fH9LwL/asia-cup-1754990931372.jpg', category: 'Sports', url: 'https://allinonereborn.fun/asia-cup/', isLocked: true },
-                { id: 'opplextv', name: 'OpplexTv-Web (Worldwide)', icon: 'https://i.ibb.co/Q76zZGM8/Screenshot-2025-09-08-132846.png', category: 'Worldwide', url: 'https://allinonereborn.fun/opplextv-web1/', isLocked: false },
-                { id: 'biggboss', name: 'BigBoss Hindi', icon: 'https://i.ibb.co/B5L1MVjX/biggboss-2025-08-22-08-35-54.webp', category: 'Entertainment', url: 'https://allinonereborn.fun/opplextv-web1/player.html', isLocked: true }
-            ];
-
+            const PLAYLIST_URL = 'http://demonji.onrender.com/multiple/playlist.php?server=server4&categories=354%2C353%2C355%2C356%2C357%2C358%2C359%2C360%2C361%2C363%2C364%2C420';
+            const CORS_PROXY_URL = 'https://proxy-js.onrender.com/';
+            const CHANNELS_PER_PAGE = 30;
+            const MAX_RETRIES = 3;
+            
             // UI Element references
             const channelGrid = document.getElementById('channelGrid');
             const loadingSpinner = document.getElementById('loadingSpinner');
@@ -972,17 +922,15 @@
             const errorContainer = document.getElementById('errorContainer');
             const loadMoreBtn = document.getElementById('loadMoreBtn');
             const loadMoreContainer = document.getElementById('loadMoreContainer');
+            const modal = document.getElementById('playerModal');
+            const ogPlayerLink = document.getElementById('ogPlayerLink');
+            const simplePlayerLink = document.getElementById('simplePlayerLink');
+            const closeButton = document.querySelector('.modal-close-button');
             const categoryFiltersContainer = document.getElementById('categoryFilters');
             const favoritesBtn = document.getElementById('favoritesBtn');
             const favoritesSection = document.getElementById('favoritesSection');
             const favoritesGrid = document.getElementById('favoritesGrid');
             const rainbowModeBtn = document.getElementById('rainbowMode');
-            
-            // Player elements
-            const playerSection = document.getElementById('player-section');
-            const videoPlayer = document.getElementById('video-player');
-            const playerChannelName = document.getElementById('player-channel-name');
-            const closePlayerBtn = document.getElementById('close-player');
             
             // State variables
             let allChannels = [];
@@ -995,18 +943,92 @@
 
             // Initialize
             function init() {
-                // Use sample data for demonstration
-                allChannels = sampleChannels.map(channel => {
-                    return {
-                        ...channel,
-                        isFavorite: favorites.includes(channel.id)
-                    };
-                });
-                
-                displayCategories();
-                applyFiltersAndRender();
+                fetchAndPrepareChannels();
                 displayFavorites();
                 setupEventListeners();
+            }
+
+            async function fetchWithRetries(url, retries = MAX_RETRIES, delay = 1000) {
+                try {
+                    return await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest', 'Referer': 'http://demonji.onrender.com/' } });
+                } catch (error) {
+                    if (retries > 0) {
+                        console.warn(`Fetch failed. Retrying in ${delay / 1000}s... (${retries} retries left)`);
+                        showMessage(`Could not load channels. Retrying... (${MAX_RETRIES - retries + 1}/${MAX_RETRIES})`);
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        return fetchWithRetries(url, retries - 1, delay * 2);
+                    } else {
+                        console.error("Max retries reached. Fetch failed.", error);
+                        throw new Error("Failed to fetch playlist after multiple attempts.");
+                    }
+                }
+            }
+
+            async function fetchAndPrepareChannels() {
+                try {
+                    showLoading();
+                    hideError();
+                    showMessage('Loading channels, please wait...');
+                    
+                    const proxiedUrl = `${CORS_PROXY_URL}${PLAYLIST_URL}`;
+                    const response = await fetchWithRetries(proxiedUrl);
+
+                    if (!response.ok) {
+                        throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const data = await response.text();
+                    allChannels = parseM3uData(data);
+                    
+                    if (allChannels.length === 0) {
+                        showMessage('No channels were found in the playlist.');
+                    } else {
+                        hideMessage();
+                        displayCategories();
+                        applyFiltersAndRender();
+                    }
+                } catch (error) {
+                    console.error('Error during channel preparation:', error);
+                    showError(`Error loading channels: ${error.message}. Please try refreshing the page later.`);
+                } finally {
+                    hideLoading();
+                }
+            }
+            
+            function parseM3uData(data) {
+                const channels = [];
+                const lines = data.split('\n');
+                let currentChannel = {};
+
+                for (const line of lines) {
+                    const trimmedLine = line.trim();
+                    if (trimmedLine.startsWith('#EXTINF')) {
+                        const infoMatch = /#EXTINF:-1\s+(.*),(.*)/.exec(trimmedLine);
+                        if (infoMatch) {
+                            const attributesString = infoMatch[1];
+                            const name = infoMatch[2].trim();
+                            
+                            const logoMatch = /tvg-logo="([^"]*)"/.exec(attributesString);
+                            const groupMatch = /group-title="([^"]*)"/.exec(attributesString);
+
+                            currentChannel = {
+                                name: name,
+                                icon: logoMatch ? logoMatch[1] : 'https://placehold.co/120x60/222/e0e0e0?text=Logo',
+                                category: groupMatch ? groupMatch[1] : 'General',
+                                id: name.toLowerCase().replace(/\s+/g, '-')
+                            };
+                        }
+                    } else if (trimmedLine.startsWith('http')) {
+                        if (currentChannel.name) {
+                            currentChannel.url = trimmedLine;
+                            // Check if this channel is a favorite
+                            currentChannel.isFavorite = favorites.includes(currentChannel.id);
+                            channels.push(currentChannel);
+                        }
+                        currentChannel = {};
+                    }
+                }
+                return channels;
             }
 
             function displayCategories() {
@@ -1047,14 +1069,14 @@
                 }
 
                 const startIndex = renderedChannelCount;
-                const endIndex = Math.min(startIndex + 12, currentlyVisibleChannels.length);
+                const endIndex = Math.min(startIndex + CHANNELS_PER_PAGE, currentlyVisibleChannels.length);
 
                 for (let i = startIndex; i < endIndex; i++) {
                     const channel = currentlyVisibleChannels[i];
                     const card = document.createElement('div');
-                    card.className = `channel-card ${channel.isLocked ? 'locked' : ''}`;
+                    card.className = 'channel-card';
                     card.dataset.id = channel.id;
-                    card.dataset.stream = channel.url;
+                    card.dataset.stream = btoa(channel.url);
                     card.dataset.name = channel.name;
                     card.dataset.icon = channel.icon;
                     card.innerHTML = `
@@ -1081,33 +1103,29 @@
                                 </button>
                             </div>
                         </div>
-                        ${!channel.isLocked ? '<div class="play-btn">Play Now</div>' : ''}
+                        <div class="play-btn">Play Now</div>
                     `;
                     
-                    // Add event listeners if not locked
-                    if (!channel.isLocked) {
-                        const playBtn = card.querySelector('.play-btn');
-                        playBtn.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            playChannel(card);
-                        });
-                        
-                        card.addEventListener('click', (e) => {
-                            if (!e.target.closest('.channel-actions')) {
-                                playChannel(card);
-                            }
-                        });
-                    }
+                    // Add event listeners
+                    const playBtn = card.querySelector('.play-btn');
+                    playBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleChannelClick(card);
+                    });
                     
                     const favBtn = card.querySelector('.favorite-btn');
-                    if (favBtn) {
-                        favBtn.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            toggleFavorite(channel.id, card);
-                        });
-                    }
+                    favBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleFavorite(channel.id, card);
+                    });
+                    
+                    card.addEventListener('click', (e) => {
+                        if (!e.target.closest('.channel-actions')) {
+                            handleChannelClick(card);
+                        }
+                    });
                     
                     channelGrid.appendChild(card);
                 }
@@ -1117,29 +1135,16 @@
                 else hideLoadMore();
             }
 
-            function playChannel(cardElement) {
-                const streamUrl = cardElement.dataset.stream;
-                const channelName = cardElement.dataset.name;
+            function handleChannelClick(item) {
+                const streamUrl = item.dataset.stream;
+                const channelName = item.dataset.name;
+                const channelIcon = item.dataset.icon;
+                const backUrl = window.location.href;
                 
-                // Set player title
-                playerChannelName.textContent = channelName;
+                ogPlayerLink.href = `player.html?s=${encodeURIComponent(streamUrl)}&name=${encodeURIComponent(channelName)}&icon=${encodeURIComponent(channelIcon)}&back=${encodeURIComponent(backUrl)}`;
+                simplePlayerLink.href = `simple-player.html?s=${encodeURIComponent(streamUrl)}&name=${encodeURIComponent(channelName)}&back=${encodeURIComponent(backUrl)}`;
                 
-                // Show player section
-                playerSection.style.display = 'flex';
-                
-                // Set up the player with the stream URL
-                videoPlayer.src = streamUrl;
-                videoPlayer.play().catch(e => {
-                    console.error('Error playing video:', e);
-                    showError('Could not play this channel. It may be restricted or require a subscription.');
-                    closePlayer();
-                });
-            }
-            
-            function closePlayer() {
-                playerSection.style.display = 'none';
-                videoPlayer.pause();
-                videoPlayer.src = '';
+                modal.style.display = 'flex';
             }
 
             function toggleFavorite(channelId, cardElement) {
@@ -1178,16 +1183,16 @@
                 favoritesGrid.innerHTML = '';
                 const favoriteChannels = allChannels.filter(channel => favorites.includes(channel.id));
                 
-                if (favorite极annels.length === 0) {
+                if (favoriteChannels.length === 0) {
                     favoritesGrid.innerHTML = '<div class="message">No favorite channels yet. Click the heart icon on any channel to add it to favorites.</div>';
                     return;
                 }
                 
                 favoriteChannels.forEach(channel => {
                     const card = document.createElement('div');
-                    card.className = `channel-card ${channel.isLocked ? 'locked' : ''}`;
+                    card.className = 'channel-card';
                     card.dataset.id = channel.id;
-                    card.dataset.stream = channel.url;
+                    card.dataset.stream = btoa(channel.url);
                     card.dataset.name = channel.name;
                     card.dataset.icon = channel.icon;
                     card.innerHTML = `
@@ -1198,7 +1203,7 @@
                             <div>
                                 <h3 class="channel-name" title="${channel.name}">${channel.name}</h3>
                                 <div class="channel-category">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx极2" ry="2"></rect><polyline points="17 2 12 7 7 2"></polyline></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect><polyline points="17 2 12 7 7 2"></polyline></svg>
                                     <span>${channel.category}</span>
                                 </div>
                             </div>
@@ -1214,35 +1219,29 @@
                                 </button>
                             </div>
                         </div>
-                        ${!channel.isLocked ? '<div class="play-btn">Play Now</div>' : ''}
+                        <div class="play-btn">Play Now</div>
                     `;
                     
-                    // Add event listeners if not locked
-                    if (!channel.isLocked) {
-                        const playBtn = card.querySelector('.play-btn');
-                        if (playBtn) {
-                            playBtn.addEventListener('click', (e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                playChannel(card);
-                            });
-                        }
-                        
-                        card.addEventListener('click', (e) => {
-                            if (!e.target.closest('.channel-actions')) {
-                                playChannel(card);
-                            }
-                        });
-                    }
+                    // Add event listeners
+                    const playBtn = card.querySelector('.play-btn');
+                    playBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleChannelClick(card);
+                    });
                     
                     const favBtn = card.querySelector('.favorite-btn');
-                    if (favBtn) {
-                        favBtn.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            toggleFavorite(channel.id, card);
-                        });
-                    }
+                    favBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleFavorite(channel.id, card);
+                    });
+                    
+                    card.addEventListener('click', (e) => {
+                        if (!e.target.closest('.channel-actions')) {
+                            handleChannelClick(card);
+                        }
+                    });
                     
                     favoritesGrid.appendChild(card);
                 });
@@ -1294,22 +1293,9 @@
                         applyFiltersAndRender();
                     }
                 });
-                
-                closePlayerBtn.addEventListener('click', closePlayer);
-                
-                // Close player when clicking outside
-                playerSection.addEventListener('click', (e) => {
-                    if (e.target === playerSection) {
-                        closePlayer();
-                    }
-                });
-                
-                // Close player with Escape key
-                document.addEventListener('keydown', (e) => {
-                    if (e.key === 'Escape' && playerSection.style.display === 'flex') {
-                        closePlayer();
-                    }
-                });
+
+                closeButton.addEventListener('click', () => { modal.style.display = 'none'; });
+                window.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
                 
                 favoritesBtn.addEventListener('click', () => {
                     favoritesSection.scrollIntoView({ behavior: 'smooth' });
