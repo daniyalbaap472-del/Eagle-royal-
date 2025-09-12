@@ -1,604 +1,1336 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Zee5 Live Channels</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-    body {
-      margin: 0;
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(145deg, #f0f4f8, #dfe9f3);
-      color: #222;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-
-    header {
-      text-align: center;
-      padding: 30px 20px 10px;
-      background: linear-gradient(90deg, #ff0000, #ff5e00);
-      color: white;
-      border-bottom: 3px solid #ffca28;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 32px;
-      color: white;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-    }
-
-    .subtitle {
-      font-size: 18px;
-      margin-top: 5px;
-    }
-
-    .controls, .categories {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin: 20px auto 10px;
-      padding: 15px 20px;
-      background: rgba(255, 255, 255, 0.8);
-      backdrop-filter: blur(10px);
-      border-radius: 15px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-      width: calc(100% - 40px);
-      max-width: 900px;
-    }
-
-    .controls input,
-    .controls select {
-      padding: 10px 15px;
-      border-radius: 12px;
-      border: 1px solid #ccc;
-      font-size: 15px;
-      width: 180px;
-      outline: none;
-      background: #fff;
-      color: #333;
-    }
-
-    .categories button {
-      padding: 8px 14px;
-      border-radius: 10px;
-      border: none;
-      background: #e0eafc;
-      cursor: pointer;
-      transition: 0.3s;
-      font-weight: 500;
-    }
-
-    .categories button.active {
-      background: #0072ff;
-      color: #fff;
-    }
-
-    .channels {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 20px;
-      padding: 20px;
-      width: 100%;
-      max-width: 1200px;
-      margin: auto;
-    }
-
-    .channel {
-      background: rgba(255, 255, 255, 0.9);
-      border-radius: 20px;
-      overflow: hidden;
-      position: relative;
-      transition: all 0.3s ease;
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-    }
-
-    .channel:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 12px 20px rgba(0, 114, 255, 0.2);
-    }
-
-    .channel img {
-      width: 100%;
-      height: 110px;
-      object-fit: contain;
-      background: #f5f5f5;
-      border-bottom: 1px solid #eee;
-      padding: 10px;
-    }
-
-    .channel-name {
-      padding: 12px;
-      font-size: 15px;
-      text-align: center;
-      font-weight: 500;
-      color: #0072ff;
-    }
-
-    .fav-btn {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      font-size: 20px;
-      background: rgba(255, 255, 255, 0.8);
-      border: none;
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #999;
-      cursor: pointer;
-      z-index: 2;
-      transition: all 0.2s;
-    }
-
-    .fav-btn:hover {
-      transform: scale(1.1);
-    }
-
-    .fav-btn.active {
-      color: #ffca28;
-      background: rgba(255, 255, 255, 0.95);
-    }
-
-    a {
-      text-decoration: none;
-      color: inherit;
-      display: block;
-    }
-
-    footer {
-      margin-top: auto;
-      text-align: center;
-      padding: 20px;
-      font-size: 14px;
-      color: #333;
-      background: rgba(255, 255, 255, 0.7);
-      backdrop-filter: blur(6px);
-      border-top: 1px solid #eee;
-    }
-
-    footer a {
-      color: #0072ff;
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    footer a:hover {
-      color: #00bcd4;
-    }
-
-    .status-bar {
-      text-align: center;
-      padding: 10px;
-      font-size: 14px;
-      color: #555;
-    }
-
-    @media (max-width: 480px) {
-      .controls, .categories {
-        flex-direction: column;
-        gap: 10px;
-      }
-
-      .controls input,
-      .controls select {
-        width: 100%;
-      }
-      
-      .channels {
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-        gap: 15px;
-        padding: 15px;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EAGLE ROYAL 🦅 - Premium Streaming</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --accent: #FF5722;
+            --accent-hover: #FF7043;
+            --card-bg: #2b2b2b;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            
+            /* Rainbow colors */
+            --rainbow-1: #ff0000;
+            --rainbow-2: #ff8c00;
+            --rainbow-3: #ffff00;
+            --rainbow-4: #008000;
+            --rainbow-5: #0000ff;
+            --rainbow-6: #4b0082;
+            --rainbow-7: #9400d3;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 0;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* Rainbow Background Animation */
+        .rainbow-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            opacity: 0.1;
+            background: linear-gradient(124deg, 
+                var(--rainbow-1), var(--rainbow-2), var(--rainbow-3), 
+                var(--rainbow-4), var(--rainbow-5), var(--rainbow-6), var(--rainbow-7));
+            background-size: 1800% 1800%;
+            animation: rainbow 18s ease infinite;
+        }
+        
+        @keyframes rainbow { 
+            0% { background-position: 0% 82% }
+            50% { background-position: 100% 19% }
+            100% { background-position: 0% 82% }
+        }
+        
+        /* Light Particles */
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Rainbow Header */
+        header {
+            position: sticky;
+            top: 0;
+            background: linear-gradient(to bottom, rgba(18, 18, 18, 0.98), rgba(18, 18, 18, 0.92));
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 10;
+            padding: 15px 20px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
+        }
+        
+        .header-rainbow {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                var(--rainbow-1), var(--rainbow-2), var(--rainbow-3), 
+                var(--rainbow-4), var(--rainbow-5), var(--rainbow-6), var(--rainbow-7));
+            background-size: 1000% 1000%;
+            animation: rainbow-flow 8s ease infinite;
+        }
+        
+        @keyframes rainbow-flow {
+            0% { background-position: 0% 50% }
+            50% { background-position: 100% 50% }
+            100% { background-position: 0% 50% }
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #FF9800, #FF5722);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            text-shadow: 0 0 10px rgba(255, 152, 0, 0.3);
+        }
+        
+        .eagle-icon {
+            font-size: 2.5rem;
+            animation: eagle-flap 3s ease-in-out infinite;
+        }
+        
+        @keyframes eagle-flap {
+            0%, 100% { transform: translateY(0) rotate(0); }
+            50% { transform: translateY(-5px) rotate(2deg); }
+        }
+        
+        .search-container {
+            flex: 1;
+            max-width: 600px;
+            position: relative;
+        }
+        
+        #searchInput {
+            width: 100%;
+            padding: 14px 20px;
+            border-radius: 30px;
+            border: 2px solid #333;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            padding-left: 50px;
+        }
+        
+        #searchInput:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(255, 87, 34, 0.5);
+        }
+        
+        #searchInput::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.8;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+        
+        /* Header Controls */
+        .header-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .control-btn {
+            background: var(--bg-secondary);
+            border: 2px solid #333;
+            color: var(--text-primary);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+            position: relative;
+        }
+        
+        .control-btn:hover {
+            background: #333;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .control-btn.rainbow-btn {
+            background: linear-gradient(45deg, 
+                var(--rainbow-1), var(--rainbow-2), var(--rainbow-3), 
+                var(--rainbow-4), var(--rainbow-5), var(--rainbow-6), var(--rainbow-7));
+            background-size: 400% 400%;
+            animation: rainbow-bg 6s ease infinite;
+            color: white;
+            border: none;
+        }
+        
+        @keyframes rainbow-bg {
+            0% { background-position: 0% 50% }
+            50% { background-position: 100% 50% }
+            100% { background-position: 0% 50% }
+        }
+        
+        /* Light Banner */
+        .banner {
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.8), rgba(45, 45, 45, 0.8));
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            border: 2px solid #333;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        .banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: banner-light 3s linear infinite;
+        }
+        
+        @keyframes banner-light {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .banner-title {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, #FF9800, #FF5722);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 10px rgba(255, 152, 0, 0.3);
+        }
+        
+        .banner-features {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .feature {
+            background: var(--card-bg);
+            padding: 12px 20px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .feature:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .join-button {
+            display: inline-block;
+            padding: 14px 28px;
+            background: var(--accent);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .join-button::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(255, 255, 255, 0.2),
+                rgba(255, 255, 255, 0)
+            );
+            transform: rotate(30deg);
+            animation: button-light 3s linear infinite;
+        }
+        
+        @keyframes button-light {
+            0% { transform: translateX(-100%) rotate(30deg); }
+            100% { transform: translateX(100%) rotate(30deg); }
+        }
+        
+        .join-button:hover {
+            background: var(--accent-hover);
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(255, 87, 34, 0.4);
+        }
+        
+        /* Category Filters */
+        .category-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 25px 0 10px;
+            justify-content: center;
+        }
+        
+        .category-btn {
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            background-color: var(--bg-secondary);
+            border: 2px solid #333;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .category-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: translateX(-100%);
+        }
+        
+        .category-btn:hover::before {
+            animation: category-light 1.5s linear;
+        }
+        
+        @keyframes category-light {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .category-btn:hover {
+            color: var(--text-primary);
+            background-color: #333;
+            transform: translateY(-2px);
+        }
+        
+        .category-btn.active {
+            color: #fff;
+            background-color: var(--accent);
+            border-color: var(--accent-hover);
+            box-shadow: 0 0 15px rgba(255, 87, 34, 0.5);
+        }
+        
+        /* 3D Channel Cards */
+        .channels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+            perspective: 1000px;
+        }
+        
+        .channel-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: transform 0.5s ease, box-shadow 0.5s ease, filter 0.5s ease;
+            box-shadow: var(--card-shadow);
+            border: 2px solid transparent;
+            animation: fadeIn 0.5s ease-in;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            transform-style: preserve-3d;
+        }
+        
+        .channel-card:hover {
+            transform: translateY(-10px) rotateX(5deg) rotateY(5deg) scale(1.03);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            border-color: var(--accent);
+            filter: brightness(1.1);
+        }
+        
+        .channel-image {
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #222;
+            padding: 15px;
+            position: relative;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+        
+        .channel-image::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.5));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .channel-card:hover .channel-image::after {
+            opacity: 1;
+        }
+        
+        .channel-image img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: transform 0.5s ease;
+            z-index: 1;
+        }
+        
+        .channel-card:hover .channel-image img {
+            transform: scale(1.1);
+        }
+        
+        .channel-info {
+            padding: 20px;
+            text-align: center;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .channel-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .channel-category {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .channel-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .channel-action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .channel-action-btn:hover {
+            background: var(--accent);
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        .favorite-btn.favorited {
+            color: var(--accent);
+        }
+        
+        .play-btn {
+            display: block;
+            width: calc(100% - 40px);
+            padding: 14px;
+            background: var(--accent);
+            color: white;
+            text-align: center;
+            border-radius: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) scale(0.95);
+            opacity: 0;
+            z-index: 2;
+        }
+        
+        .channel-card:hover .play-btn {
+            opacity: 1;
+            transform: translateX(-50%) scale(1);
+        }
+        
+        .play-btn:hover {
+            background: var(--accent-hover);
+            box-shadow: 0 0 15px rgba(255, 87, 34, 0.7);
+        }
+        
+        /* 3D Lock Effect for Favorites */
+        .channel-card.locked {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .channel-card.locked::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, 
+                rgba(255, 87, 34, 0.1), 
+                rgba(255, 152, 0, 0.2));
+            z-index: 2;
+            backdrop-filter: blur(2px);
+        }
+        
+        .channel-card.locked::after {
+            content: '🔒 PREMIUM';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotateX(0) rotateY(0) rotateZ(0);
+            background: linear-gradient(45deg, var(--rainbow-1), var(--rainbow-3), var(--rainbow-5), var(--rainbow-7));
+            padding: 8px 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            color: white;
+            z-index: 3;
+            animation: lock-pulse 2s infinite, lock-3d 5s infinite linear;
+            transform-style: preserve-3d;
+            perspective: 500px;
+        }
+        
+        @keyframes lock-pulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; box-shadow: 0 0 20px rgba(255, 87, 34, 0.7); }
+        }
+        
+        @keyframes lock-3d {
+            0% { transform: translate(-50%, -50%) rotateX(0) rotateY(0); }
+            25% { transform: translate(-50%, -50%) rotateX(5deg) rotateY(5deg); }
+            50% { transform: translate(-50%, -50%) rotateX(0) rotateY(10deg); }
+            75% { transform: translate(-50%, -50%) rotateX(-5deg) rotateY(5deg); }
+            100% { transform: translate(-50%, -50%) rotateX(0) rotateY(0); }
+        }
+        
+        /* Loading and UI Elements */
+        .loading-container, .load-more-container {
+            display: flex;
+            justify-content: center;
+            padding: 40px 0;
+        }
+        
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            border-top-color: var(--accent);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        .message {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+        
+        .error-message {
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 1rem;
+        }
+        
+        .load-more-btn {
+            padding: 14px 28px;
+            border-radius: 30px;
+            background-color: var(--accent);
+            color: white;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .load-more-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: translateX(-100%);
+        }
+        
+        .load-more-btn:hover::before {
+            animation: button-light 1.5s linear;
+        }
+        
+        .load-more-btn:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+        
+        /* Player Section */
+        #player-section {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+        
+        .player-container {
+            width: 100%;
+            max-width: 1000px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .player-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-bottom: 1px solid #333;
+        }
+        
+        .player-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .close-player {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.3s;
+        }
+        
+        .close-player:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .video-container {
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            position: relative;
+        }
+        
+        #video-player {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+        }
+        
+        /* Favorites Section */
+        .favorites-section {
+            margin: 40px 0;
+            padding: 20px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .section-header h2 {
+            font-size: 1.8rem;
+            background: linear-gradient(90deg, #FF9800, #FF5722);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .section-header i {
+            color: var(--accent);
+            font-size: 1.5rem;
+        }
+        
+        /* Animations */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container { padding: 15px; }
+            header { flex-direction: column; padding: 10px 15px; }
+            h1 { font-size: 2.2rem; }
+            .search-container { max-width: 100%; }
+            .channels-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+            .banner-title { font-size: 1.6rem; }
+            .banner-features { flex-direction: column; }
+            .header-controls { margin-top: 15px; }
+        }
+        
+        @media (max-width: 480px) {
+            .container { padding: 10px; }
+            .channels-grid { grid-template-columns: 1fr; }
+            h1 { font-size: 1.8rem; }
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1>🚩 जय भवानी 🔥</h1>
-    <div class="subtitle">Zee5 Live Channels</div>
-  </header>
+    <div class="rainbow-bg"></div>
+    <div id="particles-js"></div>
+    
+    <div class="container">
+        <header>
+            <h1><span class="eagle-icon">🦅</span> EAGLE ROYAL</h1>
+            <div class="header-rainbow"></div>
+            <div class="search-container">
+                <div class="search-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" view极="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </div>
+                <input type="text" id="searchInput" placeholder="Search current category..." autocomplete="off">
+            </div>
+            
+            <div class="header-controls">
+                <button class="control-btn rainbow-btn" title="Rainbow Mode" id="rainbowMode">
+                    <i class="fas fa-palette"></i>
+                </button>
+                <button class="control-btn" title="Favorites" id="favoritesBtn">
+                    <i class="fas fa-heart"></i>
+                </button>
+                <button class="control-btn" title="Settings" id="settingsBtn">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+        </header>
+        
+        <!-- Promotional Banner -->
+        <div class="banner">
+            <h2 class="banner-title">Join Our Premium Telegram Group</h2>
+            <p>Get access to exclusive content and features</p>
+            
+            <div class="banner-features">
+                <div class="feature">
+                    <span>✅</span> 3D Lock Favourite Channel
+                </div>
+                <div class="feature">
+                    <span>✅</span> All Future Updates
+                </div>
+                <div class="feature">
+                    <span>✅</span> Professional Website
+                </div>
+                <div class="feature">
+                    <span>✅</span> Rainbow Effects
+                </div>
+                <div class="feature">
+                    <span>✅</span> Dynamic Lighting
+                </div>
+            </div>
+            
+            <a href="https://t.me/EAGLEROYALM3u8" class="join-button" target="_blank">
+                Join Telegram Group
+            </a>
+        </div>
+        
+        <!-- Favorites Section -->
+        <div class="favorites-section" id="favoritesSection">
+            <div class="section-header">
+                <i class="fas fa-heart"></i>
+                <h2>Favorite Channels</h2>
+            </div>
+            <div id="favoritesGrid" class="channels-grid">
+                <div class="message">No favorite channels yet. Click the heart icon on any channel to add it to favorites.</div>
+            </div>
+        </div>
+        
+        <div id="categoryFilters" class="category-filters"></div>
+        
+        <main>
+            <div id="channelGrid" class="channels-grid"></div>
+            <div id="loadingSpinner" class="loading-container" style="display: none;">
+                <div class="spinner"></div>
+            </div>
+            <div id="messageContainer" class="message"></div>
+            <div id="errorContainer" class="error-message" style="display: none;"></div>
+            <div id="loadMoreContainer" class="load-more-container" style="display: none;">
+                <button id="loadMoreBtn" class="load-more-btn">Load More Channels</button>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Player Section -->
+    <div id="player-section">
+        <div class="player-container">
+            <div class极="player-header">
+                <div class="player-title" id="player-channel-name">Channel Name</div>
+                <button class="close-player" id="close-player">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="video-container">
+                <video id="video-player" controls playsinline>
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+    </div>
 
-  <div class="controls">
-    <input type="text" id="searchInput" placeholder="Search channels..." />
-    <select id="sortSelect">
-      <option value="default">Sort by</option>
-      <option value="name">Name</option>
-      <option value="favorites">Favorites</option>
-    </select>
-  </div>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize particles.js for background light effects
+            particlesJS('particles-js', {
+                particles: {
+                    number: { value: 80, density: { enable: true, value_area: 800 } },
+                    color: { value: "#ffffff" },
+                    shape: { type: "circle" },
+                    opacity: { 
+                        value: 0.2, 
+                        random: true,
+                        anim: { enable: true, speed: 1, opacity_min: 0.1, sync: false }
+                    },
+                    size: { 
+                        value: 3, 
+                        random: true,
+                        anim: { enable: true, speed: 2, size_min: 0.1, sync: false }
+                    },
+                    line_linked: {
+                        enable: true,
+                        distance: 150,
+                        color: "#ffffff",
+                        opacity: 0.1,
+                        width: 1
+                    },
+                    move: {
+                        enable: true,
+                        speed: 1,
+                        direction: "none",
+                        random: true,
+                        straight: false,
+                        out_mode: "out",
+                        bounce: false
+                    }
+                },
+                interactivity: {
+                    detect_on: "canvas",
+                    events: {
+                        onhover: { enable: true, mode: "bubble" },
+                        onclick: { enable: true, mode: "push" },
+                        resize: true
+                    },
+                    modes: {
+                        bubble: { distance: 100, size: 5, duration: 2, opacity: 0.2, speed: 3 },
+                        push: { particles_nb: 4 }
+                    }
+                },
+                retina_detect: true
+            });
 
-  <div class="categories" id="categoryTabs"></div>
+            // Sample data for demonstration
+            const sampleChannels = [
+                { id: 'jio-tv-plus', name: 'JioTV Plus', icon: 'https://i.ibb.co/TMdnTJkK/Screenshot-2025-07-13-131317.png', category: 'India', url: 'https://allinonereborn.github.io/jiotv-plus/', isLocked: false },
+                { id: 'jio-tv-ind', name: 'JioTV IND (CatchUp)', icon: 'https://i.ibb.co/XkGhJp5x/Screenshot-2025-07-13-131317-copy.png', category: 'India', url: 'https://mini.allinonereborn.online/jiotv-in/', isLocked: true },
+                { id: 'jio-tv-ww', name: 'JioTV Worldwide (CatchUp)', icon: 'https://i.ibb.co/XkGhJp5x/Screenshot-2025-07-13-131317-copy.png', category: 'Worldwide', url: 'https://mini.allinonereborn.online/jiotv-ww/', isLocked: false },
+                { id: 'sony-liv', name: 'SonyLiv (Worldwide)', icon: 'https://i.ibb.co/Y43P6Sxn/Screenshot-2025-07-13-131317-copy.png', category: 'Worldwide', url: 'https://allinonereborn.fun/sony/', isLocked: false },
+                { id: 'sony-events', name: 'SonyLiv Events (Worldwide)', icon: 'https://i.ibb.co/FqBtzp0n/Untitled-3.png', category: 'Events', url: 'https://allinonereborn.fun/events/', isLocked: true },
+                { id: 'zee5-hd', name: 'Zee5 HD (WorldWide)', icon: 'https://i.ibb.co/HfmBHLKh/Screenshot-2025-07-13-131317-copy.png', category: 'Worldwide', url: 'https://allinonereborn.fun/zee5-web/', isLocked: false },
+                { id: 'zee5-sd', name: 'Zee5 SD (WorldWide)', icon: 'https://i.ibb.co/HfmBHLKh/Screenshot-2025-07-13-131317-copy.png', category: 'Worldwide', url: 'https://allinonereborn.fun/zee5/', isLocked: true },
+                { id: 'fancode', name: 'Fancode (Worldwide)', icon: 'https://i.ibb.co/FkY6vB0f/Screenshot-2025-07-13-131317-copy.png', category: 'Sports', url: 'https://allinonereborn.fun/fcw/', isLocked: false },
+                { id: 'asia-cup', name: 'ASIA CUP INDIA', icon: 'https://i.ibb.co/67fH9LwL/asia-cup-1754990931372.jpg', category: 'Sports', url: 'https://allinonereborn.fun/asia-cup/', isLocked: true },
+                { id: 'opplextv', name: 'OpplexTv-Web (Worldwide)', icon: 'https://i.ibb.co/Q76zZGM8/Screenshot-2025-09-08-132846.png', category: 'Worldwide', url: 'https://allinonereborn.fun/opplextv-web1/', isLocked: false },
+                { id: 'biggboss', name: 'BigBoss Hindi', icon: 'https://i.ibb.co/B5L1MVjX/biggboss-2025-08-22-08-35-54.webp', category: 'Entertainment', url: 'https://allinonereborn.fun/opplextv-web1/player.html', isLocked: true }
+            ];
 
-  <div class="status-bar" id="statusBar">Loaded 28 channels</div>
+            // UI Element references
+            const channelGrid = document.getElementById('channelGrid');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const searchInput = document.getElementById('searchInput');
+            const messageContainer = document.getElementById('messageContainer');
+            const errorContainer = document.getElementById('errorContainer');
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            const loadMoreContainer = document.getElementById('loadMoreContainer');
+            const categoryFiltersContainer = document.getElementById('categoryFilters');
+            const favoritesBtn = document.getElementById('favoritesBtn');
+            const favoritesSection = document.getElementById('favoritesSection');
+            const favoritesGrid = document.getElementById('favoritesGrid');
+            const rainbowModeBtn = document.getElementById('rainbowMode');
+            
+            // Player elements
+            const playerSection = document.getElementById('player-section');
+            const videoPlayer = document.getElementById('video-player');
+            const playerChannelName = document.getElementById('player-channel-name');
+            const closePlayerBtn = document.getElementById('close-player');
+            
+            // State variables
+            let allChannels = [];
+            let currentlyVisibleChannels = [];
+            let renderedChannelCount = 0;
+            let selectedCategory = 'All';
+            let currentSearchTerm = '';
+            let favorites = JSON.parse(localStorage.getItem('favoriteChannels')) || [];
+            let isRainbowMode = false;
 
-  <div class="channels" id="channelList"></div>
+            // Initialize
+            function init() {
+                // Use sample data for demonstration
+                allChannels = sampleChannels.map(channel => {
+                    return {
+                        ...channel,
+                        isFavorite: favorites.includes(channel.id)
+                    };
+                });
+                
+                displayCategories();
+                applyFiltersAndRender();
+                displayFavorites();
+                setupEventListeners();
+            }
 
-  <footer>
-    Join our Telegram: <a href="https://t.me/joker_verse" target="_blank">@joker_verse</a>
-  </footer>
+            function displayCategories() {
+                const categories = ['All', ...new Set(allChannels.map(channel => channel.category).sort())];
+                categoryFiltersContainer.innerHTML = categories.map(category => 
+                    `<button class="category-btn ${category === 'All' ? 'active' : ''}" data-category="${category}">${category}</button>`
+                ).join('');
+            }
+            
+            function applyFiltersAndRender() {
+                hideMessage();
+                let filteredChannels = allChannels;
 
-  <script>
-    // Channel data from your M3U playlist
-    const channelsData = [
-      {
-        id: "0-9-aajtak",
-        name: "Aaj Tak",
-        language: "hi",
-        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-aajtak/channel_list/360x2033e789b21dd3c42079af3fa4a4c5a6576b594053e82124268bc5163a45b1126d4",
-        groupTitle: "Zee News",
-        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105503/AAJTAKHDNEWSELE/index-connected.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
-      },
-      {
-        id: "0-9-zeenews",
-        name: "Zee News",
-        language: "hi",
-        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-zeenews/channel_list/360x2031f194601f5104a9c80c7ab9619760098",
-        groupTitle: "Zee News",
-        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105510/ZEENEWSELE/master.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
-      },
-      {
-        id: "0-9-indiatoday",
-        name: "India Today",
-        language: "en",
-        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-indiatoday/channel_list/indiatoday11702d87d227b9dd482a88a0334f10363c11",
-        groupTitle: "Zee News",
-        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105501/INDIATODAYHDNEWSELE/index-connected.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
-      },
-      {
-        id: "0-9-255",
-        name: "Good News Today",
-        language: "hi",
-        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-255/channel_list/360x2034b7d0f587bc34fe6b8f663f9a162e9b7d365bf379a4e40d492bf9c008b51262e",
-        groupTitle: "Zee News",
-        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105499/GOODNEWSTODAYHDNEWSELE/index-connected.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
-      },
-      {
-        id: "0-9-9z5543514",
-        name: "&Prive HD",
-        language: "en",
-        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-9z5543514/channel_list/360x203c829818eda724758a0539e592f3ee8ce",
-        groupTitle: "Zee Movie",
-        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2104969/AndPriveHDELENEW/index-connected.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
-      },
-      {
-        id: "0-9-258",
-        name: "TV9 Telugu",
-        language: "te",
-        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-258/channel_list/360x203254e76adfe5248f1904be9c860c325ea",
-        groupTitle: "Zee News",
-        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2111478/TV9_TELUGU/index-connected.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
-      },
-      {
-        id: "0-9-257",
-        name: "TV9 Marathi",
-        language: "mr",
-        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-257/channel_list/360x203a77a41b9f09a4be68021edce6535c07d",
-        groupTitle: "Zee News",
-        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2111476/TV9_MARATHI/index-connected.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
-      },
-      {
-        id: "0-9-zeepunjabharyanahima",
-        name: "Zee Punjab Haryana Himachal Pradesh",
-        language: "pa",
-        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-zeepunjabharyanahima/channel_list/360x20308630cb38d3d4866a435d90715e656c8",
-        groupTitle: "Zee News",
-        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105493/ZEEPUHRHIELE/master.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
-      },
-      {
-        id: "0-9-251",
-        name: "TV9 Bharatvarsh",
-        language: "hi",
-        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-251/channel_list/360x20352e6393e55854bf68995213ec8f5e9c4",
-        groupTitle: "Zee News",
-        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2111481/TV9_Bharatvarsh/index-connected.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
-      },
-      {
-        id: "0-9-zeebusiness",
-        name: "Zee Business",
-        language: "hi",
-        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-zeebusiness/channel_list/360x2034001e7be91db42bb8ec15b8bd074d20a",
-        groupTitle: "Zee News",
-        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105509/ZEEBUSINESSELE/master.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
-      },
-      {
-        id: "0-9-260",
-        name: "TV9 Gujarati",
-        language: "gu",
-        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-260/channel_list/360x203b9888f81dbd244cbb0fd28ba96b11c3c",
-        groupTitle: "Zee News",
-        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2111482/TV9_GUJURATI/index-connected.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
-      },
-      {
-        id: "0-9-zee24kalak",
-        name: "Zee 24 Kalak",
-        language: "gu",
-        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-zee24kalak/channel_list/zee24zee24kalak360x2034b1001c338f0404b8f1d96ef5ccf7a3d",
-        groupTitle: "Zee News",
-        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105497/ZEE24KALAKELE/master.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
-      },
-      {
-        id: "0-9-259",
-        name: "TV9 Kannada",
-        language: "kn",
-        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-259/channel_list/360x20390e3b4b89ab946e29847b29f9fccb411",
-        groupTitle: "Zee News",
-        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2111477/TV9_KANNADA/index-connected.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
-      },
-      {
-        id: "0-9-zee24taas",
-        name: "Zee 24 Taas",
-        language: "mr",
-        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-zee24taas/channel_list/zee24taas360x20398a45db9f3bb4c29b0fbd1a7f50617ab",
-        groupTitle: "Zee News",
-        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105498/ZEE24TAASNEWSNEWELE/master.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
-      },
-      {
-        id: "0-9-261",
-        name: "News 9",
-        language: "en",
-        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-261/channel_list/360x20362e0ae462ebf4f40859a2776a038186e",
-        groupTitle: "Zee News",
-        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2111479/TV9_News9/index-connected.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
-      },
-      {
-        id: "0-9-wion",
-        name: "WION",
-        language: "en",
-        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-wion/channel_list/360x203e15697a079f244d1b1baf7af2eb964bc",
-        groupTitle: "Zee News",
-        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105506/WIONNEWSELE/master.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
-      },
-      {
-        id: "0-9-zeehindustan",
-        name: "Zee Bharat",
-        language: "hi",
-        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-zeehindustan/channel_list/360x20377941d3cc0bd478bb8db941a1cb4e720",
-        groupTitle: "Zee News",
-        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105262/ZEEBHARATNEWSNEWELE/master.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
-      },
-      {
-        id: "0-9-zeebiharjharkhand",
-        name: "Zee Bihar Jharkhand",
-        language: "hi",
-        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-zeebiharjharkhand/channel_list/360x2033a03ad2c8662458e8e9101fd3e4bc2d9",
-        groupTitle: "Zee News",
-        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105492/ZEEBHJKELE/master.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
-      },
-      {
-        id: "0-9-24ghantatv",
-        name: "Zee 24 Ghanta",
-        language: "bn",
-        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-24ghantatv/channel_list/zee24ghanta360x2039f73eed657d04b6b979a6814ea45a6db",
-        groupTitle: "Zee News",
-        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105511/ZEE24GHANTAELE/master.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
-      },
-      {
-        id: "0-9-zeekalinganews",
-        name: "Zee Delhi NCR Haryana",
-        language: "hi",
-        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-zeekalinganews/channel_list/360x2030f484d95b57b4c7b8484b0423a73eb18",
-        groupTitle: "Zee News",
-        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105507/ZEEDELNCRHRNEWSNEWELE/master.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
-      },
-      {
-        id: "0-9-zeerajasthannews",
-        name: "Zee Rajasthan News",
-        language: "hi",
-        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-zeerajasthannews/channel_list/360x2038b45f2fb59954d5897ccbdcd40717054",
-        groupTitle: "Zee News",
-        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105496/ZEERAJASTHANELE/master.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
-      },
-      {
-        id: "0-9-zeemadhyapradeshchat",
-        name: "Zee Madhya Pradesh Chhattisgarh",
-        language: "hi",
-        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-zeemadhyapradeshchat/channel_list/360x203cacfbcb7b45943dcac37f5e23345477c",
-        groupTitle: "Zee News",
-        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105495/ZEEMPCGELE/master.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
-      },
-      {
-        id: "0-9-zing",
-        name: "Zing",
-        language: "hi",
-        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-zing/channel_list/360x2033bff29dd5f574ea4b36a2269a35a612c",
-        groupTitle: "Zee Music",
-        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105532/ZingELE/master.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
-      },
-      {
-        id: "0-9-bigmagic_1786965389",
-        name: "Big Magic",
-        language: "hi",
-        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-bigmagic_1786965389/channel_list/360x2032d681f33fc1f415a8b027e4913ee884a",
-        groupTitle: "Zee Entertainment",
-        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105176/BigMagicELE/master.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
-      },
-      {
-        id: "0-9-zeetvhd",
-        name: "Zee TV HD",
-        language: "hi",
-        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-zeetvhd/channel_list/360x203ba09ccf2bfcf484c8c6401b014ce263b",
-        groupTitle: "Zee Entertainment",
-        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105531/ZeeTVHDMSLELE/index-connected.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
-      },
-      {
-        id: "0-9-tvhd_0",
-        name: "&TV HD",
-        language: "hi",
-        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-tvhd_0/channel_list/360x203b8aa32da7b8d40e3a88a149166705dc1",
-        groupTitle: "Zee Entertainment",
-        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105504/AndTVHDELE/index-connected.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
-      },
-      {
-        id: "0-9-zeemarathi",
-        name: "Zee Marathi HD",
-        language: "mr",
-        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-zeemarathi/channel_list/360x203b7bd7f7a0b26408fbd0683f4c2f25661",
-        groupTitle: "Zee Entertainment",
-        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105520/ZeeMarathiHDELE/index-connected.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
-      },
-      {
-        id: "0-9-zeeyuva",
-        name: "Zee Yuva",
-        language: "mr",
-        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-zeeyuva/channel_list/zee24yuva360x203b72ac2ae8fbe480a9d51f3d33fe3089a",
-        groupTitle: "Zee Entertainment",
-        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105533/ZeeYuvaELE/master.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
-      },
-      {
-        id: "0-9-zeecafehd",
-        name: "Zee Café HD",
-        language: "en",
-        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-zeecafehd/channel_list/360x2036b29d1698b6640f59cc7bf86eaa51eaf",
-        groupTitle: "Zee Entertainment",
-        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105539/ZeecafeHDELE/index-connected.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
-      },
-      {
-        id: "0-9-bigganga",
-        name: "Anmol Cinema 2",
-        language: "hi",
-        logo: "https://akamaividz2.zee5.com/image/upload/resources/0-9-bigganga/channel_list/360x20389300d0c5de94cb582c2899511d0dbf1",
-        groupTitle: "Zee Movie",
-        url: "https://z5ak-cmaflive.zee5.com/cmaf/live/2105176/BigMagicELE/master.m3u8?hdntl=exp=1757647809~acl=%2f*~data=hdntl~hmac=f7329441f20db3315e780048a7fbffc4b9d13c8b7afba3165482a46f00b0a929"
-      }
-    ];
+                if (selectedCategory !== 'All') {
+                    filteredChannels = allChannels.filter(channel => channel.category === selectedCategory);
+                }
 
-    const channelList = document.getElementById('channelList');
-    const searchInput = document.getElementById('searchInput');
-    const sortSelect = document.getElementById('sortSelect');
-    const categoryTabs = document.getElementById('categoryTabs');
-    const statusBar = document.getElementById('statusBar');
+                if (currentSearchTerm) {
+                    const searchTerm = currentSearchTerm.toLowerCase();
+                    filteredChannels = filteredChannels.filter(channel => 
+                        channel.name.toLowerCase().includes(searchTerm)
+                    );
+                }
+                
+                currentlyVisibleChannels = filteredChannels;
+                renderChannels(true);
+            }
 
-    let currentCategory = "All";
+            function renderChannels(isNewRender) {
+                if (isNewRender) {
+                    channelGrid.innerHTML = '';
+                    renderedChannelCount = 0;
+                    if (currentlyVisibleChannels.length === 0) {
+                        showMessage('No channels match your selection.');
+                        hideLoadMore();
+                        return;
+                    }
+                }
 
-    function getFavorites() {
-      return JSON.parse(localStorage.getItem('favorites')) || [];
-    }
+                const startIndex = renderedChannelCount;
+                const endIndex = Math.min(startIndex + 12, currentlyVisibleChannels.length);
 
-    function toggleFavorite(id) {
-      const favs = getFavorites();
-      const index = favs.indexOf(id);
-      if (index === -1) favs.push(id);
-      else favs.splice(index, 1);
-      localStorage.setItem('favorites', JSON.stringify(favs));
-      renderChannels();
-    }
+                for (let i = startIndex; i < endIndex; i++) {
+                    const channel = currentlyVisibleChannels[i];
+                    const card = document.createElement('div');
+                    card.className = `channel-card ${channel.isLocked ? 'locked' : ''}`;
+                    card.dataset.id = channel.id;
+                    card.dataset.stream = channel.url;
+                    card.dataset.name = channel.name;
+                    card.dataset.icon = channel.icon;
+                    card.innerHTML = `
+                        <div class="channel-image">
+                            <img src="${channel.icon}" alt="${channel.name} logo" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/120x60/222/e0e0e0?text=Logo';">
+                        </div>
+                        <div class="channel-info">
+                            <div>
+                                <h3 class="channel-name" title="${channel.name}">${channel.name}</h3>
+                                <div class="channel-category">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect><polyline points="17 2 12 7 7 2"></polyline></svg>
+                                    <span>${channel.category}</span>
+                                </div>
+                            </div>
+                            <div class="channel-actions">
+                                <button class="channel-action-btn favorite-btn ${channel.isFavorite ? 'favorited' : ''}" title="Add to favorites">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                                <button class="channel-action-btn" title="Add to playlist">
+                                    <i class="fas fa-list"></i>
+                                </button>
+                                <button class="channel-action-btn" title="Share channel">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        ${!channel.isLocked ? '<div class="play-btn">Play Now</div>' : ''}
+                    `;
+                    
+                    // Add event listeners if not locked
+                    if (!channel.isLocked) {
+                        const playBtn = card.querySelector('.play-btn');
+                        playBtn.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            playChannel(card);
+                        });
+                        
+                        card.addEventListener('click', (e) => {
+                            if (!e.target.closest('.channel-actions')) {
+                                playChannel(card);
+                            }
+                        });
+                    }
+                    
+                    const favBtn = card.querySelector('.favorite-btn');
+                    if (favBtn) {
+                        favBtn.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            toggleFavorite(channel.id, card);
+                        });
+                    }
+                    
+                    channelGrid.appendChild(card);
+                }
 
-    function isFavorite(id) {
-      return getFavorites().includes(id);
-    }
+                renderedChannelCount = endIndex;
+                if (renderedChannelCount < currentlyVisibleChannels.length) showLoadMore();
+                else hideLoadMore();
+            }
 
-    function loadPlaylist() {
-      renderCategoryTabs();
-      renderChannels();
-    }
+            function playChannel(cardElement) {
+                const streamUrl = cardElement.dataset.stream;
+                const channelName = cardElement.dataset.name;
+                
+                // Set player title
+                playerChannelName.textContent = channelName;
+                
+                // Show player section
+                playerSection.style.display = 'flex';
+                
+                // Set up the player with the stream URL
+                videoPlayer.src = streamUrl;
+                videoPlayer.play().catch(e => {
+                    console.error('Error playing video:', e);
+                    showError('Could not play this channel. It may be restricted or require a subscription.');
+                    closePlayer();
+                });
+            }
+            
+            function closePlayer() {
+                playerSection.style.display = 'none';
+                videoPlayer.pause();
+                videoPlayer.src = '';
+            }
 
-    function renderCategoryTabs() {
-      const categories = Array.from(new Set(channelsData.map(c => c.groupTitle)));
-      categoryTabs.innerHTML = `<button class="${currentCategory === 'All' ? 'active' : ''}" onclick="setCategory('All')">All</button>`;
-      categories.forEach(cat => {
-        const btn = document.createElement('button');
-        btn.textContent = cat;
-        btn.className = currentCategory === cat ? 'active' : '';
-        btn.onclick = () => setCategory(cat);
-        categoryTabs.appendChild(btn);
-      });
-    }
+            function toggleFavorite(channelId, cardElement) {
+                const index = favorites.indexOf(channelId);
+                const favBtn = cardElement.querySelector('.favorite-btn');
+                
+                if (index === -1) {
+                    // Add to favorites
+                    favorites.push(channelId);
+                    favBtn.classList.add('favorited');
+                } else {
+                    // Remove from favorites
+                    favorites.splice(index, 1);
+                    favBtn.classList.remove('favorited');
+                }
+                
+                // Update localStorage
+                localStorage.setItem('favoriteChannels', JSON.stringify(favorites));
+                
+                // Update all channels data
+                const channel = allChannels.find(c => c.id === channelId);
+                if (channel) {
+                    channel.isFavorite = !channel.isFavorite;
+                }
+                
+                // Update favorites display
+                displayFavorites();
+            }
 
-    function setCategory(cat) {
-      currentCategory = cat;
-      renderCategoryTabs();
-      renderChannels();
-    }
+            function displayFavorites() {
+                if (favorites.length === 0) {
+                    favoritesGrid.innerHTML = '<div class="message">No favorite channels yet. Click the heart icon on any channel to add it to favorites.</div>';
+                    return;
+                }
+                
+                favoritesGrid.innerHTML = '';
+                const favoriteChannels = allChannels.filter(channel => favorites.includes(channel.id));
+                
+                if (favorite极annels.length === 0) {
+                    favoritesGrid.innerHTML = '<div class="message">No favorite channels yet. Click the heart icon on any channel to add it to favorites.</div>';
+                    return;
+                }
+                
+                favoriteChannels.forEach(channel => {
+                    const card = document.createElement('div');
+                    card.className = `channel-card ${channel.isLocked ? 'locked' : ''}`;
+                    card.dataset.id = channel.id;
+                    card.dataset.stream = channel.url;
+                    card.dataset.name = channel.name;
+                    card.dataset.icon = channel.icon;
+                    card.innerHTML = `
+                        <div class="channel-image">
+                            <img src="${channel.icon}" alt="${channel.name} logo" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/120x60/222/e0e0e0?text=Logo';">
+                        </div>
+                        <div class="channel-info">
+                            <div>
+                                <h3 class="channel-name" title="${channel.name}">${channel.name}</h3>
+                                <div class="channel-category">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx极2" ry="2"></rect><polyline points="17 2 12 7 7 2"></polyline></svg>
+                                    <span>${channel.category}</span>
+                                </div>
+                            </div>
+                            <div class="channel-actions">
+                                <button class="channel-action-btn favorite-btn favorited" title="Remove from favorites">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                                <button class="channel-action-btn" title="Add to playlist">
+                                    <i class="fas fa-list"></i>
+                                </button>
+                                <button class="channel-action-btn" title="Share channel">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        ${!channel.isLocked ? '<div class="play-btn">Play Now</div>' : ''}
+                    `;
+                    
+                    // Add event listeners if not locked
+                    if (!channel.isLocked) {
+                        const playBtn = card.querySelector('.play-btn');
+                        if (playBtn) {
+                            playBtn.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                playChannel(card);
+                            });
+                        }
+                        
+                        card.addEventListener('click', (e) => {
+                            if (!e.target.closest('.channel-actions')) {
+                                playChannel(card);
+                            }
+                        });
+                    }
+                    
+                    const favBtn = card.querySelector('.favorite-btn');
+                    if (favBtn) {
+                        favBtn.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            toggleFavorite(channel.id, card);
+                        });
+                    }
+                    
+                    favoritesGrid.appendChild(card);
+                });
+            }
 
-    function renderChannels() {
-      const keyword = searchInput.value.toLowerCase();
-      let filtered = channelsData.filter(c =>
-        c.name.toLowerCase().includes(keyword) &&
-        (currentCategory === 'All' || c.groupTitle === currentCategory)
-      );
+            function toggleRainbowMode() {
+                isRainbowMode = !isRainbowMode;
+                
+                if (isRainbowMode) {
+                    document.body.classList.add('rainbow-mode');
+                    rainbowModeBtn.innerHTML = '<i class="fas fa-sun"></i>';
+                    rainbowModeBtn.title = 'Disable Rainbow Mode';
+                    
+                    // Add rainbow effects to various elements
+                    document.querySelectorAll('.channel-card').forEach(card => {
+                        card.style.animation = 'rainbow-border 3s linear infinite';
+                    });
+                } else {
+                    document.body.classList.remove('rainbow-mode');
+                    rainbowModeBtn.innerHTML = '<i class="fas fa-palette"></i>';
+                    rainbowModeBtn.title = 'Enable Rainbow Mode';
+                    
+                    // Remove rainbow effects
+                    document.querySelectorAll('.channel-card').forEach(card => {
+                        card.style.animation = '';
+                    });
+                }
+            }
 
-      if (sortSelect.value === 'name') {
-        filtered.sort((a, b) => a.name.localeCompare(b.name));
-      } else if (sortSelect.value === 'favorites') {
-        const favs = getFavorites();
-        filtered.sort((a, b) => isFavorite(b.id) - isFavorite(a.id));
-      }
+            function setupEventListeners() {
+                loadMoreBtn.addEventListener('click', () => renderChannels(false));
 
-      channelList.innerHTML = '';
-      
-      if (filtered.length === 0) {
-        channelList.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #666;">No channels found matching your search.</div>`;
-        statusBar.textContent = `No channels found`;
-        return;
-      }
+                let searchTimeout;
+                searchInput.addEventListener('input', function() {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        currentSearchTerm = this.value.trim();
+                        applyFiltersAndRender();
+                    }, 300);
+                });
 
-      filtered.forEach(({ id, logo, name, url }) => {
-        const channel = document.createElement('div');
-        channel.className = 'channel';
-        channel.innerHTML = `
-          <button class="fav-btn ${isFavorite(id) ? 'active' : ''}" onclick="toggleFavorite('${id}')">★</button>
-          <a href="${url}" target="_blank">
-            <img src="${logo}" alt="${name}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYwIiBoZWlnaHQ9IjkwIiB2aWV3Qm94PSIwIDAgMTYwIDkwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxNjAiIGhlaWdodD0iOTAiIGZpbGw9IiNlZWVlZWUiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjOTk5Ij5ObyBMb2dvPC90ZXh0Pjwvc3ZnPg=='"/>
-            <div class="channel-name">${name}</div>
-          </a>
-        `;
-        channelList.appendChild(channel);
-      });
-      
-      statusBar.textContent = `Showing ${filtered.length} of ${channelsData.length} channels`;
-    }
+                categoryFiltersContainer.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('category-btn')) {
+                        selectedCategory = e.target.dataset.category;
+                        
+                        document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+                        e.target.classList.add('active');
+                        
+                        applyFiltersAndRender();
+                    }
+                });
+                
+                closePlayerBtn.addEventListener('click', closePlayer);
+                
+                // Close player when clicking outside
+                playerSection.addEventListener('click', (e) => {
+                    if (e.target === playerSection) {
+                        closePlayer();
+                    }
+                });
+                
+                // Close player with Escape key
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && playerSection.style.display === 'flex') {
+                        closePlayer();
+                    }
+                });
+                
+                favoritesBtn.addEventListener('click', () => {
+                    favoritesSection.scrollIntoView({ behavior: 'smooth' });
+                });
+                
+                rainbowModeBtn.addEventListener('click', toggleRainbowMode);
+            }
+            
+            // UI Helper Functions
+            function showLoading() { loadingSpinner.style.display = 'flex'; }
+            function hideLoading() { loadingSpinner.style.display = 'none'; }
+            function showMessage(message) { messageContainer.textContent = message; messageContainer.style.display = 'block'; }
+            function hideMessage() { messageContainer.style.display = 'none'; }
+            function showError(message) { errorContainer.textContent = message; errorContainer.style.display = 'block'; }
+            function hideError() { errorContainer.style.display = 'none'; }
+            function showLoadMore() { loadMoreContainer.style.display = 'flex'; }
+            function hideLoadMore() { loadMoreContainer.style.display = 'none'; }
 
-    searchInput.addEventListener('input', renderChannels);
-    sortSelect.addEventListener('change', renderChannels);
-
-    // Initialize the page
-    loadPlaylist();
-  </script>
-  
-  <script>
-    // Disable Right Click
-    document.addEventListener('contextmenu', e => e.preventDefault());
-
-    // Disable DevTools Shortcuts
-    document.addEventListener('keydown', function (e) {
-      if (
-        e.key === 'F12' ||
-        (e.ctrlKey && e.shiftKey && ['I', 'C', 'J'].includes(e.key)) ||
-        (e.ctrlKey && ['U', 'S'].includes(e.key))
-      ) {
-        e.preventDefault();
-        return false;
-      }
-    });
-
-    // Detect DevTools by measuring console open
-    let devtools = { open: false };
-    const threshold = 160;
-    const emitEvent = (state) => {
-      if (state !== devtools.open) {
-        devtools.open = state;
-        if (state) {
-          document.body.innerHTML = '<h1 style="color:red;text-align:center;margin-top:20%;">DevTools is not allowed!</h1>';
-        }
-      }
-    };
-
-    setInterval(function () {
-      const widthThreshold = window.outerWidth - window.innerWidth > threshold;
-      const heightThreshold = window.outerHeight - window.innerHeight > threshold;
-      emitEvent(widthThreshold || heightThreshold);
-    }, 500);
-  </script>
+            // Initialize the app
+            init();
+        });
+    </script>
 </body>
 </html>
