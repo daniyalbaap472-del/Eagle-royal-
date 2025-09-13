@@ -1,178 +1,1191 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Watch Live – Zee5</title>
-  <meta name="theme-color" content="#e11d48" />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.6/shaka-player.compiled.min.js"></script>
-  <style>
-    #customLogoWrapper {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      width: 100px;
-      height: 100px;
-      border-radius: 16px;
-      background: rgba(255, 255, 255, 0.2);
-      backdrop-filter: blur(6px);
-      padding: 8px;
-      z-index: 10;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      pointer-events: none;
-    }
-
-    #customLogo {
-      width: 100%;
-      height: auto;
-      border-radius: 12px;
-      opacity: 0.9;
-    }
-  </style>
-</head>
-
-<body class="bg-gray-100 text-gray-900 min-h-screen font-sans">
-
-  <!-- Navigation -->
-  <nav class="bg-white shadow-md">
-    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-      <a href="index.html" class="text-xl font-bold text-red-600">IPTV07INDIA</a>
-      <div class="flex space-x-4 text-sm">
-        <a href="index.html" class="text-gray-700 hover:text-red-600">Home</a>
-        <a href="#" class="text-gray-700 hover:text-red-600">Live TV</a>
-        <a href="#" class="text-gray-700 hover:text-red-600">Search</a>
-      </div>
-    </div>
-  </nav>
-
-  <!-- Video Player -->
-  <div class="relative max-w-5xl mx-auto mt-6 rounded-xl overflow-hidden shadow-lg">
-    <div id="customLogoWrapper">
-      <img id="customLogo" src="https://via.placeholder.com/150" alt="Overlay Logo" />
-    </div>
-    <video id="video" controls autoplay class="w-full bg-black aspect-video"></video>
-  </div>
-
-  <!-- Program Info Card -->
-  <div class="max-w-4xl mx-auto mt-6 bg-white p-6 rounded-xl shadow-md">
-    <div class="flex items-center gap-4">
-      <div class="w-20 h-20 bg-gray-200 rounded-full overflow-hidden">
-        <img id="channel-logo" src="https://iili.io/Jn2BLen.gif" alt="Channel Logo" class="w-full h-full object-cover" />
-      </div>
-      <div class="flex-1">
-        <h2 id="program-title" class="text-lg font-bold">Loading...</h2>
-        <p id="channel-name" class="text-md text-gray-600 font-bold">Loading...</p>
-        <p id="program-time" class="text-sm text-gray-500">Loading...</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Join Buttons -->
-  <div class="flex justify-center gap-4 mt-6">
-    <a href="https://t.me/IPTV07INDIA" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md">
-      Join Telegram
-    </a>
-  </div>
-
-  <!-- Error Message -->
-  <div id="error" class="text-center mt-4 text-red-600 font-semibold"></div>
-
-  <!-- Shaka Player Logic -->
-  <script>
-    const tvgId = new URLSearchParams(window.location.search).get('id');
-    const videoElement = document.getElementById('video');
-    const customLogo = document.getElementById('customLogo');
-    const errorEl = document.getElementById('error');
-    const playlistUrl = 'https://tv9899.vercel.app/playlist.m3u';
-
-    async function init() {
-      if (!tvgId) {
-        errorEl.textContent = 'No channel ID provided.';
-        return;
-      }
-
-      try {
-        const res = await fetch(playlistUrl);
-        const text = await res.text();
-        const lines = text.split('\n');
-        let found = false;
-
-        for (let i = 0; i < lines.length; i++) {
-          if (lines[i].startsWith('#KODIPROP') && lines[i + 1]?.includes(`tvg-id="${tvgId}"`)) {
-            const license = lines[i].split('=')[1].trim();
-            const infoLine = lines[i + 1];
-            const streamUrl = lines[i + 2];
-            const match = infoLine.match(/tvg-logo="([^"]+)".*?,\s*(.*)/);
-
-            if (match) {
-              const logo = match[1];
-              const name = match[2];
-              const [keyId, key] = license.split(':');
-
-              document.getElementById('program-title').textContent = name;
-              document.getElementById('channel-name').textContent = tvgId.toUpperCase();
-              document.getElementById('channel-logo').src = logo;
-              customLogo.src = logo;
-
-              const player = new shaka.Player(videoElement);
-              await player.configure({
-                drm: { clearKeys: { [keyId]: key } }
-              });
-
-              await player.load(streamUrl);
-              found = true;
-              break;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple HLS Player</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.10/hls.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #121212;
+            color: #ffffff;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .player-container {
+            position: relative;
+            width: 100%;
+            max-width: 1440px;
+            aspect-ratio: 16 / 9;
+            background: #1c1c1c;
+            cursor: none;
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        .player-container.show-cursor {
+            cursor: default;
+        }
+        .player-container.light-theme {
+            background: #f5f5f5;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        #video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 12px;
+        }
+        .controls-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                to bottom,
+                rgba(0,0,0,0.8) 0%,
+                transparent 20%,
+                transparent 80%,
+                rgba(0,0,0,0.95) 100%
+            );
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        .player-container.light-theme .controls-overlay {
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0.8) 0%,
+                transparent 20%,
+                transparent 80%,
+                rgba(255,255,255,0.95) 100%
+            );
+        }
+        .controls-overlay.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .top-controls {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .player-container.light-theme .title {
+            color: #1c1c1c;
+            text-shadow: 0 2px 4px rgba(255,255,255,0.3);
+        }
+        .settings-btn, .fit-btn, .pip-btn, .theater-btn, .audio-btn {
+            background: rgba(0,0,0,0.5);
+            border: none;
+            color: #ffffff;
+            font-size: 1.1em;
+            cursor: pointer;
+            padding: 0.6em;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            width: 2.2em;
+            height: 2.2em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+        .player-container.light-theme .settings-btn,
+        .player-container.light-theme .fit-btn,
+        .player-container.light-theme .pip-btn,
+        .player-container.light-theme .theater-btn,
+        .player-container.light-theme .audio-btn {
+            background: rgba(255,255,255,0.5);
+            color: #1c1c1c;
+        }
+        .settings-btn:hover, .fit-btn:hover, .pip-btn:hover, .theater-btn:hover, .audio-btn:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.1);
+        }
+        .bottom-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+        }
+        .progress-container {
+            margin-bottom: 16px;
+            position: relative;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
+            transition: height 0.2s ease;
+        }
+        .player-container.light-theme .progress-bar {
+            background: rgba(0,0,0,0.2);
+        }
+        .progress-bar:hover {
+            height: 8px;
+        }
+        .progress-filled {
+            height: 100%;
+            background: #00aaff;
+            border-radius: 3px;
+            transition: width 0.1s ease;
+            position: relative;
+            width: 0;
+        }
+        .player-container.light-theme .progress-filled {
+            background: #0077cc;
+        }
+        .progress-buffer {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            background: rgba(255,255,255,0.4);
+            border-radius: 3px;
+            width: 0;
+            transition: width 0.3s ease;
+        }
+        .player-container.light-theme .progress-buffer {
+            background: rgba(0,0,0,0.4);
+        }
+        .progress-thumb {
+            position: absolute;
+            right: -8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            background: #00aaff;
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        .player-container.light-theme .progress-thumb {
+            background: #0077cc;
+        }
+        .progress-bar:hover .progress-thumb {
+            opacity: 1;
+            transform: translateY(-50%) scale(1.2);
+        }
+        .progress-tooltip {
+            position: absolute;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.9);
+            color: #ffffff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            backdrop-filter: blur(5px);
+        }
+        .controls-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .left-controls {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .right-controls {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .control-btn {
+            background: rgba(0,0,0,0.5);
+            border: none;
+            color: #ffffff;
+            font-size: 1.1em;
+            cursor: pointer;
+            padding: 0.6em;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            width: 2.2em;
+            height: 2.2em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+        .player-container.light-theme .control-btn {
+            background: rgba(255,255,255,0.5);
+            color: #1c1c1c;
+        }
+        .control-btn:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.15);
+        }
+        .play-btn {
+            font-size: 1.4em;
+            width: 2.8em;
+            height: 2.8em;
+        }
+        .time-display {
+            font-size: 0.9em;
+            color: #ffffff;
+            min-width: 6em;
+            font-family: 'Roboto Mono', monospace;
+            letter-spacing: 0.5px;
+        }
+        .player-container.light-theme .time-display {
+            color: #1c1c1c;
+        }
+        .volume-container {
+            display: flex;
+            align-items: center;
+            gap: 0.8em;
+        }
+        .volume-slider {
+            width: 5em;
+            height: 6px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+            outline: none;
+            cursor: pointer;
+            -webkit-appearance: none;
+            transition: height 0.2s ease;
+        }
+        .player-container.light-theme .volume-slider {
+            background: rgba(0,0,0,0.2);
+        }
+        .volume-slider:hover {
+            height: 8px;
+        }
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #00aaff;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .player-container.light-theme .volume-slider::-webkit-slider-thumb {
+            background: #0077cc;
+        }
+        .volume-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+        .center-controls {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            gap: 2em;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .center-controls.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .center-btn {
+            width: 3.5em;
+            height: 3.5em;
+            background: rgba(0,0,0,0.8);
+            border: none;
+            border-radius: 50%;
+            color: #ffffff;
+            font-size: 1.3em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        .player-container.light-theme .center-btn {
+            background: rgba(255,255,255,0.8);
+            color: #1c1c1c;
+        }
+        .center-btn:hover {
+            background: rgba(0,0,0,0.95);
+            transform: scale(1.15);
+        }
+        .player-container.light-theme .center-btn:hover {
+            background: rgba(255,255,255,0.95);
+        }
+        .center-play {
+            width: 4.5em;
+            height: 4.5em;
+            font-size: 1.8em;
+        }
+        .loading, .buffering {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255,255,255,0.2);
+            border-top: 4px solid #00aaff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        .player-container.light-theme .loading,
+        .player-container.light-theme .buffering {
+            border: 4px solid rgba(0,0,0,0.2);
+            border-top: 4px solid #0077cc;
+        }
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        .error-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.95);
+            padding: 24px;
+            border-radius: 12px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            max-width: 90%;
+            color: #ffffff;
+            font-size: 16px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+        }
+        .player-container.light-theme .error-message {
+            background: rgba(255,255,255,0.95);
+            color: #1c1c1c;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        }
+        .error-message h3 {
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+        .settings-menu, .audio-menu {
+            position: absolute;
+            bottom: 80px;
+            right: 20px;
+            background: rgba(0,0,0,0.95);
+            border-radius: 12px;
+            padding: 12px 0;
+            min-width: 160px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            backdrop-filter: blur(10px);
+            z-index: 10;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+            transform: translateY(10px);
+        }
+        .settings-menu.show, .audio-menu.show {
+            opacity: 1;
+            pointer-events: all;
+            transform: translateY(0);
+        }
+        .player-container.light-theme .settings-menu,
+        .player-container.light-theme .audio-menu {
+            background: rgba(255,255,255,0.95);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        }
+        .settings-section, .audio-section {
+            padding: 12px 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .player-container.light-theme .settings-section,
+        .player-container.light-theme .audio-section {
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+        .settings-section:last-child, .audio-section:last-child {
+            border-bottom: none;
+        }
+        .settings-title, .audio-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
+        .player-container.light-theme .settings-title,
+        .player-container.light-theme .audio-title {
+            color: #1c1c1c;
+        }
+        .settings-option, .audio-option {
+            padding: 10px 24px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ffffff;
+        }
+        .player-container.light-theme .settings-option,
+        .player-container.light-theme .audio-option {
+            color: #1c1c1c;
+        }
+        .settings-option:hover, .audio-option:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        .player-container.light-theme .settings-option:hover,
+        .player-container.light-theme .audio-option:hover {
+            background: rgba(0,0,0,0.1);
+        }
+        .settings-option.active, .audio-option.active {
+            font-weight: 700;
+            color: #00aaff;
+        }
+        .player-container.light-theme .settings-option.active,
+        .player-container.light-theme .audio-option.active {
+            color: #0077cc;
+        }
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 20;
+            background: rgba(0,0,0,0.5);
+            border: none;
+            color: #ffffff;
+            font-size: 1.1em;
+            cursor: pointer;
+            padding: 0.6em;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            width: 2.2em;
+            height: 2.2em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+        .back-btn:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.1);
+        }
+        @media (max-width: 768px) {
+            .player-container {
+                border-radius: 0;
             }
-          }
+            .volume-container {
+                display: none;
+            }
+            .top-controls, .bottom-controls {
+                padding: 12px;
+            }
+            .title {
+                font-size: 16px;
+            }
+            .center-controls {
+                gap: 1.2em;
+            }
+            .center-btn {
+                width: 3em;
+                height: 3em;
+                font-size: 1.1em;
+            }
+            .center-play {
+                width: 4em;
+                height: 4em;
+                font-size: 1.4em;
+            }
+            .settings-menu, .audio-menu {
+                min-width: 140px;
+                bottom: 70px;
+                right: 12px;
+            }
+            .settings-option, .audio-option {
+                padding: 8px 20px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="player-container" id="playerContainer">
+        <button class="back-btn" id="backBtn" onclick="goBack()">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <video id="video" playsinline></video>
+        <div class="controls-overlay" id="controlsOverlay">
+            <div class="top-controls">
+                <div class="title" id="videoTitle">HLS Player</div>
+                <button class="theater-btn" id="theaterBtn"><i class="fas fa-desktop"></i></button>
+            </div>
+            <div class="bottom-controls">
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar">
+                        <div class="progress-buffer" id="progressBuffer"></div>
+                        <div class="progress-filled" id="progressFilled">
+                            <div class="progress-thumb"></div>
+                        </div>
+                    </div>
+                    <div class="progress-tooltip" id="progressTooltip"></div>
+                </div>
+                <div class="controls-row">
+                    <div class="left-controls">
+                        <button class="control-btn" id="skipBackBtn"><i class="fas fa-backward"></i></button>
+                        <button class="control-btn play-btn" id="playBtn"><i class="fas fa-play"></i></button>
+                        <button class="control-btn" id="skipForwardBtn"><i class="fas fa-forward"></i></button>
+                        <div class="time-display" id="timeDisplay">0:00 / 0:00</div>
+                    </div>
+                    <div class="right-controls">
+                        <div class="volume-container">
+                            <button class="control-btn" id="muteBtn"><i class="fas fa-volume-up"></i></button>
+                            <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="100">
+                        </div>
+                        <button class="control-btn fit-btn" id="fitBtn"><i class="fas fa-arrows-alt"></i></button>
+                        <button class="control-btn pip-btn" id="pipBtn"><i class="fas fa-window-restore"></i></button>
+                        <button class="control-btn audio-btn" id="audioBtn" style="display: none;"><i class="fas fa-headphones"></i></button>
+                        <button class="control-btn settings-btn" id="settingsBtn"><i class="fas fa-cog"></i></button>
+                        <button class="control-btn" id="fullscreenBtn"><i class="fas fa-expand"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="center-controls" id="centerControls">
+            <button class="center-btn" id="centerSkipBackBtn"><i class="fas fa-backward"></i></button>
+            <button class="center-btn center-play" id="centerPlayBtn"><i class="fas fa-play"></i></button>
+            <button class="center-btn" id="centerSkipForwardBtn"><i class="fas fa-forward"></i></button>
+        </div>
+        <div class="loading" id="loading" style="display: none;"></div>
+        <div class="buffering" id="buffering" style="display: none;"></div>
+        <div class="error-message" id="errorMessage" style="display: none;">
+            <h3>Playback Error</h3>
+            <p></p>
+        </div>
+        <div class="settings-menu" id="settingsMenu">
+            <div class="settings-section">
+                <div class="settings-title">Quality</div>
+                <div class="settings-option active" data-level="-1">Auto</div>
+            </div>
+            <div class="settings-section">
+                <div class="settings-title">Playback Speed</div>
+                <div class="settings-option" data-speed="0.5">0.5x</div>
+                <div class="settings-option active" data-speed="1">1x</div>
+                <div class="settings-option" data-speed="1.5">1.5x</div>
+                <div class="settings-option" data-speed="2">2x</div>
+            </div>
+            <div class="settings-section">
+                <div class="settings-title">Theme</div>
+                <div class="settings-option active" data-theme="dark">Dark</div>
+                <div class="settings-option" data-theme="light">Light</div>
+            </div>
+        </div>
+        <div class="audio-menu" id="audioMenu">
+            <div class="audio-section">
+                <div class="audio-title">Audio Track</div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function goBack() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const backUrl = urlParams.get('back');
+            
+            if (backUrl) {
+                window.location.href = backUrl;
+            } else {
+                window.history.back();
+            }
         }
 
-        if (!found) {
-          errorEl.textContent = 'No matching channel found in playlist.';
+        class HLSPlayer {
+            constructor() {
+                this.video = document.getElementById('video');
+                this.playerContainer = document.getElementById('playerContainer');
+                this.controlsOverlay = document.getElementById('controlsOverlay');
+                this.playBtn = document.getElementById('playBtn');
+                this.centerPlayBtn = document.getElementById('centerPlayBtn');
+                this.centerControls = document.getElementById('centerControls');
+                this.centerSkipBackBtn = document.getElementById('centerSkipBackBtn');
+                this.centerSkipForwardBtn = document.getElementById('centerSkipForwardBtn');
+                this.progressBar = document.getElementById('progressBar');
+                this.progressFilled = document.getElementById('progressFilled');
+                this.progressBuffer = document.getElementById('progressBuffer');
+                this.progressTooltip = document.getElementById('progressTooltip');
+                this.timeDisplay = document.getElementById('timeDisplay');
+                this.volumeSlider = document.getElementById('volumeSlider');
+                this.muteBtn = document.getElementById('muteBtn');
+                this.fullscreenBtn = document.getElementById('fullscreenBtn');
+                this.skipBackBtn = document.getElementById('skipBackBtn');
+                this.skipForwardBtn = document.getElementById('skipForwardBtn');
+                this.settingsBtn = document.getElementById('settingsBtn');
+                this.settingsMenu = document.getElementById('settingsMenu');
+                this.fitBtn = document.getElementById('fitBtn');
+                this.pipBtn = document.getElementById('pipBtn');
+                this.theaterBtn = document.getElementById('theaterBtn');
+                this.videoTitle = document.getElementById('videoTitle');
+                this.loading = document.getElementById('loading');
+                this.buffering = document.getElementById('buffering');
+                this.errorMessage = document.getElementById('errorMessage');
+                this.audioBtn = document.getElementById('audioBtn');
+                this.audioMenu = document.getElementById('audioMenu');
+
+                this.hls = null;
+                this.controlsTimeout = null;
+                this.isDragging = false;
+                this.lastVolume = 1;
+                this.fitModes = ['contain', 'fill', 'cover'];
+                this.fitIcons = ['compress-arrows-alt', 'expand-arrows-alt', 'search-plus'];
+                this.currentFitIndex = 0;
+                this.isTheaterMode = false;
+                this.currentTheme = 'dark';
+
+                this.init();
+            }
+
+            init() {
+                this.setDynamicTitle();
+                this.setupEventListeners();
+                this.loadStream();
+                this.updatePlayerSize();
+                window.addEventListener('resize', () => this.updatePlayerSize());
+            }
+
+            setDynamicTitle() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const name = urlParams.get('name');
+                const streamUrl = urlParams.get('s') || '';
+                
+                // Decode the stream URL from base64
+                let decodedUrl = '';
+                try {
+                    decodedUrl = atob(streamUrl);
+                } catch (e) {
+                    console.error('Error decoding stream URL:', e);
+                }
+
+                const lastSegment = decodedUrl.split('/').pop().split('?')[0] || 'Video Stream';
+
+                if (name && name.trim() !== '') {
+                    this.videoTitle.textContent = decodeURIComponent(name);
+                    document.title = decodeURIComponent(name);
+                } else {
+                    this.videoTitle.textContent = decodeURIComponent(lastSegment);
+                    document.title = `HLS Player - ${decodeURIComponent(lastSegment)}`;
+                }
+            }
+
+            updatePlayerSize() {
+                const maxWidth = window.innerWidth * 0.98;
+                const maxHeight = window.innerHeight * 0.98;
+                const aspectRatio = 16 / 9;
+
+                let width = maxWidth;
+                let height = width / aspectRatio;
+
+                if (height > maxHeight) {
+                    height = maxHeight;
+                    width = height * aspectRatio;
+                }
+
+                this.playerContainer.style.width = `${width}px`;
+                this.playerContainer.style.height = `${height}px`;
+            }
+
+            setupEventListeners() {
+                this.playBtn.addEventListener('click', () => this.togglePlay());
+                this.centerPlayBtn.addEventListener('click', () => this.togglePlay());
+                this.video.addEventListener('click', () => this.togglePlay());
+
+                this.progressBar.addEventListener('click', (e) => this.seek(e));
+                this.progressBar.addEventListener('mousedown', () => this.isDragging = true);
+                document.addEventListener('mouseup', () => this.isDragging = false);
+                document.addEventListener('mousemove', (e) => {
+                    if (this.isDragging) this.seek(e);
+                });
+                this.progressBar.addEventListener('mousemove', (e) => this.showProgressTooltip(e));
+                this.progressBar.addEventListener('mouseleave', () => this.hideProgressTooltip());
+
+                this.volumeSlider.addEventListener('input', (e) => this.setVolume(e.target.value / 100));
+                this.muteBtn.addEventListener('click', () => this.toggleMute());
+
+                this.skipBackBtn.addEventListener('click', () => this.skip(-10));
+                this.skipForwardBtn.addEventListener('click', () => this.skip(10));
+                this.centerSkipBackBtn.addEventListener('click', () => this.skip(-10));
+                this.centerSkipForwardBtn.addEventListener('click', () => this.skip(10));
+
+                this.fullscreenBtn.addEventListener('click', () => this.toggleFullscreen());
+
+                this.settingsBtn.addEventListener('click', () => this.toggleSettingsMenu());
+                this.settingsMenu.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('settings-option')) {
+                        const level = e.target.dataset.level;
+                        const speed = e.target.dataset.speed;
+                        const theme = e.target.dataset.theme;
+                        if (level !== undefined) this.setQuality(parseInt(level));
+                        if (speed) this.setPlaybackSpeed(parseFloat(speed));
+                        if (theme) this.setTheme(theme);
+                    }
+                });
+
+                this.audioBtn.addEventListener('click', () => this.toggleAudioMenu());
+                this.audioMenu.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('audio-option')) {
+                        const audioId = parseInt(e.target.dataset.audioId);
+                        this.setAudioTrack(audioId);
+                    }
+                });
+
+                this.fitBtn.addEventListener('click', () => this.toggleFitMode());
+
+                this.pipBtn.addEventListener('click', () => this.togglePictureInPicture());
+
+                this.theaterBtn.addEventListener('click', () => this.toggleTheaterMode());
+
+                this.video.addEventListener('timeupdate', () => this.updateProgress());
+                this.video.addEventListener('loadedmetadata', () => this.updateDuration());
+                this.video.addEventListener('play', () => this.onPlay());
+                this.video.addEventListener('pause', () => this.onPause());
+                this.video.addEventListener('waiting', () => this.onWaiting());
+                this.video.addEventListener('canplay', () => this.onCanPlay());
+                this.video.addEventListener('progress', () => this.updateBuffer());
+                this.video.addEventListener('error', () => this.handleError());
+
+                this.playerContainer.addEventListener('mousemove', () => this.showControls());
+                this.playerContainer.addEventListener('mouseleave', () => this.hideControls());
+                this.controlsOverlay.addEventListener('click', (e) => e.stopPropagation());
+
+                this.playerContainer.addEventListener('touchstart', () => this.showControls());
+
+                document.addEventListener('keydown', (e) => this.handleKeyboard(e));
+            }
+
+            loadStream() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const streamUrl = urlParams.get('s');
+
+                if (!streamUrl) {
+                    this.showError('No stream URL provided');
+                    return;
+                }
+
+                // Decode the base64 URL
+                let decodedUrl;
+                try {
+                    decodedUrl = atob(streamUrl);
+                } catch (e) {
+                    this.showError('Invalid stream URL encoding');
+                    return;
+                }
+
+                if (Hls.isSupported()) {
+                    this.hls = new Hls({
+                        enableWorker: true,
+                        lowLatencyMode: true,
+                        backBufferLength: 90
+                    });
+
+                    this.hls.loadSource(decodedUrl);
+                    this.hls.attachMedia(this.video);
+
+                    this.hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                        this.setupQualityLevels();
+                        this.setupAudioTracks();
+                        this.hideLoading();
+                    });
+
+                    this.hls.on(Hls.Events.ERROR, (event, data) => this.handleError(data));
+                } else if (this.video.canPlayType('application/vnd.apple.mpegurl')) {
+                    this.video.src = decodedUrl;
+                    this.hideLoading();
+                } else {
+                    this.showError('HLS not supported in this browser');
+                }
+            }
+
+            setupQualityLevels() {
+                if (!this.hls) return;
+
+                const levels = this.hls.levels;
+                const qualitySection = this.settingsMenu.querySelector('.settings-section:first-child');
+                qualitySection.innerHTML = '<div class="settings-title">Quality</div><div class="settings-option active" data-level="-1">Auto</div>';
+
+                levels.forEach((level, index) => {
+                    if (level.height && level.height > 0) {
+                        const option = document.createElement('div');
+                        option.className = 'settings-option';
+                        option.dataset.level = index;
+                        option.textContent = `${level.height}p`;
+                        qualitySection.appendChild(option);
+                    }
+                });
+            }
+
+            setupAudioTracks() {
+                if (!this.hls || !this.hls.audioTracks || this.hls.audioTracks.length <= 1) {
+                    this.audioBtn.style.display = 'none';
+                    this.audioMenu.style.display = 'none';
+                    return;
+                }
+
+                this.audioBtn.style.display = 'flex';
+                const audioSection = this.audioMenu.querySelector('.audio-section');
+                audioSection.innerHTML = '<div class="audio-title">Audio Track</div>';
+
+                this.hls.audioTracks.forEach((track, index) => {
+                    const option = document.createElement('div');
+                    option.className = 'audio-option';
+                    option.dataset.audioId = index;
+                    option.textContent = track.name || `Audio ${index + 1}`;
+                    if (index === this.hls.audioTrack) {
+                        option.classList.add('active');
+                    }
+                    audioSection.appendChild(option);
+                });
+            }
+
+            setQuality(level) {
+                if (!this.hls) return;
+
+                this.hls.currentLevel = level;
+
+                const qualityOptions = this.settingsMenu.querySelectorAll('[data-level]');
+                qualityOptions.forEach(opt => opt.classList.remove('active'));
+                this.settingsMenu.querySelector(`[data-level="${level}"]`).classList.add('active');
+
+                this.hideSettingsMenu();
+            }
+
+            setAudioTrack(audioId) {
+                if (!this.hls) return;
+
+                this.hls.audioTrack = audioId;
+
+                const audioOptions = this.audioMenu.querySelectorAll('.audio-option');
+                audioOptions.forEach(opt => opt.classList.remove('active'));
+                this.audioMenu.querySelector(`[data-audio-id="${audioId}"]`).classList.add('active');
+
+                this.hideAudioMenu();
+            }
+
+            setPlaybackSpeed(speed) {
+                this.video.playbackRate = speed;
+
+                const speedOptions = this.settingsMenu.querySelectorAll('[data-speed]');
+                speedOptions.forEach(opt => opt.classList.remove('active'));
+                this.settingsMenu.querySelector(`[data-speed="${speed}"]`).classList.add('active');
+            }
+
+            setTheme(theme) {
+                this.playerContainer.classList.toggle('light-theme', theme === 'light');
+                this.currentTheme = theme;
+                const themeOptions = this.settingsMenu.querySelectorAll('[data-theme]');
+                themeOptions.forEach(opt => opt.classList.remove('active'));
+                this.settingsMenu.querySelector(`[data-theme="${theme}"]`).classList.add('active');
+            }
+
+            togglePlay() {
+                if (this.video.paused) {
+                    this.video.play().catch(error => {
+                        this.showError(`Playback failed: ${error.message}`);
+                    });
+                } else {
+                    this.video.pause();
+                }
+            }
+
+            onPlay() {
+                this.playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                this.centerPlayBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                this.centerControls.classList.remove('show');
+                this.hideSettingsMenu();
+                this.hideAudioMenu();
+            }
+
+            onPause() {
+                this.playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                this.centerPlayBtn.innerHTML = '<i class="fas fa-play"></i>';
+                this.centerControls.classList.add('show');
+                this.showControls();
+            }
+
+            onWaiting() {
+                this.buffering.style.display = 'block';
+                this.centerControls.classList.remove('show');
+            }
+
+            onCanPlay() {
+                this.buffering.style.display = 'none';
+            }
+
+            updateProgress() {
+                if (this.video.duration) {
+                    const percent = (this.video.currentTime / this.video.duration) * 100;
+                    this.progressFilled.style.width = `${percent}%`;
+                    this.updateTimeDisplay();
+                }
+            }
+
+            updateBuffer() {
+                if (this.video.buffered.length > 0 && this.video.duration) {
+                    const bufferedEnd = this.video.buffered.end(this.video.buffered.length - 1);
+                    const percent = (bufferedEnd / this.video.duration) * 100;
+                    this.progressBuffer.style.width = `${percent}%`;
+                }
+            }
+
+            updateDuration() {
+                if (this.video.duration) {
+                    this.timeDisplay.textContent = `${this.formatTime(this.video.currentTime)} / ${this.formatTime(this.video.duration)}`;
+                }
+            }
+
+            formatTime(seconds) {
+                if (isNaN(seconds) || seconds < 0) return '0:00';
+                const minutes = Math.floor(seconds / 60);
+                const secs = Math.floor(seconds % 60).toString().padStart(2, '0');
+                return `${minutes}:${secs}`;
+            }
+
+            seek(e) {
+                if (this.video.duration) {
+                    const rect = this.progressBar.getBoundingClientRect();
+                    const offsetX = e.clientX - rect.left;
+                    const percent = Math.max(0, Math.min(1, offsetX / rect.width));
+                    this.video.currentTime = percent * this.video.duration;
+                }
+            }
+
+            showProgressTooltip(e) {
+                if (this.video.duration) {
+                    const rect = this.progressBar.getBoundingClientRect();
+                    const offsetX = e.clientX - rect.left;
+                    const percent = Math.max(0, Math.min(1, offsetX / rect.width));
+                    const seekTime = percent * this.video.duration;
+                    this.progressTooltip.textContent = this.formatTime(seekTime);
+                    this.progressTooltip.style.left = `${percent * 100}%`;
+                    this.progressTooltip.style.opacity = '1';
+                }
+            }
+
+            hideProgressTooltip() {
+                this.progressTooltip.style.opacity = '0';
+            }
+
+            setVolume(volume) {
+                this.video.volume = volume;
+                this.video.muted = volume === 0;
+                this.updateVolumeIcon();
+            }
+
+            toggleMute() {
+                if (this.video.muted) {
+                    this.video.muted = false;
+                    this.video.volume = this.lastVolume;
+                } else {
+                    this.video.muted = true;
+                    this.lastVolume = this.video.volume;
+                    this.video.volume = 0;
+                }
+                this.updateVolumeIcon();
+                this.volumeSlider.value = this.video.volume * 100;
+            }
+
+            updateVolumeIcon() {
+                if (this.video.muted || this.video.volume === 0) {
+                    this.muteBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+                } else if (this.video.volume < 0.5) {
+                    this.muteBtn.innerHTML = '<i class="fas fa-volume-down"></i>';
+                } else {
+                    this.muteBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+                }
+            }
+
+            skip(seconds) {
+                this.video.currentTime += seconds;
+            }
+
+            toggleFullscreen() {
+                if (document.fullscreenElement) {
+                    document.exitFullscreen();
+                    this.fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+                } else {
+                    this.playerContainer.requestFullscreen();
+                    this.fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
+                }
+            }
+
+            toggleSettingsMenu() {
+                if (this.settingsMenu.classList.contains('show')) {
+                    this.settingsMenu.classList.remove('show');
+                } else {
+                    this.settingsMenu.classList.add('show');
+                    this.hideAudioMenu();
+                }
+            }
+
+            hideSettingsMenu() {
+                this.settingsMenu.classList.remove('show');
+            }
+
+            toggleAudioMenu() {
+                if (this.audioMenu.classList.contains('show')) {
+                    this.audioMenu.classList.remove('show');
+                } else {
+                    this.audioMenu.classList.add('show');
+                    this.hideSettingsMenu();
+                }
+            }
+
+            hideAudioMenu() {
+                this.audioMenu.classList.remove('show');
+            }
+
+            toggleFitMode() {
+                this.currentFitIndex = (this.currentFitIndex + 1) % this.fitModes.length;
+                this.video.style.objectFit = this.fitModes[this.currentFitIndex];
+                this.fitBtn.innerHTML = `<i class="fas fa-${this.fitIcons[this.currentFitIndex]}"></i>`;
+            }
+
+            togglePictureInPicture() {
+                if (document.pictureInPictureElement) {
+                    document.exitPictureInPicture();
+                } else {
+                    this.video.requestPictureInPicture();
+                }
+            }
+
+            toggleTheaterMode() {
+                this.isTheaterMode = !this.isTheaterMode;
+                if (this.isTheaterMode) {
+                    this.playerContainer.style.maxWidth = 'calc(100vw - 40px)';
+                    this.playerContainer.style.height = `calc(100vh - 40px)`;
+                    this.playerContainer.style.aspectRatio = 'unset';
+                    this.theaterBtn.innerHTML = '<i class="fas fa-compress-arrows-alt"></i>';
+                } else {
+                    this.playerContainer.style.maxWidth = '1440px';
+                    this.playerContainer.style.height = 'auto';
+                    this.playerContainer.style.aspectRatio = '16 / 9';
+                    this.theaterBtn.innerHTML = '<i class="fas fa-desktop"></i>';
+                    this.updatePlayerSize();
+                }
+            }
+
+            showControls() {
+                clearTimeout(this.controlsTimeout);
+                this.controlsOverlay.classList.add('show');
+                this.playerContainer.classList.add('show-cursor');
+                this.controlsTimeout = setTimeout(() => {
+                    if (!this.video.paused && !this.isDragging) {
+                        this.hideControls();
+                    }
+                }, 3000);
+            }
+
+            hideControls() {
+                if (!this.video.paused && !this.isDragging) {
+                    this.controlsOverlay.classList.remove('show');
+                    this.playerContainer.classList.remove('show-cursor');
+                    this.hideSettingsMenu();
+                    this.hideAudioMenu();
+                }
+            }
+
+            handleKeyboard(e) {
+                const { key } = e;
+                const activeEl = document.activeElement;
+                if (activeEl && ['INPUT', 'TEXTAREA'].includes(activeEl.tagName)) return;
+
+                switch (key) {
+                    case ' ':
+                    case 'k':
+                        e.preventDefault();
+                        this.togglePlay();
+                        break;
+                    case 'm':
+                        this.toggleMute();
+                        break;
+                    case 'f':
+                        this.toggleFullscreen();
+                        break;
+                    case 'i':
+                        this.togglePictureInPicture();
+                        break;
+                    case 't':
+                        this.toggleTheaterMode();
+                        break;
+                    case 'ArrowRight':
+                        this.skip(5);
+                        break;
+                    case 'ArrowLeft':
+                        this.skip(-5);
+                        break;
+                }
+            }
+
+            showLoading() {
+                this.loading.style.display = 'block';
+                this.controlsOverlay.classList.remove('show');
+            }
+
+            hideLoading() {
+                this.loading.style.display = 'none';
+            }
+
+            showError(message) {
+                this.hideLoading();
+                this.errorMessage.style.display = 'flex';
+                this.errorMessage.querySelector('p').textContent = message;
+            }
+
+            handleError(data) {
+                let errorMessage = 'An unknown error occurred.';
+                if (data && data.details) {
+                    errorMessage = `HLS.js error: ${data.details}`;
+                } else if (this.video.error) {
+                    switch (this.video.error.code) {
+                        case 1:
+                            errorMessage = 'Video playback aborted.';
+                            break;
+                        case 2:
+                            errorMessage = 'Network error: A network error caused the video download to fail.';
+                            break;
+                        case 3:
+                            errorMessage = 'Video decode error: The video is corrupted or its format is not supported.';
+                            break;
+                        case 4:
+                            errorMessage = 'The video could not be loaded, either because the server or network failed or because the format is not supported.';
+                            break;
+                        default:
+                            errorMessage = 'An unknown video error occurred.';
+                            break;
+                    }
+                }
+                this.showError(errorMessage);
+            }
         }
-      } catch (err) {
-        console.error(err);
-        errorEl.textContent = 'Failed to load channel. Please check your network or playlist.';
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', init);
-  </script>
-
-  <!-- Disable Right Click & DevTools -->
-  <script>
-    document.addEventListener('contextmenu', e => e.preventDefault());
-
-    document.addEventListener('keydown', function (e) {
-      if (
-        e.key === 'F12' ||
-        (e.ctrlKey && e.shiftKey && ['I', 'C', 'J'].includes(e.key)) ||
-        (e.ctrlKey && ['U', 'S'].includes(e.key))
-      ) {
-        e.preventDefault();
-        return false;
-      }
-    });
-
-    let devtools = { open: false };
-    const threshold = 160;
-    const emitEvent = (state) => {
-      if (state !== devtools.open) {
-        devtools.open = state;
-        if (state) {
-          document.body.innerHTML = '<h1 style="color:red;text-align:center;margin-top:20%;">DevTools is not allowed!</h1>';
-        }
-      }
-    };
-
-    setInterval(function () {
-      const widthThreshold = window.outerWidth - window.innerWidth > threshold;
-      const heightThreshold = window.outerHeight - window.innerHeight > threshold;
-      emitEvent(widthThreshold || heightThreshold);
-    }, 500);
-  </script>
-
+        document.addEventListener('DOMContentLoaded', () => {
+            const player = new HLSPlayer();
+        });
+    </script>
 </body>
 </html>
