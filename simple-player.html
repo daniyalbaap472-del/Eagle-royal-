@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Demons HLS Player - Complete</title>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet">
+    <title>JW Player with MPD Support</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jwplayer.com/libraries/abcdefgh.js"></script> <!-- Replace with your JW Player library ID -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -86,115 +87,6 @@
         .header-button:hover {
             background-color: #333;
         }
-        .player-container {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 16/9;
-            background-color: #000;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: var(--card-shadow);
-        }
-        #player {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-        .custom-controls {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-        }
-        .player-container:hover .custom-controls {
-            opacity: 1;
-            pointer-events: all;
-        }
-        .progress-container {
-            width: 100%;
-            height: 6px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 3px;
-            cursor: pointer;
-            position: relative;
-        }
-        .progress-bar {
-            height: 100%;
-            background-color: var(--accent);
-            border-radius: 3px;
-            width: 0%;
-        }
-        .buffer-bar {
-            position: absolute;
-            height: 100%;
-            background: rgba(255,255,255,0.3);
-            border-radius: 3px;
-            width: 0%;
-            top: 0;
-            left: 0;
-        }
-        .control-buttons {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .left-controls, .right-controls {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        .control-btn {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 18px;
-            cursor: pointer;
-            padding: 5px;
-            border-radius: 50%;
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .control-btn:hover {
-            background: rgba(255,255,255,0.1);
-        }
-        .volume-container {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .volume-slider {
-            width: 80px;
-            height: 4px;
-            -webkit-appearance: none;
-            appearance: none;
-            background: rgba(255,255,255,0.2);
-            border-radius: 2px;
-            outline: none;
-        }
-        .volume-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: var(--accent);
-            cursor: pointer;
-        }
-        .time-display {
-            font-size: 14px;
-            font-weight: 500;
-        }
         .channels-info {
             width: 100%;
             background-color: var(--bg-secondary);
@@ -238,6 +130,18 @@
             width: 100%;
             max-width: 600px;
             font-weight: 600;
+        }
+        .player-container {
+            position: relative;
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+        }
+        #jw-player {
+            width: 100%;
+            height: 100%;
+            min-height: 400px;
         }
         .video-controls {
             display: flex;
@@ -393,7 +297,9 @@
             .channels-info .channel-name { font-size: 16px; }
             .video-controls { flex-direction: column; align-items: center; }
             .control-group { width: 100%; justify-content: center; }
-            .volume-slider { width: 60px; }
+            #jw-player {
+                min-height: 300px;
+            }
         }
     </style>
 </head>
@@ -401,24 +307,31 @@
     <div class="main-container">
         <div class="header">
             <button class="back-button" id="backButton">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M15 18l-6-6 6-6"></path>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                    <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" fill="none"/>
                 </svg>
                 Back
             </button>
             <div class="header-controls">
-                <button class="header-button" id="statsToggle"><i class="fas fa-chart-bar"></i> Stats</button>
-                <button class="header-button" id="reloadStream"><i class="fas fa-sync-alt"></i> Reload</button>
+                <button class="header-button" id="statsToggle">
+                    <i class="fas fa-chart-bar"></i> Stats
+                </button>
+                <button class="header-button" id="reloadStream">
+                    <i class="fas fa-sync-alt"></i> Reload
+                </button>
             </div>
         </div>
+        
         <div class="channels-info">
             <img id="channelIcon" src="https://placehold.co/100x56/222/e0e0e0?text=Logo" alt="Channel Logo">
             <div class="info-text">
                 <h2>Now Playing</h2>
-                <p>Channel: <span id="channelName" class="channel-name">Demo Channel</span></p>
+                <p>Channel: <span id="channelName" class="channel-name">Loading...</span></p>
             </div>
         </div>
+        
         <div id="statusMessage" class="status-message"></div>
+        
         <div class="player-container">
             <div class="loading-spinner" id="loadingSpinner"></div>
             <div class="error-overlay" id="errorOverlay">
@@ -426,35 +339,18 @@
                 <p id="errorMessage">An error occurred while loading the stream.</p>
                 <button id="retryButton">Retry</button>
             </div>
-            <video id="player" playsinline crossorigin="anonymous"></video>
-            <div class="custom-controls">
-                <div class="progress-container" id="progressContainer">
-                    <div class="buffer-bar" id="bufferBar"></div>
-                    <div class="progress-bar" id="progressBar"></div>
-                </div>
-                <div class="control-buttons">
-                    <div class="left-controls">
-                        <button class="control-btn" id="playPauseBtn"><i class="fas fa-play"></i></button>
-                        <div class="volume-container">
-                            <button class="control-btn" id="muteBtn"><i class="fas fa-volume-up"></i></button>
-                            <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.01" value="1">
-                        </div>
-                        <div class="time-display" id="timeDisplay">00:00 / 00:00</div>
-                    </div>
-                    <div class="right-controls">
-                        <button class="control-btn" id="pipBtn"><i class="fas fa-compress"></i></button>
-                        <button class="control-btn" id="fullscreenBtn"><i class="fas fa-expand"></i></button>
-                    </div>
-                </div>
-            </div>
-            <button class="pip-button" id="pipButton" title="Picture-in-Picture"><i class="fas fa-compress"></i></button>
+            <div id="jw-player"></div>
+            <button class="pip-button" id="pipButton" title="Picture-in-Picture">
+                <i class="fas fa-compress"></i>
+            </button>
         </div>
+        
         <div class="video-controls">
             <div class="control-group">
                 <span>Video Fit:</span>
-                <button class="fit-button active" data-fit="contain">Fit</button>
-                <button class="fit-button" data-fit="cover">Fill</button>
-                <button class="fit-button" data-fit="fill">Stretch</button>
+                <button class="fit-button active" data-fit="fit">Fit</button>
+                <button class="fit-button" data-fit="fill">Fill</button>
+                <button class="fit-button" data-fit="stretch">Stretch</button>
             </div>
             <div class="control-group">
                 <span>Quality:</span>
@@ -462,7 +358,16 @@
                     <option value="auto">Auto</option>
                 </select>
             </div>
+            <div class="control-group">
+                <button class="fit-button" id="muteButton">
+                    <i class="fas fa-volume-up"></i> Mute
+                </button>
+                <button class="fit-button" id="fullscreenButton">
+                    <i class="fas fa-expand"></i> Fullscreen
+                </button>
+            </div>
         </div>
+        
         <div class="stats-panel" id="statsPanel">
             <h3>Stream Statistics</h3>
             <div class="stats-grid">
@@ -493,16 +398,18 @@
             </div>
         </div>
     </div>
+
     <script>
         (function(){
             // Configuration
-            const CORS_PROXY_URL = 'https://corsproxy.io/?';
-            const DEFAULT_STREAM_URL = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8';
-            const DEFAULT_CHANNEL_NAME = 'Demo Stream';
-            const DEFAULT_CHANNEL_ICON = 'https://placehold.co/100x56/222/e0e0e0?text=Demo';
+            const CORS_PROXY_URL = 'https://proxy-js.onrender.com/';
+            const urlParams = new URLSearchParams(window.location.search);
+            const streamParam = urlParams.get('s') || ''; 
+            const channelNameParam = urlParams.get('name') || 'Unknown Channel';
+            const channelIconParam = urlParams.get('icon') || '';
+            const backUrlParam = urlParams.get('back') || 'MaC.html';
             
             // Elements
-            const player = document.getElementById('player');
             const channelName = document.getElementById('channelName');
             const channelIcon = document.getElementById('channelIcon');
             const backButton = document.getElementById('backButton');
@@ -518,17 +425,8 @@
             const statsPanel = document.getElementById('statsPanel');
             const statsToggle = document.getElementById('statsToggle');
             const reloadStreamBtn = document.getElementById('reloadStream');
-            
-            // Custom controls elements
-            const playPauseBtn = document.getElementById('playPauseBtn');
-            const muteBtn = document.getElementById('muteBtn');
-            const volumeSlider = document.getElementById('volumeSlider');
-            const timeDisplay = document.getElementById('timeDisplay');
-            const progressContainer = document.getElementById('progressContainer');
-            const progressBar = document.getElementById('progressBar');
-            const bufferBar = document.getElementById('bufferBar');
-            const pipBtn = document.getElementById('pipBtn');
-            const fullscreenBtn = document.getElementById('fullscreenBtn');
+            const muteButton = document.getElementById('muteButton');
+            const fullscreenButton = document.getElementById('fullscreenButton');
             
             // Stats elements
             const statBuffer = document.getElementById('statBuffer');
@@ -538,67 +436,37 @@
             const statVolume = document.getElementById('statVolume');
             const statSpeed = document.getElementById('statSpeed');
 
-            let hls;
-            let streamUrl = DEFAULT_STREAM_URL;
+            // Player variables
+            let jwPlayer;
+            let decodedStreamUrl = '';
             let reconnectAttempts = 0;
             const MAX_RECONNECT_ATTEMPTS = 10;
             const RECONNECT_DELAY = 3000;
-            let stallDetector = null;
             let statsInterval = null;
+            let isMuted = false;
             let availableQualities = [];
-            let isSeeking = false;
 
             // Initialize the player
             function init() {
                 setupEventListeners();
                 setChannelInfo();
-                initHls();
+                
+                try {
+                    decodedStreamUrl = atob(decodeURIComponent(streamParam));
+                    initJWPlayer();
+                } catch (e) {
+                    showError('Invalid Stream URL', 'The stream URL format is invalid.');
+                }
             }
 
             function setupEventListeners() {
-                backButton.addEventListener('click', () => {
-                    window.history.back();
-                });
-                
-                retryButton.addEventListener('click', initHls);
+                backButton.addEventListener('click', navigateBack);
+                retryButton.addEventListener('click', initJWPlayer);
                 pipButton.addEventListener('click', togglePip);
                 statsToggle.addEventListener('click', toggleStats);
                 reloadStreamBtn.addEventListener('click', reloadStream);
-                
-                // Custom controls event listeners
-                playPauseBtn.addEventListener('click', togglePlayPause);
-                muteBtn.addEventListener('click', toggleMute);
-                volumeSlider.addEventListener('input', setVolume);
-                pipBtn.addEventListener('click', togglePip);
-                fullscreenBtn.addEventListener('click', toggleFullscreen);
-                
-                progressContainer.addEventListener('click', seek);
-                progressContainer.addEventListener('mousedown', () => {
-                    isSeeking = true;
-                });
-                document.addEventListener('mouseup', () => {
-                    if (isSeeking) {
-                        isSeeking = false;
-                        // Seek when dragging is finished
-                        seekFromEvent();
-                    }
-                });
-                progressContainer.addEventListener('mousemove', (e) => {
-                    if (isSeeking) {
-                        updateProgressPreview(e);
-                    }
-                });
-                
-                player.addEventListener('click', togglePlayPause);
-                player.addEventListener('play', updatePlayButton);
-                player.addEventListener('pause', updatePlayButton);
-                player.addEventListener('timeupdate', updateProgress);
-                player.addEventListener('volumechange', updateVolumeUI);
-                player.addEventListener('loadedmetadata', updateDuration);
-                player.addEventListener('waiting', showLoading);
-                player.addEventListener('playing', hideLoading);
-                player.addEventListener('enterpictureinpicture', updatePipButton);
-                player.addEventListener('leavepictureinpicture', updatePipButton);
+                muteButton.addEventListener('click', toggleMute);
+                fullscreenButton.addEventListener('click', toggleFullscreen);
                 
                 fitButtons.forEach(button => {
                     if (button.dataset.fit) {
@@ -610,15 +478,27 @@
                     }
                 });
 
+                // Detect if PiP is supported
                 if (!document.pictureInPictureEnabled) {
                     pipButton.style.display = 'none';
-                    pipBtn.style.display = 'none';
+                }
+            }
+
+            function navigateBack() {
+                try {
+                    window.location.assign(decodeURIComponent(backUrlParam));
+                } catch (err) {
+                    window.location.href = 'MaC.html';
                 }
             }
 
             function setChannelInfo() {
-                channelName.textContent = DEFAULT_CHANNEL_NAME;
-                channelIcon.src = DEFAULT_CHANNEL_ICON;
+                channelName.textContent = decodeURIComponent(channelNameParam);
+                const decodedIcon = decodeURIComponent(channelIconParam);
+                if (decodedIcon) {
+                    channelIcon.src = decodedIcon;
+                    channelIcon.alt = decodeURIComponent(channelNameParam) + ' Logo';
+                }
             }
 
             function showStatus(message, isError = false) {
@@ -644,7 +524,6 @@
                 errorTitle.textContent = title;
                 errorMessage.textContent = message;
                 errorOverlay.style.display = 'flex';
-                hideLoading();
             }
             
             function hideError() {
@@ -652,28 +531,17 @@
             }
 
             function handleFitChange(fitType) {
-                player.style.objectFit = fitType;
+                // This would need custom CSS implementation for JW Player
+                console.log('Video fit changed to:', fitType);
             }
 
             function togglePip() {
-                if (document.pictureInPictureElement) {
-                    document.exitPictureInPicture().catch(err => {
-                        console.error('Error exiting PiP:', err);
-                    });
-                } else if (document.pictureInPictureEnabled) {
-                    player.requestPictureInPicture().catch(err => {
-                        console.error('Error entering PiP:', err);
-                    });
-                }
-            }
-            
-            function updatePipButton() {
-                if (document.pictureInPictureElement) {
-                    pipBtn.innerHTML = '<i class="fas fa-compress-arrows-alt"></i>';
-                    pipButton.innerHTML = '<i class="fas fa-compress-arrows-alt"></i>';
-                } else {
-                    pipBtn.innerHTML = '<i class="fas fa-compress"></i>';
-                    pipButton.innerHTML = '<i class="fas fa-compress"></i>';
+                if (jwPlayer) {
+                    if (jwPlayer.getState() === 'pictureInPicture') {
+                        jwPlayer.exitPictureInPicture();
+                    } else {
+                        jwPlayer.setPictureInPicture(true);
+                    }
                 }
             }
 
@@ -681,134 +549,34 @@
                 statsPanel.style.display = statsPanel.style.display === 'none' ? 'block' : 'none';
                 if (statsPanel.style.display === 'block') {
                     updateStats();
-                    startStatsMonitoring();
-                } else {
-                    stopStatsMonitoring();
                 }
             }
 
             function reloadStream() {
-                if (hls) hls.destroy();
-                initHls();
+                if (jwPlayer) {
+                    jwPlayer.load();
+                    jwPlayer.play();
+                }
             }
 
-            function togglePlayPause() {
-                if (player.paused || video.ended) {
-                    player.play().catch(err => {
-                        console.error('Play error:', err);
-                    });
-                } else {
-                    player.pause();
-                }
-            }
-            
-            function updatePlayButton() {
-                if (player.paused) {
-                    playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-                } else {
-                    playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-                }
-            }
-            
             function toggleMute() {
-                player.muted = !player.muted;
-                updateMuteButton();
+                if (jwPlayer) {
+                    jwPlayer.setMute(!jwPlayer.getMute());
+                    updateMuteButton();
+                }
             }
-            
+
             function updateMuteButton() {
-                if (player.muted || player.volume === 0) {
-                    muteBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
-                    volumeSlider.value = 0;
+                if (jwPlayer && jwPlayer.getMute()) {
+                    muteButton.innerHTML = '<i class="fas fa-volume-mute"></i> Unmute';
                 } else {
-                    muteBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
-                    volumeSlider.value = player.volume;
+                    muteButton.innerHTML = '<i class="fas fa-volume-up"></i> Mute';
                 }
             }
-            
-            function setVolume() {
-                player.volume = volumeSlider.value;
-                player.muted = (player.volume === 0);
-                updateMuteButton();
-            }
-            
-            function updateVolumeUI() {
-                volumeSlider.value = player.volume;
-                updateMuteButton();
-            }
-            
+
             function toggleFullscreen() {
-                if (!document.fullscreenElement) {
-                    if (player.requestFullscreen) {
-                        player.requestFullscreen();
-                    }
-                } else {
-                    if (document.exitFullscreen) {
-                        document.exitFullscreen();
-                    }
-                }
-            }
-            
-            function updateProgress() {
-                if (!player.duration || isSeeking) return;
-                
-                const percent = (player.currentTime / player.duration) * 100;
-                progressBar.style.width = percent + '%';
-                
-                // Update time display
-                const currentTime = formatTime(player.currentTime);
-                const duration = formatTime(player.duration);
-                timeDisplay.textContent = `${currentTime} / ${duration}`;
-            }
-            
-            function updateProgressPreview(e) {
-                const rect = progressContainer.getBoundingClientRect();
-                const percent = Math.min(Math.max(0, e.clientX - rect.left), rect.width) / rect.width;
-                progressBar.style.width = percent * 100 + '%';
-                
-                // Update preview time
-                const previewTime = player.duration * percent;
-                const currentTime = formatTime(previewTime);
-                const duration = formatTime(player.duration);
-                timeDisplay.textContent = `${currentTime} / ${duration}`;
-            }
-            
-            function seek(e) {
-                if (!player.duration) return;
-                
-                const rect = progressContainer.getBoundingClientRect();
-                let x = e.clientX - rect.left;
-                if (x < 0) x = 0;
-                if (x > rect.width) x = rect.width;
-                const percentage = (x / rect.width);
-                player.currentTime = percentage * player.duration;
-                progressBar.style.width = percentage * 100 + '%';
-            }
-            
-            function seekFromEvent() {
-                // This would be used for drag-to-seek functionality
-                // Implementation would track mouse movement during drag
-            }
-            
-            function updateDuration() {
-                if (player.duration) {
-                    timeDisplay.textContent = `00:00 / ${formatTime(player.duration)}`;
-                }
-            }
-            
-            function formatTime(seconds) {
-                const mins = Math.floor(seconds / 60);
-                const secs = Math.floor(seconds % 60);
-                return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-            }
-            
-            function updateBufferBar() {
-                if (player.buffered.length > 0) {
-                    const bufferedEnd = player.buffered.end(player.buffered.length - 1);
-                    const duration = player.duration;
-                    if (duration > 0) {
-                        const bufferPercent = (bufferedEnd / duration) * 100;
-                        bufferBar.style.width = bufferPercent + '%';
-                    }
+                if (jwPlayer) {
+                    jwPlayer.setFullscreen(!jwPlayer.getFullscreen());
                 }
             }
 
@@ -825,174 +593,158 @@
             }
 
             function updateStats() {
-                if (!hls || !hls.levels.length) return;
+                if (!jwPlayer) return;
                 
-                const currentLevel = hls.levels[hls.currentLevel] || hls.levels[0] || {};
+                // Get player state
+                const state = jwPlayer.getState();
                 
                 // Buffer length
-                const bufferLength = player.buffered.length > 0 
-                    ? Math.floor(player.buffered.end(player.buffered.length - 1) - player.currentTime)
-                    : 0;
-                statBuffer.textContent = `${bufferLength} s`;
+                const bufferLength = jwPlayer.getBufferLength();
+                statBuffer.textContent = `${bufferLength.toFixed(1)} s`;
                 
                 // Current bitrate
-                const bitrate = currentLevel.bitrate ? (currentLevel.bitrate / 1000000).toFixed(2) : 0;
+                const bitrate = jwPlayer.getQualityLevels().length > 0 ? 
+                    (jwPlayer.getQualityLevels()[jwPlayer.getCurrentQuality()].bitrate / 1000000).toFixed(2) : 0;
                 statBitrate.textContent = `${bitrate} Mbps`;
                 
                 // Resolution
-                const width = currentLevel.width || 0;
-                const height = currentLevel.height || 0;
+                const width = jwPlayer.getWidth();
+                const height = jwPlayer.getHeight();
                 statResolution.textContent = `${width}x${height}`;
                 
-                // Dropped frames
-                statDropped.textContent = player.webkitDroppedFrameCount || 0;
-                
                 // Volume
-                statVolume.textContent = `${Math.round(player.volume * 100)}%`;
+                const volume = Math.round(jwPlayer.getVolume() * 100);
+                statVolume.textContent = `${volume}%`;
                 
-                // Connection speed
-                const bwEstimate = hls.bandwidthEstimate / 1000000;
-                statSpeed.textContent = `${bwEstimate.toFixed(2)} Mbps`;
-                
-                // Update buffer bar
-                updateBufferBar();
+                // Connection speed (estimated)
+                if (state === 'playing') {
+                    const bwEstimate = bitrate * 1.5; // Simple estimation
+                    statSpeed.textContent = `${bwEstimate.toFixed(2)} Mbps`;
+                }
             }
 
-            function initHls() {
-                if (hls) hls.destroy();
-                clearTimeout(stallDetector);
-                stopStatsMonitoring();
-                player.pause();
-                showLoading();
-                showStatus(`Loading stream...`);
-                hideError();
-
-                const urlToLoad = streamUrl.startsWith('http') ? CORS_PROXY_URL + encodeURIComponent(streamUrl) : streamUrl;
-                
-                if (Hls.isSupported()) {
-                    hls = new Hls({
-                        maxBufferLength: 300,
-                        maxMaxBufferLength: 600,
-                        maxBufferSize: 500 * 1024 * 1024,
-                        fragLoadingMaxRetry: 8,
-                        lowLatencyMode: true,
-                        enableWorker: true,
-                        // CORS proxy setup
-                        xhrSetup: (xhr, url) => {
-                            const newUrl = url.startsWith('http') ? CORS_PROXY_URL + encodeURIComponent(url) : url;
-                            xhr.open('GET', newUrl, true);
-                        }
-                    });
-                    
-                    hls.loadSource(urlToLoad);
-                    hls.attachMedia(player);
-                    
-                    hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
-                        hideStatus();
-                        hideLoading();
-                        reconnectAttempts = 0;
-                        availableQualities = data.levels;
-                        updateQualitySelector();
-                        
-                        player.play().catch(err => {
-                            showStatus('Autoplay blocked. Click to play.', true);
-                        });
-                        startStallDetector();
-                    });
-                    
-                    hls.on(Hls.Events.LEVEL_LOADED, (event, data) => {
-                        updateStats();
-                    });
-                    
-                    hls.on(Hls.Events.LEVEL_SWITCHED, (event, data) => {
-                        updateStats();
-                    });
-                    
-                    hls.on(Hls.Events.BUFFER_APPENDED, () => {
-                        updateBufferBar();
-                    });
-                    
-                    hls.on(Hls.Events.ERROR, (event, data) => {
-                        console.error('HLS.js error:', data);
-                        if (data.fatal) {
-                            switch(data.type) {
-                                case Hls.ErrorTypes.NETWORK_ERROR:
-                                    handleStreamError('Network Error', 'A network error occurred. Trying to reconnect...');
-                                    break;
-                                case Hls.ErrorTypes.MEDIA_ERROR:
-                                    handleStreamError('Media Error', 'Video or audio data error. The stream may be incompatible.');
-                                    break;
-                                default:
-                                    handleStreamError('Playback Error', 'An unexpected error occurred. Trying to reconnect...');
-                                    break;
-                            }
-                        }
-                    });
-
-                } else if (player.canPlayType('application/vnd.apple.mpegurl')) {
-                    // Native HLS support (Safari)
-                    player.src = urlToLoad;
-                    player.addEventListener('loadedmetadata', () => {
-                        hideStatus();
-                        hideLoading();
-                        player.play();
-                    });
-                    player.addEventListener('error', () => {
-                        showError('Playback Error', 'An error occurred during playback. This stream might not be compatible with your browser.');
-                    });
-                } else {
-                    showError('Not Supported', 'HLS is not supported on this browser. Try a modern browser like Chrome, Firefox, or Safari.');
+            function initJWPlayer() {
+                if (!decodedStreamUrl) {
+                    showError('No Stream URL', 'No stream URL provided.');
+                    return;
                 }
+                
+                showLoading();
+                showStatus(`Loading channel...`);
+                hideError();
+                
+                // Destroy existing player instance if any
+                if (jwPlayer) {
+                    jwPlayer.remove();
+                }
+                
+                // Setup JW Player
+                jwPlayer = jwplayer("jw-player").setup({
+                    file: CORS_PROXY_URL + decodedStreamUrl,
+                    image: channelIcon.src,
+                    title: channelName.textContent,
+                    width: "100%",
+                    height: "100%",
+                    autostart: true,
+                    mute: false,
+                    playbackRateControls: true,
+                    repeat: false,
+                    displaytitle: true,
+                    displaydescription: true,
+                    abouttext: "Demons Player",
+                    aboutlink: "https://example.com",
+                    stretching: "uniform", // uniform, fill, none, exactfit
+                    skin: {
+                        name: "stormtrooper",
+                        active: "#FF5722"
+                    }
+                });
+                
+                // Event listeners for JW Player
+                jwPlayer.on('ready', function() {
+                    hideStatus();
+                    hideLoading();
+                    reconnectAttempts = 0;
+                    
+                    // Populate quality selector
+                    updateQualitySelector();
+                    startStatsMonitoring();
+                });
+                
+                jwPlayer.on('play', function() {
+                    hideError();
+                    startStatsMonitoring();
+                });
+                
+                jwPlayer.on('pause', function() {
+                    stopStatsMonitoring();
+                });
+                
+                jwPlayer.on('error', function(e) {
+                    handleStreamError(e);
+                });
+                
+                jwPlayer.on('levels', function() {
+                    updateQualitySelector();
+                });
+                
+                jwPlayer.on('levelsChanged', function() {
+                    updateStats();
+                });
+                
+                jwPlayer.on('mute', function() {
+                    updateMuteButton();
+                    updateStats();
+                });
+                
+                jwPlayer.on('volume', function() {
+                    updateStats();
+                });
             }
             
             function updateQualitySelector() {
+                if (!jwPlayer) return;
+                
+                // Clear existing options except Auto
                 while (qualitySelector.options.length > 1) {
                     qualitySelector.remove(1);
                 }
                 
-                availableQualities.forEach((level, index) => {
+                // Add available quality levels
+                const levels = jwPlayer.getQualityLevels();
+                availableQualities = levels;
+                
+                levels.forEach((level, index) => {
                     const option = document.createElement('option');
                     option.value = index;
                     option.textContent = level.height + 'p';
                     qualitySelector.appendChild(option);
                 });
                 
+                // Set up event listener
                 qualitySelector.onchange = function() {
-                    if (hls) {
-                        if (this.value === 'auto') {
-                            hls.currentLevel = -1;
-                        } else {
-                            hls.currentLevel = parseInt(this.value);
-                        }
+                    if (this.value === 'auto') {
+                        jwPlayer.setCurrentQuality(-1); // Auto
+                    } else {
+                        jwPlayer.setCurrentQuality(parseInt(this.value));
                     }
                 };
             }
-            
-            function startStallDetector() {
-                stallDetector = setTimeout(() => {
-                    if (player.currentTime > 0.1 && (player.videoWidth === 0 || player.paused || player.ended)) {
-                        hls.destroy();
-                        clearTimeout(stallDetector);
-                        showError('Playback Stalled', 'The video is not playing. This may be due to a poor connection or an unsupported format.');
-                    }
-                }, 8000); 
-            }
 
-            function handleStreamError(title, message) {
-                clearTimeout(stallDetector);
+            function handleStreamError(error) {
                 stopStatsMonitoring();
                 hideLoading();
                 
                 if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
                     reconnectAttempts++;
                     showStatus(`Stream lost. Reconnecting... (Attempt ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`, true);
-                    setTimeout(initHls, RECONNECT_DELAY);
+                    setTimeout(initJWPlayer, RECONNECT_DELAY);
                 } else {
-                    showError(title, message + ' Could not reconnect after multiple attempts. Please try again later.');
+                    showError('Connection Failed', 'Could not reconnect to the stream. Please try again later.');
                 }
             }
             
-            // Initialize the player
+            // Initialize the player when the page loads
             init();
         })();
     </script>
