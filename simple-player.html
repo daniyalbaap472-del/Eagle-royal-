@@ -1,9 +1,10 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Robust Streaming Player</title>
+    <title>Demons HLS Player</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -136,99 +137,12 @@
             border-radius: 12px;
             overflow: hidden;
             box-shadow: var(--card-shadow);
-            background: #000;
         }
-        #video-element {
+        #videoPlayer {
             width: 100%;
-            height: auto;
-            max-height: 506px;
-            display: block;
-        }
-        .custom-controls {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        .player-container:hover .custom-controls {
-            opacity: 1;
-        }
-        .progress-container {
-            width: 100%;
-            height: 5px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 5px;
-            cursor: pointer;
-            overflow: hidden;
-        }
-        .progress-bar {
             height: 100%;
-            background: var(--accent);
-            width: 0%;
-            border-radius: 5px;
-            transition: width 0.2s ease;
-        }
-        .control-buttons {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .left-controls, .right-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .control-btn {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.2s;
-        }
-        .control-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        .time-display {
-            font-size: 14px;
-            color: #e0e0e0;
-            margin: 0 10px;
-        }
-        .volume-container {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .volume-slider {
-            width: 80px;
-            height: 5px;
-            -webkit-appearance: none;
-            appearance: none;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 5px;
-            outline: none;
-        }
-        .volume-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: var(--accent);
-            cursor: pointer;
+            min-height: 400px;
+            background-color: #000;
         }
         .video-controls {
             display: flex;
@@ -346,43 +260,25 @@
         .error-overlay button:hover {
             background-color: var(--accent-hover);
         }
-        .connection-status {
+        .pip-button {
             position: absolute;
-            top: 15px;
-            right: 15px;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
+            bottom: 20px;
+            right: 20px;
             z-index: 8;
-            display: none;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
         }
-        .connection-status.connected {
-            background: var(--success);
-            display: block;
-        }
-        .connection-status.reconnecting {
-            background: var(--warning);
-            display: block;
-        }
-        .connection-status.error {
-            background: var(--error);
-            display: block;
-        }
-        .buffer-indicator {
-            position: absolute;
-            bottom: 60px;
-            left: 0;
-            height: 3px;
-            background: rgba(255, 255, 255, 0.3);
-            width: 100%;
-            z-index: 7;
-        }
-        .buffer-progress {
-            height: 100%;
-            background: var(--accent);
-            width: 0%;
-            transition: width 0.3s ease;
+        .pip-button:hover {
+            background-color: var(--accent);
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -391,15 +287,6 @@
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
-        }
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-        .reconnecting .loading-spinner {
-            display: block;
-            animation: spin 1s linear infinite, pulse 1.5s ease-in-out infinite;
         }
         @media (max-width: 768px) {
             body { padding: 15px; }
@@ -411,8 +298,8 @@
             .channels-info .channel-name { font-size: 16px; }
             .video-controls { flex-direction: column; align-items: center; }
             .control-group { width: 100%; justify-content: center; }
-            .volume-slider {
-                width: 60px;
+            #videoPlayer {
+                min-height: 300px;
             }
         }
     </style>
@@ -422,20 +309,15 @@
         <div class="header">
             <button class="back-button" id="backButton">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                    <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" fill="none"/>
+                    <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" fill="none" />
                 </svg>
                 Back
             </button>
             <div class="header-controls">
-                <button class="header-button" id="statsToggle">
-                    <i class="fas fa-chart-bar"></i> Stats
-                </button>
-                <button class="header-button" id="reloadStream">
-                    <i class="fas fa-sync-alt"></i> Reload
-                </button>
+                <button class="header-button" id="statsToggle"><i class="fas fa-chart-bar"></i> Stats</button>
+                <button class="header-button" id="reloadStream"><i class="fas fa-sync-alt"></i> Reload</button>
             </div>
         </div>
-        
         <div class="channels-info">
             <img id="channelIcon" src="https://placehold.co/100x56/222/e0e0e0?text=Logo" alt="Channel Logo">
             <div class="info-text">
@@ -443,50 +325,17 @@
                 <p>Channel: <span id="channelName" class="channel-name">Loading...</span></p>
             </div>
         </div>
-        
         <div id="statusMessage" class="status-message"></div>
-        
-        <div class="player-container" id="playerContainer">
-            <div class="connection-status" id="connectionStatus"></div>
+        <div class="player-container">
             <div class="loading-spinner" id="loadingSpinner"></div>
             <div class="error-overlay" id="errorOverlay">
                 <h3 id="errorTitle">Stream Error</h3>
                 <p id="errorMessage">An error occurred while loading the stream.</p>
                 <button id="retryButton">Retry</button>
             </div>
-            
-            <video id="video-element" playsinline></video>
-            
-            <div class="buffer-indicator">
-                <div class="buffer-progress" id="bufferProgress"></div>
-            </div>
-            
-            <div class="custom-controls">
-                <div class="progress-container" id="progressContainer">
-                    <div class="progress-bar" id="progressBar"></div>
-                </div>
-                <div class="control-buttons">
-                    <div class="left-controls">
-                        <button class="control-btn" id="playPauseBtn">
-                            <i class="fas fa-play" id="playPauseIcon"></i>
-                        </button>
-                        <span class="time-display" id="timeDisplay">00:00 / 00:00</span>
-                    </div>
-                    <div class="right-controls">
-                        <div class="volume-container">
-                            <button class="control-btn" id="muteBtn">
-                                <i class="fas fa-volume-up" id="volumeIcon"></i>
-                            </button>
-                            <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.1" value="1">
-                        </div>
-                        <button class="control-btn" id="fullscreenBtn">
-                            <i class="fas fa-expand"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
+            <video id="videoPlayer" controls></video>
+            <button class="pip-button" id="pipButton" title="Picture-in-Picture"><i class="fas fa-compress"></i></button>
         </div>
-        
         <div class="video-controls">
             <div class="control-group">
                 <span>Video Fit:</span>
@@ -495,13 +344,13 @@
                 <button class="fit-button" data-fit="fill">Fill</button>
             </div>
             <div class="control-group">
-                <span>Quality:</span>
-                <select class="quality-selector" id="qualitySelector">
-                    <option value="auto">Auto</option>
-                </select>
+                <span>Quality:</span> <select class="quality-selector" id="qualitySelector"> <option value="auto">Auto</option> </select>
+            </div>
+            <div class="control-group">
+                <button class="fit-button" id="muteButton"><i class="fas fa-volume-up"></i> Mute</button>
+                <button class="fit-button" id="fullscreenButton"><i class="fas fa-expand"></i> Fullscreen</button>
             </div>
         </div>
-        
         <div class="stats-panel" id="statsPanel">
             <h3>Stream Statistics</h3>
             <div class="stats-grid">
@@ -529,59 +378,39 @@
                     <div class="stat-label">Connection Speed</div>
                     <div class="stat-value" id="statSpeed">0 Mbps</div>
                 </div>
-                <div class="stat-item">
-                    <div class="stat-label">Reconnect Attempts</div>
-                    <div class="stat-value" id="statReconnect">0</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">Stream Health</div>
-                    <div class="stat-value" id="statHealth">Good</div>
-                </div>
             </div>
         </div>
     </div>
-
     <script>
         (function(){
             // Configuration
-            const CORS_PROXY_URL = 'https://corsproxy.io/?';
+            const CORS_PROXY_URL = 'https://proxy-js.onrender.com/';
             const urlParams = new URLSearchParams(window.location.search);
             const streamParam = urlParams.get('s') || ''; 
             const channelNameParam = urlParams.get('name') || 'Unknown Channel';
             const channelIconParam = urlParams.get('icon') || '';
-            const backUrlParam = urlParams.get('back') || 'index.html';
+            const backUrlParam = urlParams.get('back') || 'MaC.html';
             
             // Elements
-            const videoElement = document.getElementById('video-element');
             const channelName = document.getElementById('channelName');
             const channelIcon = document.getElementById('channelIcon');
             const backButton = document.getElementById('backButton');
             const statusMessage = document.getElementById('statusMessage');
+            const fitButtons = document.querySelectorAll('.fit-button');
             const loadingSpinner = document.getElementById('loadingSpinner');
             const errorOverlay = document.getElementById('errorOverlay');
             const errorTitle = document.getElementById('errorTitle');
             const errorMessage = document.getElementById('errorMessage');
             const retryButton = document.getElementById('retryButton');
+            const pipButton = document.getElementById('pipButton');
             const qualitySelector = document.getElementById('qualitySelector');
             const statsPanel = document.getElementById('statsPanel');
             const statsToggle = document.getElementById('statsToggle');
             const reloadStreamBtn = document.getElementById('reloadStream');
-            const connectionStatus = document.getElementById('connectionStatus');
-            const bufferProgress = document.getElementById('bufferProgress');
-            const playerContainer = document.getElementById('playerContainer');
-            
-            // Custom controls elements
-            const playPauseBtn = document.getElementById('playPauseBtn');
-            const playPauseIcon = document.getElementById('playPauseIcon');
-            const timeDisplay = document.getElementById('timeDisplay');
-            const progressBar = document.getElementById('progressBar');
-            const progressContainer = document.getElementById('progressContainer');
-            const muteBtn = document.getElementById('muteBtn');
-            const volumeIcon = document.getElementById('volumeIcon');
-            const volumeSlider = document.getElementById('volumeSlider');
-            const fullscreenBtn = document.getElementById('fullscreenBtn');
-            const fitButtons = document.querySelectorAll('.fit-button');
-            
+            const muteButton = document.getElementById('muteButton');
+            const fullscreenButton = document.getElementById('fullscreenButton');
+            const videoPlayer = document.getElementById('videoPlayer');
+
             // Stats elements
             const statBuffer = document.getElementById('statBuffer');
             const statBitrate = document.getElementById('statBitrate');
@@ -589,23 +418,15 @@
             const statDropped = document.getElementById('statDropped');
             const statVolume = document.getElementById('statVolume');
             const statSpeed = document.getElementById('statSpeed');
-            const statReconnect = document.getElementById('statReconnect');
-            const statHealth = document.getElementById('statHealth');
 
             // Player variables
             let hls;
             let decodedStreamUrl = '';
             let reconnectAttempts = 0;
-            const MAX_RECONNECT_ATTEMPTS = 15;
-            const RECONNECT_DELAY_BASE = 2000; // Base delay in ms
-            let reconnectTimeout = null;
+            const MAX_RECONNECT_ATTEMPTS = 10;
+            const RECONNECT_DELAY = 3000;
             let statsInterval = null;
-            let isMuted = false;
             let availableQualities = [];
-            let lastPlaybackTime = 0;
-            let stallDetectionTimeout = null;
-            let healthScore = 100; // Stream health score (0-100)
-            let bufferingDetected = false;
 
             // Initialize the player
             function init() {
@@ -614,36 +435,21 @@
                 
                 try {
                     decodedStreamUrl = atob(decodeURIComponent(streamParam));
-                    initHls();
+                    loadStream();
                 } catch (e) {
-                    showError('Invalid Stream URL', 'The stream URL format is invalid.');
+                    showError('Invalid Stream URL', 'The stream URL format is invalid. Ensure the URL is correctly encoded and passed.');
                 }
             }
 
             function setupEventListeners() {
                 backButton.addEventListener('click', navigateBack);
-                retryButton.addEventListener('click', initHls);
+                retryButton.addEventListener('click', loadStream);
+                pipButton.addEventListener('click', togglePip);
                 statsToggle.addEventListener('click', toggleStats);
                 reloadStreamBtn.addEventListener('click', reloadStream);
+                muteButton.addEventListener('click', toggleMute);
+                fullscreenButton.addEventListener('click', toggleFullscreen);
                 
-                // Custom controls event listeners
-                playPauseBtn.addEventListener('click', togglePlayPause);
-                muteBtn.addEventListener('click', toggleMute);
-                volumeSlider.addEventListener('input', updateVolume);
-                fullscreenBtn.addEventListener('click', toggleFullscreen);
-                progressContainer.addEventListener('click', seek);
-                
-                // Video event listeners
-                videoElement.addEventListener('timeupdate', updateProgress);
-                videoElement.addEventListener('loadedmetadata', updateDuration);
-                videoElement.addEventListener('play', updatePlayButton);
-                videoElement.addEventListener('pause', updatePlayButton);
-                videoElement.addEventListener('volumechange', updateVolumeUI);
-                videoElement.addEventListener('waiting', handleBuffering);
-                videoElement.addEventListener('playing', handlePlaying);
-                videoElement.addEventListener('ended', handleEnded);
-                
-                // Fit buttons
                 fitButtons.forEach(button => {
                     button.addEventListener('click', () => {
                         handleFitChange(button.dataset.fit);
@@ -652,17 +458,22 @@
                     });
                 });
 
-                // Detect if PiP is supported
                 if (!document.pictureInPictureEnabled) {
-                    // pipButton.style.display = 'none';
+                    pipButton.style.display = 'none';
                 }
+
+                videoPlayer.addEventListener('loadedmetadata', updateStats);
+                videoPlayer.addEventListener('play', startStatsMonitoring);
+                videoPlayer.addEventListener('pause', stopStatsMonitoring);
+                videoPlayer.addEventListener('volumechange', updateStats);
+                videoPlayer.addEventListener('error', handleStreamError);
             }
 
             function navigateBack() {
                 try {
                     window.location.assign(decodeURIComponent(backUrlParam));
                 } catch (err) {
-                    window.location.href = 'index.html';
+                    window.location.href = 'MaC.html';
                 }
             }
 
@@ -688,204 +499,72 @@
 
             function showLoading() {
                 loadingSpinner.style.display = 'block';
-                playerContainer.classList.add('reconnecting');
             }
             
             function hideLoading() {
                 loadingSpinner.style.display = 'none';
-                playerContainer.classList.remove('reconnecting');
             }
 
             function showError(title, message) {
                 errorTitle.textContent = title;
                 errorMessage.textContent = message;
                 errorOverlay.style.display = 'flex';
-                updateConnectionStatus('error', 'Connection Failed');
             }
             
             function hideError() {
                 errorOverlay.style.display = 'none';
             }
-            
-            function updateConnectionStatus(status, text) {
-                connectionStatus.textContent = text;
-                connectionStatus.className = 'connection-status ' + status;
-            }
 
             function handleFitChange(fitType) {
-                videoElement.style.objectFit = fitType;
+                videoPlayer.style.objectFit = fitType;
+            }
+
+            async function togglePip() {
+                if (document.pictureInPictureElement) {
+                    await document.exitPictureInPicture();
+                } else {
+                    await videoPlayer.requestPictureInPicture();
+                }
             }
 
             function toggleStats() {
                 statsPanel.style.display = statsPanel.style.display === 'none' ? 'block' : 'none';
                 if (statsPanel.style.display === 'block') {
                     updateStats();
+                    startStatsMonitoring();
+                } else {
+                    stopStatsMonitoring();
                 }
             }
 
             function reloadStream() {
-                if (hls) hls.destroy();
-                initHls();
+                if (hls) {
+                    hls.stopLoad();
+                    hls.loadSource(CORS_PROXY_URL + decodedStreamUrl);
+                    hls.attachMedia(videoPlayer);
+                    videoPlayer.play();
+                }
             }
 
-            function togglePlayPause() {
-                if (videoElement.paused) {
-                    videoElement.play().catch(e => {
-                        console.error('Play failed:', e);
-                    });
-                } else {
-                    videoElement.pause();
-                }
-            }
-            
-            function updatePlayButton() {
-                if (videoElement.paused) {
-                    playPauseIcon.className = 'fas fa-play';
-                } else {
-                    playPauseIcon.className = 'fas fa-pause';
-                }
-            }
-            
             function toggleMute() {
-                videoElement.muted = !videoElement.muted;
+                videoPlayer.muted = !videoPlayer.muted;
+                updateMuteButton();
+                updateStats();
             }
-            
-            function updateVolume() {
-                videoElement.volume = volumeSlider.value;
-            }
-            
-            function updateVolumeUI() {
-                volumeSlider.value = videoElement.volume;
-                if (videoElement.muted || videoElement.volume === 0) {
-                    volumeIcon.className = 'fas fa-volume-mute';
-                } else if (videoElement.volume < 0.5) {
-                    volumeIcon.className = 'fas fa-volume-down';
+
+            function updateMuteButton() {
+                if (videoPlayer.muted) {
+                    muteButton.innerHTML = '<i class="fas fa-volume-mute"></i> Unmute';
                 } else {
-                    volumeIcon.className = 'fas fa-volume-up';
+                    muteButton.innerHTML = '<i class="fas fa-volume-up"></i> Mute';
                 }
-                
-                // Update stats
-                statVolume.textContent = `${Math.round(videoElement.volume * 100)}%`;
             }
-            
+
             function toggleFullscreen() {
                 if (!document.fullscreenElement) {
-                    if (playerContainer.requestFullscreen) {
-                        playerContainer.requestFullscreen();
-                    } else if (playerContainer.webkitRequestFullscreen) {
-                        playerContainer.webkitRequestFullscreen();
-                    } else if (playerContainer.msRequestFullscreen) {
-                        playerContainer.msRequestFullscreen();
-                    }
+                    document.documentElement.requestFullscreen();
                 } else {
-                    if (document.exitFullscreen) {
-                        document.exitFullscreen();
-                    } else if (document.webkitExitFullscreen) {
-                        document.webkitExitFullscreen();
-                    } else if (document.msExitFullscreen) {
-                        document.msExitFullscreen();
-                    }
-                }
-            }
-            
-            function updateProgress() {
-                const percent = (videoElement.currentTime / videoElement.duration) * 100;
-                progressBar.style.width = `${percent}%`;
-                
-                // Update time display
-                const currentTime = formatTime(videoElement.currentTime);
-                const duration = formatTime(videoElement.duration);
-                timeDisplay.textContent = `${currentTime} / ${duration}`;
-                
-                // Detect potential stalls
-                detectStall();
-            }
-            
-            function updateDuration() {
-                const duration = formatTime(videoElement.duration);
-                timeDisplay.textContent = `00:00 / ${duration}`;
-            }
-            
-            function formatTime(seconds) {
-                if (isNaN(seconds)) return '00:00';
-                
-                const minutes = Math.floor(seconds / 60);
-                seconds = Math.floor(seconds % 60);
-                return `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-            }
-            
-            function seek(e) {
-                const rect = progressContainer.getBoundingClientRect();
-                const percent = (e.clientX - rect.left) / rect.width;
-                videoElement.currentTime = percent * videoElement.duration;
-            }
-            
-            function handleBuffering() {
-                bufferingDetected = true;
-                showLoading();
-                updateConnectionStatus('reconnecting', 'Buffering...');
-                
-                // Reduce health score when buffering occurs
-                healthScore = Math.max(0, healthScore - 10);
-                updateHealthIndicator();
-            }
-            
-            function handlePlaying() {
-                bufferingDetected = false;
-                hideLoading();
-                updateConnectionStatus('connected', 'Live');
-                
-                // Improve health score when playback resumes
-                healthScore = Math.min(100, healthScore + 5);
-                updateHealthIndicator();
-                
-                // Reset stall detection
-                lastPlaybackTime = videoElement.currentTime;
-                clearTimeout(stallDetectionTimeout);
-            }
-            
-            function handleEnded() {
-                // Attempt to reconnect if stream ends unexpectedly
-                if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
-                    setTimeout(initHls, RECONNECT_DELAY_BASE);
-                }
-            }
-            
-            function detectStall() {
-                // Clear any existing timeout
-                clearTimeout(stallDetectionTimeout);
-                
-                // If video is playing but time isn't advancing, we might be stalled
-                if (!videoElement.paused && videoElement.currentTime === lastPlaybackTime) {
-                    stallDetectionTimeout = setTimeout(() => {
-                        if (!videoElement.paused && videoElement.currentTime === lastPlaybackTime) {
-                            console.warn('Stream stall detected, attempting to recover...');
-                            healthScore = Math.max(0, healthScore - 15);
-                            updateHealthIndicator();
-                            reloadStream();
-                        }
-                    }, 5000); // 5 seconds without progress is considered a stall
-                }
-                
-                lastPlaybackTime = videoElement.currentTime;
-            }
-            
-            function updateHealthIndicator() {
-                if (healthScore >= 80) {
-                    statHealth.textContent = 'Excellent';
-                    statHealth.style.color = var(--success);
-                } else if (healthScore >= 60) {
-                    statHealth.textContent = 'Good';
-                    statHealth.style.color = '#FF9800';
-                } else if (healthScore >= 40) {
-                    statHealth.textContent = 'Fair';
-                    statHealth.style.color = '#FF9800';
-                } else if (healthScore >= 20) {
-                    statHealth.textContent = 'Poor';
-                    statHealth.style.color = '#FF5722';
-                } else {
-                    statHealth.textContent = 'Unstable';
-                    statHealth.style.color = var(--error);
+                    document.exitFullscreen();
                 }
             }
 
@@ -904,203 +583,134 @@
             function updateStats() {
                 if (!hls) return;
                 
-                // Buffer length
-                const bufferLength = videoElement.buffered.length > 0 
-                    ? Math.floor(videoElement.buffered.end(videoElement.buffered.length - 1) - videoElement.currentTime)
-                    : 0;
-                statBuffer.textContent = `${bufferLength} s`;
+                const stats = hls.get=Stats(); // This is a placeholder as hls.js doesn't have a direct getStats method. You'd use hls.on(Hls.Events.FRAG_LOADED) etc. to get real data.
                 
-                // Update buffer progress indicator
-                if (videoElement.duration > 0) {
-                    const bufferedPercent = videoElement.buffered.length > 0 
-                        ? (videoElement.buffered.end(videoElement.buffered.length - 1) / videoElement.duration) * 100
-                        : 0;
-                    bufferProgress.style.width = `${bufferedPercent}%`;
+                statBuffer.textContent = `${videoPlayer.buffered.length > 0 ? (videoPlayer.buffered.end(videoPlayer.buffered.length - 1) - videoPlayer.currentTime).toFixed(1) : 0} s`;
+                
+                const currentLevel = hls.currentLevel;
+                if (currentLevel !== -1 && hls.levels[currentLevel]) {
+                    const level = hls.levels[currentLevel];
+                    const bitrate = (level.bitrate / 1000000).toFixed(2);
+                    const resolution = `${level.width}x${level.height}`;
+                    statBitrate.textContent = `${bitrate} Mbps`;
+                    statResolution.textContent = resolution;
+                } else {
+                    statBitrate.textContent = 'Auto';
+                    statResolution.textContent = 'Auto';
                 }
                 
-                // Current bitrate
-                const currentLevel = hls.levels[hls.currentLevel];
-                const bitrate = currentLevel ? (currentLevel.bitrate / 1000000).toFixed(2) : 0;
-                statBitrate.textContent = `${bitrate} Mbps`;
+                // Dropped frames and connection speed are more complex to get directly
+                // from hls.js without listening to specific events like FRAG_PARSED
+                // and FRAG_LOADED, but we can make a simple estimate.
+                statDropped.textContent = videoPlayer.webkitDroppedFrameCount || videoPlayer.mozDroppedFrameCount || 0;
                 
-                // Resolution
-                const width = currentLevel ? currentLevel.width : 0;
-                const height = currentLevel ? currentLevel.height : 0;
-                statResolution.textContent = `${width}x${height}`;
-                
-                // Volume
-                statVolume.textContent = `${Math.round(videoElement.volume * 100)}%`;
-                
-                // Connection speed (from HLS)
-                const bwEstimate = hls.bandwidthEstimate / 1000000;
+                const bwEstimate = hls.bandwidthEstimate / 1000000 || 0;
                 statSpeed.textContent = `${bwEstimate.toFixed(2)} Mbps`;
                 
-                // Reconnect attempts
-                statReconnect.textContent = reconnectAttempts;
+                statVolume.textContent = `${Math.round(videoPlayer.volume * 100)}%`;
             }
 
-            function initHls() {
-                if (!decodedStreamUrl) {
-                    showError('No Stream URL', 'No stream URL provided.');
-                    return;
+            function updateQualitySelector() {
+                if (!hls) return;
+                
+                // Clear existing options
+                while (qualitySelector.options.length > 0) {
+                    qualitySelector.remove(0);
                 }
                 
-                // Clear any existing timeouts
-                clearTimeout(reconnectTimeout);
-                clearTimeout(stallDetectionTimeout);
+                const autoOption = document.createElement('option');
+                autoOption.value = -1;
+                autoOption.textContent = 'Auto';
+                qualitySelector.appendChild(autoOption);
+
+                hls.levels.forEach((level, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = `${level.height}p`;
+                    qualitySelector.appendChild(option);
+                });
                 
-                if (hls) hls.destroy();
+                qualitySelector.addEventListener('change', function() {
+                    const qualityIndex = parseInt(this.value);
+                    hls.currentLevel = qualityIndex;
+                });
+            }
+
+            function handleStreamError(e) {
                 stopStatsMonitoring();
+                hideLoading();
+
+                if (hls && e.type === 'error') {
+                    const errorDetails = e.details;
+                    const errorFatal = e.fatal;
+                    
+                    console.error(`HLS Error: ${errorDetails}`, errorFatal);
+
+                    if (errorFatal) {
+                        if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+                            reconnectAttempts++;
+                            showStatus(`Stream lost. Reconnecting... (Attempt ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`, true);
+                            setTimeout(() => {
+                                hls.destroy();
+                                loadStream();
+                            }, RECONNECT_DELAY);
+                        } else {
+                            showError('Connection Failed', 'Could not reconnect to the stream. Please try again later.');
+                        }
+                    }
+                } else {
+                    // Fallback for non-HLS errors
+                    showError('Stream Error', 'An error occurred while loading the stream. The URL might be invalid or the server is down.');
+                }
+            }
+
+            function loadStream() {
+                if (!decodedStreamUrl) {
+                    showError('No Stream URL', 'No stream URL provided. Please check the URL parameter.');
+                    return;
+                }
                 
                 showLoading();
                 showStatus(`Loading channel...`);
                 hideError();
-                updateConnectionStatus('reconnecting', 'Connecting...');
+
+                // Destroy existing HLS instance to prevent memory leaks
+                if (hls) {
+                    hls.destroy();
+                }
 
                 if (Hls.isSupported()) {
-                    hls = new Hls({
-                        maxBufferLength: 60,
-                        maxMaxBufferLength: 120,
-                        maxBufferSize: 60 * 1000 * 1000, // 60MB
-                        maxBufferHole: 0.5,
-                        lowLatencyMode: true,
-                        backBufferLength: 90,
-                        maxFragLookUpTolerance: 0.2,
-                        liveSyncDurationCount: 3,
-                        liveMaxLatencyDurationCount: 10,
-                        enableWorker: true,
-                        fragLoadingTimeOut: 10000,
-                        manifestLoadingTimeOut: 10000,
-                        levelLoadingTimeOut: 10000,
-                        fragLoadingMaxRetry: 6,
-                        manifestLoadingMaxRetry: 4,
-                        levelLoadingMaxRetry: 4,
-                        fragLoadingRetryDelay: 1000,
-                        manifestLoadingRetryDelay: 1000,
-                        levelLoadingRetryDelay: 1000,
-                        startFragPrefetch: true,
-                        testBandwidth: true,
-                        xhrSetup: (xhr, url) => {
-                            xhr.open('GET', CORS_PROXY_URL + encodeURIComponent(url), true);
-                            xhr.withCredentials = false;
-                        }
-                    });
-                    
-                    hls.loadSource(decodedStreamUrl);
-                    hls.attachMedia(videoElement);
-                    
-                    hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
-                        hideStatus();
-                        hideLoading();
-                        reconnectAttempts = 0;
-                        healthScore = 100;
-                        updateHealthIndicator();
-                        
-                        // Populate quality selector
-                        availableQualities = data.levels;
-                        updateQualitySelector();
-                        
-                        videoElement.play().catch(err => {
-                            showStatus('Autoplay blocked. Click to play.', true);
-                        });
-                        
-                        updateConnectionStatus('connected', 'Live');
-                        startStatsMonitoring();
-                    });
-                    
-                    hls.on(Hls.Events.LEVEL_LOADED, (event, data) => {
-                        updateStats();
-                    });
-                    
-                    hls.on(Hls.Events.LEVEL_SWITCHED, (event, data) => {
-                        updateStats();
-                    });
-                    
-                    hls.on(Hls.Events.ERROR, (event, data) => {
-                        if (data.fatal) {
-                            switch(data.type) {
-                                case Hls.ErrorTypes.NETWORK_ERROR:
-                                    handleStreamError('Network Error', data);
-                                    break;
-                                case Hls.ErrorTypes.MEDIA_ERROR:
-                                    handleStreamError('Media Error', data);
-                                    break;
-                                default:
-                                    handleStreamError('Unknown Error', data);
-                                    break;
-                            }
-                        }
-                    });
-                    
-                    hls.on(Hls.Events.BUFFER_CREATED, () => {
-                        updateStats();
-                    });
-                    
-                    hls.on(Hls.Events.BUFFER_APPENDED, () => {
-                        updateStats();
-                    });
-                } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
-                    // Native HLS support (Safari)
-                    videoElement.src = CORS_PROXY_URL + encodeURIComponent(decodedStreamUrl);
-                    videoElement.addEventListener('loadedmetadata', () => {
-                        hideStatus();
-                        hideLoading();
-                        videoElement.play();
-                        updateConnectionStatus('connected', 'Live');
-                    });
-                } else {
-                    showError('Not Supported', 'HLS is not supported on this browser.');
-                }
-            }
-            
-            function updateQualitySelector() {
-                // Clear existing options except Auto
-                while (qualitySelector.options.length > 1) {
-                    qualitySelector.remove(1);
-                }
-                
-                // Add available quality levels
-                availableQualities.forEach((level, index) => {
-                    const option = document.createElement('option');
-                    option.value = index;
-                    option.textContent = level.height + 'p';
-                    qualitySelector.appendChild(option);
-                });
-                
-                // Set up event listener
-                qualitySelector.onchange = function() {
-                    if (this.value === 'auto') {
-                        hls.currentLevel = -1; // Auto
-                    } else {
-                        hls.currentLevel = parseInt(this.value);
-                    }
-                };
-            }
+                    hls = new Hls();
+                    hls.loadSource(CORS_PROXY_URL + decodedStreamUrl);
+                    hls.attachMedia(videoPlayer);
 
-            function handleStreamError(errorType, data) {
-                clearTimeout(stallDetectionTimeout);
-                stopStatsMonitoring();
-                hideLoading();
-                
-                if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
-                    reconnectAttempts++;
-                    const delay = Math.min(RECONNECT_DELAY_BASE * Math.pow(1.5, reconnectAttempts), 30000);
-                    
-                    showStatus(`Connection lost. Reconnecting in ${delay/1000} seconds... (Attempt ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`, true);
-                    updateConnectionStatus('reconnecting', `Reconnecting (${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`);
-                    
-                    healthScore = Math.max(0, healthScore - 20);
-                    updateHealthIndicator();
-                    
-                    reconnectTimeout = setTimeout(initHls, delay);
+                    hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                        hideLoading();
+                        hideStatus();
+                        videoPlayer.play();
+                        updateQualitySelector();
+                    });
+
+                    hls.on(Hls.Events.ERROR, function(event, data) {
+                        handleStreamError(data);
+                    });
+                } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
+                    // Fallback for Safari/iOS
+                    videoPlayer.src = CORS_PROXY_URL + decodedStreamUrl;
+                    videoPlayer.addEventListener('loadedmetadata', () => {
+                        hideLoading();
+                        hideStatus();
+                        videoPlayer.play();
+                        // Quality selection is not easily supported in native player
+                    });
+                    videoPlayer.addEventListener('error', () => {
+                        handleStreamError({});
+                    });
                 } else {
-                    showError('Connection Failed', 'Could not reconnect to the stream. Please try again later.');
-                    healthScore = 0;
-                    updateHealthIndicator();
+                    showError('Browser Not Supported', 'Your browser does not support HLS streaming.');
                 }
             }
             
-            // Initialize the player when the page loads
             init();
         })();
     </script>
