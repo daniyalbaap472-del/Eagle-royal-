@@ -1,14 +1,13 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JW Player with MPD Support</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdn.jwplayer.com/libraries/abcdefgh.js"></script> <!-- Replace with your JW Player library ID -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demons Player</title>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
         :root {
             --bg-primary: #121212;
             --bg-secondary: #1e1e1e;
@@ -87,6 +86,17 @@
         .header-button:hover {
             background-color: #333;
         }
+        media-theme-yt {
+            width: 100%;
+            display: block;
+            --media-primary-color: var(--accent);
+            --media-text-color: #fff;
+            --media-background-color: #000;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+        }
         .channels-info {
             width: 100%;
             background-color: var(--bg-secondary);
@@ -130,18 +140,6 @@
             width: 100%;
             max-width: 600px;
             font-weight: 600;
-        }
-        .player-container {
-            position: relative;
-            width: 100%;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: var(--card-shadow);
-        }
-        #jw-player {
-            width: 100%;
-            height: 100%;
-            min-height: 400px;
         }
         .video-controls {
             display: flex;
@@ -259,6 +257,9 @@
         .error-overlay button:hover {
             background-color: var(--accent-hover);
         }
+        .player-container {
+            position: relative;
+        }
         .pip-button {
             position: absolute;
             bottom: 20px;
@@ -297,111 +298,105 @@
             .channels-info .channel-name { font-size: 16px; }
             .video-controls { flex-direction: column; align-items: center; }
             .control-group { width: 100%; justify-content: center; }
-            #jw-player {
-                min-height: 300px;
-            }
         }
     </style>
-</head>
-<body>
-    <div class="main-container">
-        <div class="header">
-            <button class="back-button" id="backButton">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                    <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" fill="none"/>
-                </svg>
-                Back
-            </button>
-            <div class="header-controls">
-                <button class="header-button" id="statsToggle">
-                    <i class="fas fa-chart-bar"></i> Stats
-                </button>
-                <button class="header-button" id="reloadStream">
-                    <i class="fas fa-sync-alt"></i> Reload
-                </button>
-            </div>
-        </div>
-        
-        <div class="channels-info">
-            <img id="channelIcon" src="https://placehold.co/100x56/222/e0e0e0?text=Logo" alt="Channel Logo">
-            <div class="info-text">
-                <h2>Now Playing</h2>
-                <p>Channel: <span id="channelName" class="channel-name">Loading...</span></p>
-            </div>
-        </div>
-        
-        <div id="statusMessage" class="status-message"></div>
-        
-        <div class="player-container">
-            <div class="loading-spinner" id="loadingSpinner"></div>
-            <div class="error-overlay" id="errorOverlay">
-                <h3 id="errorTitle">Stream Error</h3>
-                <p id="errorMessage">An error occurred while loading the stream.</p>
-                <button id="retryButton">Retry</button>
-            </div>
-            <div id="jw-player"></div>
-            <button class="pip-button" id="pipButton" title="Picture-in-Picture">
-                <i class="fas fa-compress"></i>
-            </button>
-        </div>
-        
-        <div class="video-controls">
-            <div class="control-group">
-                <span>Video Fit:</span>
-                <button class="fit-button active" data-fit="fit">Fit</button>
-                <button class="fit-button" data-fit="fill">Fill</button>
-                <button class="fit-button" data-fit="stretch">Stretch</button>
-            </div>
-            <div class="control-group">
-                <span>Quality:</span>
-                <select class="quality-selector" id="qualitySelector">
-                    <option value="auto">Auto</option>
-                </select>
-            </div>
-            <div class="control-group">
-                <button class="fit-button" id="muteButton">
-                    <i class="fas fa-volume-up"></i> Mute
-                </button>
-                <button class="fit-button" id="fullscreenButton">
-                    <i class="fas fa-expand"></i> Fullscreen
-                </button>
-            </div>
-        </div>
-        
-        <div class="stats-panel" id="statsPanel">
-            <h3>Stream Statistics</h3>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <div class="stat-label">Buffer Length</div>
-                    <div class="stat-value" id="statBuffer">0 s</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">Bitrate</div>
-                    <div class="stat-value" id="statBitrate">0 Mbps</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">Resolution</div>
-                    <div class="stat-value" id="statResolution">0x0</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">Dropped Frames</div>
-                    <div class="stat-value" id="statDropped">0</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">Volume</div>
-                    <div class="stat-value" id="statVolume">100%</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">Connection Speed</div>
-                    <div class="stat-value" id="statSpeed">0 Mbps</div>
-                </div>
-            </div>
-        </div>
+ </head>
+ <body>
+  <div class="main-container">
+   <div class="header">
+    <button class="back-button">
+     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+      <path d="M15 18l-6-6 6-6"></path>
+     </svg>
+     Back
+    </button>
+    <div class="header-controls">
+        <button class="header-button" id="statsToggle">
+            <i class="fas fa-chart-bar"></i> Stats
+        </button>
+        <button class="header-button" id="reloadStream">
+            <i class="fas fa-sync-alt"></i> Reload
+        </button>
     </div>
+   </div>
+   <div class="channels-info">
+    <img id="channelIcon" src="https://placehold.co/100x56/222/e0e0e0?text=Logo" alt="Channel Logo">
+    <div class="info-text">
+     <h2>Now Playing</h2>
+     <p>Channel: <span id="channelName" class="channel-name">Loading...</span></p>
+    </div>
+   </div>
+   <div id="statusMessage" class="status-message"></div>
+   <div class="player-container">
+        <div class="loading-spinner" id="loadingSpinner"></div>
+        <div class="error-overlay" id="errorOverlay">
+            <h3 id="errorTitle">Stream Error</h3>
+            <p id="errorMessage">An error occurred while loading the stream.</p>
+            <button id="retryButton">Retry</button>
+        </div>
+        <media-theme-yt>
+            <video id="player" slot="media" playsinline crossorigin="anonymous"></video>
+        </media-theme-yt>
+        <button class="pip-button" id="pipButton" title="Picture-in-Picture">
+            <i class="fas fa-compress"></i>
+        </button>
+   </div>
+   <div class="video-controls">
+        <div class="control-group">
+            <span>Video Fit:</span>
+            <button class="fit-button active" data-fit="fit">Fit</button>
+            <button class="fit-button" data-fit="fill">Fill</button>
+            <button class="fit-button" data-fit="stretch">Stretch</button>
+        </div>
+        <div class="control-group">
+            <span>Quality:</span>
+            <select class="quality-selector" id="qualitySelector">
+                <option value="auto">Auto</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <button class="fit-button" id="muteButton">
+                <i class="fas fa-volume-up"></i> Mute
+            </button>
+            <button class="fit-button" id="fullscreenButton">
+                <i class="fas fa-expand"></i> Fullscreen
+            </button>
+        </div>
+   </div>
+   <div class="stats-panel" id="statsPanel">
+        <h3>Stream Statistics</h3>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-label">Buffer Length</div>
+                <div class="stat-value" id="statBuffer">0 s</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Bitrate</div>
+                <div class="stat-value" id="statBitrate">0 Mbps</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Resolution</div>
+                <div class="stat-value" id="statResolution">0x0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Dropped Frames</div>
+                <div class="stat-value" id="statDropped">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Volume</div>
+                <div class="stat-value" id="statVolume">100%</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Connection Speed</div>
+                <div class="stat-value" id="statSpeed">0 Mbps</div>
+            </div>
+        </div>
+   </div>
+  </div>
+  <script type="module">
+        import 'https://cdn.jsdelivr.net/npm/player.style/yt/+esm';
 
-    <script>
         (function(){
-            // Configuration
             const CORS_PROXY_URL = 'https://proxy-js.onrender.com/';
             const urlParams = new URLSearchParams(window.location.search);
             const streamParam = urlParams.get('s') || ''; 
@@ -409,10 +404,10 @@
             const channelIconParam = urlParams.get('icon') || '';
             const backUrlParam = urlParams.get('back') || 'MaC.html';
             
-            // Elements
+            const player = document.getElementById('player');
             const channelName = document.getElementById('channelName');
             const channelIcon = document.getElementById('channelIcon');
-            const backButton = document.getElementById('backButton');
+            const backButton = document.querySelector('.back-button');
             const statusMessage = document.getElementById('statusMessage');
             const fitButtons = document.querySelectorAll('.fit-button');
             const loadingSpinner = document.getElementById('loadingSpinner');
@@ -436,12 +431,12 @@
             const statVolume = document.getElementById('statVolume');
             const statSpeed = document.getElementById('statSpeed');
 
-            // Player variables
-            let jwPlayer;
+            let hls;
             let decodedStreamUrl = '';
             let reconnectAttempts = 0;
             const MAX_RECONNECT_ATTEMPTS = 10;
             const RECONNECT_DELAY = 3000;
+            let stallDetector = null;
             let statsInterval = null;
             let isMuted = false;
             let availableQualities = [];
@@ -453,7 +448,7 @@
                 
                 try {
                     decodedStreamUrl = atob(decodeURIComponent(streamParam));
-                    initJWPlayer();
+                    initHls();
                 } catch (e) {
                     showError('Invalid Stream URL', 'The stream URL format is invalid.');
                 }
@@ -461,7 +456,7 @@
 
             function setupEventListeners() {
                 backButton.addEventListener('click', navigateBack);
-                retryButton.addEventListener('click', initJWPlayer);
+                retryButton.addEventListener('click', initHls);
                 pipButton.addEventListener('click', togglePip);
                 statsToggle.addEventListener('click', toggleStats);
                 reloadStreamBtn.addEventListener('click', reloadStream);
@@ -476,6 +471,29 @@
                             button.classList.add('active');
                         });
                     }
+                });
+
+                player.addEventListener('play', () => {
+                    hideError();
+                    startStatsMonitoring();
+                });
+
+                player.addEventListener('pause', () => {
+                    stopStatsMonitoring();
+                });
+
+                player.addEventListener('volumechange', () => {
+                    isMuted = player.muted;
+                    updateMuteButton();
+                    updateStats();
+                });
+
+                player.addEventListener('enterpictureinpicture', () => {
+                    pipButton.innerHTML = '<i class="fas fa-compress-arrows-alt"></i>';
+                });
+
+                player.addEventListener('leavepictureinpicture', () => {
+                    pipButton.innerHTML = '<i class="fas fa-compress"></i>';
                 });
 
                 // Detect if PiP is supported
@@ -531,17 +549,18 @@
             }
 
             function handleFitChange(fitType) {
-                // This would need custom CSS implementation for JW Player
-                console.log('Video fit changed to:', fitType);
+                player.style.objectFit = fitType === 'fill' ? 'cover' : fitType === 'stretch' ? 'fill' : 'contain';
             }
 
             function togglePip() {
-                if (jwPlayer) {
-                    if (jwPlayer.getState() === 'pictureInPicture') {
-                        jwPlayer.exitPictureInPicture();
-                    } else {
-                        jwPlayer.setPictureInPicture(true);
-                    }
+                if (document.pictureInPictureElement) {
+                    document.exitPictureInPicture().catch(err => {
+                        console.error('Error exiting PiP:', err);
+                    });
+                } else if (document.pictureInPictureEnabled) {
+                    player.requestPictureInPicture().catch(err => {
+                        console.error('Error entering PiP:', err);
+                    });
                 }
             }
 
@@ -553,21 +572,17 @@
             }
 
             function reloadStream() {
-                if (jwPlayer) {
-                    jwPlayer.load();
-                    jwPlayer.play();
-                }
+                if (hls) hls.destroy();
+                initHls();
             }
 
             function toggleMute() {
-                if (jwPlayer) {
-                    jwPlayer.setMute(!jwPlayer.getMute());
-                    updateMuteButton();
-                }
+                player.muted = !player.muted;
+                updateMuteButton();
             }
 
             function updateMuteButton() {
-                if (jwPlayer && jwPlayer.getMute()) {
+                if (player.muted) {
                     muteButton.innerHTML = '<i class="fas fa-volume-mute"></i> Unmute';
                 } else {
                     muteButton.innerHTML = '<i class="fas fa-volume-up"></i> Mute';
@@ -575,8 +590,22 @@
             }
 
             function toggleFullscreen() {
-                if (jwPlayer) {
-                    jwPlayer.setFullscreen(!jwPlayer.getFullscreen());
+                if (!document.fullscreenElement) {
+                    if (player.requestFullscreen) {
+                        player.requestFullscreen();
+                    } else if (player.webkitRequestFullscreen) {
+                        player.webkitRequestFullscreen();
+                    } else if (player.msRequestFullscreen) {
+                        player.msRequestFullscreen();
+                    }
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) {
+                        document.webkitExitFullscreen();
+                    } else if (document.msExitFullscreen) {
+                        document.msExitFullscreen();
+                    }
                 }
             }
 
@@ -593,128 +622,116 @@
             }
 
             function updateStats() {
-                if (!jwPlayer) return;
-                
-                // Get player state
-                const state = jwPlayer.getState();
+                if (!hls) return;
                 
                 // Buffer length
-                const bufferLength = jwPlayer.getBufferLength();
-                statBuffer.textContent = `${bufferLength.toFixed(1)} s`;
+                const bufferLength = player.buffered.length > 0 
+                    ? Math.floor(player.buffered.end(player.buffered.length - 1) - player.currentTime)
+                    : 0;
+                statBuffer.textContent = `${bufferLength} s`;
                 
                 // Current bitrate
-                const bitrate = jwPlayer.getQualityLevels().length > 0 ? 
-                    (jwPlayer.getQualityLevels()[jwPlayer.getCurrentQuality()].bitrate / 1000000).toFixed(2) : 0;
+                const currentLevel = hls.levels[hls.currentLevel];
+                const bitrate = currentLevel ? (currentLevel.bitrate / 1000000).toFixed(2) : 0;
                 statBitrate.textContent = `${bitrate} Mbps`;
                 
                 // Resolution
-                const width = jwPlayer.getWidth();
-                const height = jwPlayer.getHeight();
+                const width = currentLevel ? currentLevel.width : 0;
+                const height = currentLevel ? currentLevel.height : 0;
                 statResolution.textContent = `${width}x${height}`;
                 
-                // Volume
-                const volume = Math.round(jwPlayer.getVolume() * 100);
-                statVolume.textContent = `${volume}%`;
+                // Dropped frames (approximation)
+                statDropped.textContent = '0'; // Would need more advanced tracking
                 
-                // Connection speed (estimated)
-                if (state === 'playing') {
-                    const bwEstimate = bitrate * 1.5; // Simple estimation
-                    statSpeed.textContent = `${bwEstimate.toFixed(2)} Mbps`;
-                }
+                // Volume
+                statVolume.textContent = `${Math.round(player.volume * 100)}%`;
+                
+                // Connection speed (from HLS)
+                const bwEstimate = hls.bandwidthEstimate / 1000000;
+                statSpeed.textContent = `${bwEstimate.toFixed(2)} Mbps`;
             }
 
-            function initJWPlayer() {
+            function initHls() {
                 if (!decodedStreamUrl) {
                     showError('No Stream URL', 'No stream URL provided.');
                     return;
                 }
                 
+                if (hls) hls.destroy();
+                clearTimeout(stallDetector);
+                stopStatsMonitoring();
+                player.pause();
                 showLoading();
                 showStatus(`Loading channel...`);
                 hideError();
-                
-                // Destroy existing player instance if any
-                if (jwPlayer) {
-                    jwPlayer.remove();
-                }
-                
-                // Setup JW Player
-                jwPlayer = jwplayer("jw-player").setup({
-                    file: CORS_PROXY_URL + decodedStreamUrl,
-                    image: channelIcon.src,
-                    title: channelName.textContent,
-                    width: "100%",
-                    height: "100%",
-                    autostart: true,
-                    mute: false,
-                    playbackRateControls: true,
-                    repeat: false,
-                    displaytitle: true,
-                    displaydescription: true,
-                    abouttext: "Demons Player",
-                    aboutlink: "https://example.com",
-                    stretching: "uniform", // uniform, fill, none, exactfit
-                    skin: {
-                        name: "stormtrooper",
-                        active: "#FF5722"
-                    }
-                });
-                
-                // Event listeners for JW Player
-                jwPlayer.on('ready', function() {
-                    hideStatus();
-                    hideLoading();
-                    reconnectAttempts = 0;
+
+                if (Hls.isSupported()) {
+                    hls = new Hls({
+                        maxBufferLength: 300,
+                        maxMaxBufferLength: 600,
+                        maxBufferSize: 500 * 1024 * 1024,
+                        fragLoadingMaxRetry: 8,
+                        lowLatencyMode: true,
+                        enableWorker: true,
+                        xhrSetup: (xhr, url) => {
+                            xhr.open('GET', CORS_PROXY_URL + url, true);
+                            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                            xhr.setRequestHeader('Referer', 'http://demonji.onrender.com/');
+                        }
+                    });
                     
-                    // Populate quality selector
-                    updateQualitySelector();
-                    startStatsMonitoring();
-                });
-                
-                jwPlayer.on('play', function() {
-                    hideError();
-                    startStatsMonitoring();
-                });
-                
-                jwPlayer.on('pause', function() {
-                    stopStatsMonitoring();
-                });
-                
-                jwPlayer.on('error', function(e) {
-                    handleStreamError(e);
-                });
-                
-                jwPlayer.on('levels', function() {
-                    updateQualitySelector();
-                });
-                
-                jwPlayer.on('levelsChanged', function() {
-                    updateStats();
-                });
-                
-                jwPlayer.on('mute', function() {
-                    updateMuteButton();
-                    updateStats();
-                });
-                
-                jwPlayer.on('volume', function() {
-                    updateStats();
-                });
+                    hls.loadSource(CORS_PROXY_URL + decodedStreamUrl);
+                    hls.attachMedia(player);
+                    
+                    hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
+                        hideStatus();
+                        hideLoading();
+                        reconnectAttempts = 0;
+                        
+                        // Populate quality selector
+                        availableQualities = data.levels;
+                        updateQualitySelector();
+                        
+                        player.play().catch(err => {
+                            showStatus('Autoplay blocked. Tap to play.', true);
+                        });
+                        startStallDetector();
+                    });
+                    
+                    hls.on(Hls.Events.LEVEL_LOADED, (event, data) => {
+                        updateStats();
+                    });
+                    
+                    hls.on(Hls.Events.LEVEL_SWITCHED, (event, data) => {
+                        updateStats();
+                    });
+                    
+                    hls.on(Hls.Events.ERROR, (event, data) => {
+                        if (data.fatal) {
+                           handleStreamError(data);
+                        }
+                    });
+                } else if (player.canPlayType('application/vnd.apple.mpegurl')) {
+                    // Native HLS support (Safari)
+                    player.src = CORS_PROXY_URL + decodedStreamUrl;
+                    player.addEventListener('loadedmetadata', () => {
+                        hideStatus();
+                        hideLoading();
+                        player.play();
+                    });
+                } else {
+                    showError('Not Supported', 'HLS is not supported on this browser.');
+                }
             }
             
             function updateQualitySelector() {
-                if (!jwPlayer) return;
-                
                 // Clear existing options except Auto
                 while (qualitySelector.options.length > 1) {
                     qualitySelector.remove(1);
                 }
                 
                 // Add available quality levels
-                const levels = jwPlayer.getQualityLevels();
-                availableQualities = levels;
-                
-                levels.forEach((level, index) => {
+                availableQualities.forEach((level, index) => {
                     const option = document.createElement('option');
                     option.value = index;
                     option.textContent = level.height + 'p';
@@ -724,21 +741,32 @@
                 // Set up event listener
                 qualitySelector.onchange = function() {
                     if (this.value === 'auto') {
-                        jwPlayer.setCurrentQuality(-1); // Auto
+                        hls.currentLevel = -1; // Auto
                     } else {
-                        jwPlayer.setCurrentQuality(parseInt(this.value));
+                        hls.currentLevel = parseInt(this.value);
                     }
                 };
             }
+            
+            function startStallDetector() {
+                stallDetector = setTimeout(() => {
+                    if (player.currentTime > 0.1 && player.videoWidth === 0) {
+                        hls.destroy();
+                        clearTimeout(stallDetector);
+                        showError('Format Not Supported', 'Video format (likely HEVC/H.265) or Audio (AC3) is not supported by your browser.');
+                    }
+                }, 4000); 
+            }
 
-            function handleStreamError(error) {
+            function handleStreamError(data) {
+                clearTimeout(stallDetector);
                 stopStatsMonitoring();
                 hideLoading();
                 
                 if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
                     reconnectAttempts++;
                     showStatus(`Stream lost. Reconnecting... (Attempt ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`, true);
-                    setTimeout(initJWPlayer, RECONNECT_DELAY);
+                    setTimeout(initHls, RECONNECT_DELAY);
                 } else {
                     showError('Connection Failed', 'Could not reconnect to the stream. Please try again later.');
                 }
@@ -748,5 +776,5 @@
             init();
         })();
     </script>
-</body>
+ </body>
 </html>
