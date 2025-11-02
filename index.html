@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -638,4 +639,818 @@
         }
         @keyframes float {
             0% { transform: translateY(0); }
-            50% { transform: translateY
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+        @keyframes floatParticle {
+            0% { transform: translateY(100vh) translateX(0); }
+            100% { transform: translateY(-100vh) translateX(100px); }
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        @keyframes glow {
+            0% { box-shadow: 0 0 5px var(--accent); }
+            50% { box-shadow: 0 0 20px var(--accent); }
+            100% { box-shadow: 0 0 5px var(--accent); }
+        }
+        
+        .rainbow-text {
+            background: var(--rainbow-gradient);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: rainbow 3s ease infinite;
+        }
+        .glow {
+            animation: glow 2s infinite;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container { padding: 15px; }
+            header { flex-direction: column; padding: 10px 15px; }
+            h1 { font-size: 2.2rem; }
+            .search-container { max-width: 100%; }
+            .channels-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+            .banner-title { font-size: 1.6rem; }
+            .banner-features { flex-direction: column; }
+            .fab-container { bottom: 15px; right: 15px; }
+            .fab { width: 50px; height: 50px; font-size: 20px; }
+        }
+        @media (max-width: 480px) {
+            .container { padding: 10px; }
+            .channels-grid { grid-template-columns: 1fr; }
+            h1 { font-size: 1.8rem; }
+            .sidebar { width: 100%; right: -100%; }
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 100; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7); 
+            justify-content: center; 
+            align-items: center;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background-color: var(--bg-secondary); 
+            padding: 30px; 
+            border-radius: 12px; 
+            text-align: center;
+            position: relative; 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); 
+            width: 90%; 
+            max-width: 400px;
+            animation: fadeIn 0.3s ease-out;
+        }
+        .modal-close-button {
+            position: absolute; 
+            top: 10px; 
+            right: 15px; 
+            color: var(--text-secondary);
+            font-size: 28px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: color 0.2s;
+        }
+        .modal-close-button:hover { color: var(--accent); }
+        .modal-title { color: var(--text-primary); font-size: 20px; margin-bottom: 20px; }
+        .modal-buttons { display: flex; flex-direction: column; gap: 15px; }
+        .modal-button {
+            text-decoration: none; 
+            color: #fff; 
+            background-color: #335; 
+            padding: 12px 20px;
+            border-radius: 20px; 
+            font-size: 16px; 
+            font-weight: 600; 
+            transition: background-color 0.2s, transform 0.2s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .modal-button:hover { transform: translateY(-2px); background-color: #447; }
+        .modal-button.og { background-color: var(--accent); }
+        .modal-button.og:hover { background-color: var(--accent-hover); }
+    </style>
+</head>
+<body class="sky-mode">
+    <!-- Floating Particles Background -->
+    <div class="particles" id="particles"></div>
+    
+    <!-- Light Beam Effects -->
+    <div class="light-beam"></div>
+    
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <div id="notificationMessage">Notification message</div>
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <span class="sidebar-close" id="sidebarClose">&times;</span>
+        <h3>Settings & Features</h3>
+        
+        <div class="settings-option">
+            <label for="animationSpeed">Animation Speed</label>
+            <select id="animationSpeed">
+                <option value="slow">Slow</option>
+                <option value="normal" selected>Normal</option>
+                <option value="fast">Fast</option>
+            </select>
+        </div>
+        
+        <div class="settings-option">
+            <label for="particleDensity">Particle Density</label>
+            <select id="particleDensity">
+                <option value="low">Low</option>
+                <option value="medium" selected>Medium</option>
+                <option value="high">High</option>
+            </select>
+        </div>
+        
+        <div class="settings-option">
+            <label>
+                <input type="checkbox" id="autoPlay" checked> Auto-play preview
+            </label>
+        </div>
+        
+        <div class="settings-option">
+            <label>
+                <input type="checkbox" id="darkMode" checked> Dark mode
+            </label>
+        </div>
+        
+        <h3>Favorites</h3>
+        <div id="favoritesList"></div>
+    </div>
+    
+    <div class="container">
+        <header>
+            <h1><span class="eagle-icon">🦅</span> EAGLE ROYAL</h1>
+            <div class="search-container">
+                <div class="search-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <input type="text" id="searchInput" placeholder="Search current category..." autocomplete="off">
+            </div>
+        </header>
+        
+        <!-- Theme Selector -->
+        <div class="theme-selector">
+            <button class="theme-btn active" data-theme="sky">Sky Theme</button>
+            <button class="theme-btn" data-theme="rainbow">Rainbow Theme</button>
+            <button class="theme-btn" data-theme="tv">TV Mode</button>
+            <button class="theme-btn" data-theme="windows">Windows Mode</button>
+            <button class="theme-btn" data-theme="neon">Neon Mode</button>
+        </div>
+        
+        <!-- Playlist Selector -->
+        <div class="playlist-selector">
+            <button class="playlist-btn active" data-playlist="allinone">
+                <i class="fas fa-globe"></i> All in One
+            </button>
+            <button class="playlist-btn" data-playlist="zee5">
+                <i class="fas fa-play-circle"></i> Zee5
+            </button>
+            <button class="playlist-btn" data-playlist="sonyliv">
+                <i class="fas fa-tv"></i> SonyLiv
+            </button>
+            <button class="playlist-btn" data-playlist="jio">
+                <i class="fas fa-bolt"></i> Jio TV
+            </button>
+            <button class="playlist-btn" data-playlist="airtel">
+                <i class="fas fa-broadcast-tower"></i> Airtel 4K
+            </button>
+            <button class="playlist-btn" data-playlist="eaglespecial">
+                <i class="fas fa-crown"></i> Eagle Special
+            </button>
+            <button class="playlist-btn" data-playlist="tatasky">
+                <i class="fas fa-satellite"></i> Tata Sky
+            </button>
+        </div>
+        
+        <!-- Promotional Banner -->
+        <div class="banner">
+            <h2 class="banner-title">Join Our Premium Telegram Group</h2>
+            <p>Get access to exclusive content and features</p>
+            
+            <div class="banner-features">
+                <div class="feature">
+                    <span>✅</span> 3D Lock Favourite Channel
+                </div>
+                <div class="feature">
+                    <span>✅</span> All Future Updates
+                </div>
+                <div class="feature">
+                    <span>✅</span> Professional Website
+                </div>
+                <div class="feature">
+                    <span>✅</span> Advanced Player Options
+                </div>
+            </div>
+            
+            <a href="https://t.me/EAGLEROYALM3u8" class="join-button" target="_blank">
+                Join Telegram Group
+            </a>
+        </div>
+        
+        <div id="categoryFilters" class="category-filters"></div>
+        <main>
+            <div id="channelGrid" class="channels-grid"></div>
+            <div id="loadingSpinner" class="loading-container" style="display: none;">
+                <div class="spinner"></div>
+            </div>
+            <div id="messageContainer" class="message"></div>
+            <div id="errorContainer" class="error-message" style="display: none;"></div>
+            <div id="loadMoreContainer" class="load-more-container" style="display: none;">
+                <button id="loadMoreBtn" class="load-more-btn">Load More Channels</button>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Floating Action Buttons -->
+    <div class="fab-container">
+        <div class="fab" id="settingsFab">
+            <i class="fas fa-cog"></i>
+        </div>
+        <div class="fab" id="favoritesFab">
+            <i class="fas fa-star"></i>
+        </div>
+        <div class="fab" id="themeFab">
+            <i class="fas fa-palette"></i>
+        </div>
+    </div>
+    
+    <!-- Player Modal -->
+    <div id="playerModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close-button">×</span>
+            <h2 class="modal-title">Choose Player</h2>
+            <div class="modal-buttons">
+                <a id="ogPlayerLink" href="#" target="_blank" class="modal-button og">Original Player</a> 
+                <a id="simplePlayerLink" href="#" target="_blank" class="modal-button">Simple Player</a>
+                <a id="advancedPlayerLink" href="#" target="_blank" class="modal-button">Advanced Player</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Playlist URLs
+            const PLAYLISTS = {
+                allinone: 'https://servertvhub.site/playlist.php',
+                zee5: 'https://servertvhub.site/zee5-main/playlist.php',
+                sonyliv: 'https://servertvhub.site/sonyliv.m3u',
+                jio: 'https://servertvhub.site/jio/app/playlist.php',
+                airtel: 'https://tinyurl.com/Airtel4k',
+                eaglespecial: 'https://tinyurl.com/Eaglespecialm3u2027vald',
+                tatasky: 'https://lnk.ink/Tatv1yearvalidity'
+            };
+            
+            const CORS_PROXY_URL = 'https://proxy-js.onrender.com/';
+            const CHANNELS_PER_PAGE = 30;
+            const MAX_RETRIES = 3;
+            
+            // UI Element references
+            const channelGrid = document.getElementById('channelGrid');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const searchInput = document.getElementById('searchInput');
+            const messageContainer = document.getElementById('messageContainer');
+            const errorContainer = document.getElementById('errorContainer');
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            const loadMoreContainer = document.getElementById('loadMoreContainer');
+            const modal = document.getElementById('playerModal');
+            const ogPlayerLink = document.getElementById('ogPlayerLink');
+            const simplePlayerLink = document.getElementById('simplePlayerLink');
+            const advancedPlayerLink = document.getElementById('advancedPlayerLink');
+            const closeButton = document.querySelector('.modal-close-button');
+            const categoryFiltersContainer = document.getElementById('categoryFilters');
+            const themeButtons = document.querySelectorAll('.theme-btn');
+            const playlistButtons = document.querySelectorAll('.playlist-btn');
+            const particlesContainer = document.getElementById('particles');
+            const notification = document.getElementById('notification');
+            const notificationMessage = document.getElementById('notificationMessage');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarClose = document.getElementById('sidebarClose');
+            const settingsFab = document.getElementById('settingsFab');
+            const favoritesFab = document.getElementById('favoritesFab');
+            const themeFab = document.getElementById('themeFab');
+            const favoritesList = document.getElementById('favoritesList');
+            const animationSpeed = document.getElementById('animationSpeed');
+            const particleDensity = document.getElementById('particleDensity');
+            const autoPlay = document.getElementById('autoPlay');
+            const darkMode = document.getElementById('darkMode');
+            
+            // State variables
+            let allChannels = [];
+            let currentlyVisibleChannels = [];
+            let renderedChannelCount = 0;
+            let selectedCategory = 'All';
+            let currentSearchTerm = '';
+            let currentPlaylist = 'allinone';
+            let favorites = JSON.parse(localStorage.getItem('eagleRoyalFavorites')) || [];
+            let settings = JSON.parse(localStorage.getItem('eagleRoyalSettings')) || {
+                animationSpeed: 'normal',
+                particleDensity: 'medium',
+                autoPlay: true,
+                darkMode: true
+            };
+
+            // Initialize settings
+            function initializeSettings() {
+                animationSpeed.value = settings.animationSpeed;
+                particleDensity.value = settings.particleDensity;
+                autoPlay.checked = settings.autoPlay;
+                darkMode.checked = settings.darkMode;
+                
+                // Apply settings
+                applyAnimationSpeed();
+                createParticles();
+            }
+            
+            // Apply animation speed
+            function applyAnimationSpeed() {
+                const speed = settings.animationSpeed;
+                const speedMultiplier = speed === 'slow' ? 1.5 : speed === 'fast' ? 0.5 : 1;
+                
+                document.documentElement.style.setProperty('--animation-speed', speedMultiplier);
+                
+                // Update CSS animations
+                const style = document.createElement('style');
+                style.textContent = `
+                    * {
+                        animation-duration: ${speedMultiplier}s !important;
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            // Create floating particles
+            function createParticles() {
+                particlesContainer.innerHTML = '';
+                const density = settings.particleDensity;
+                const count = density === 'low' ? 20 : density === 'high' ? 80 : 50;
+                
+                for (let i = 0; i < count; i++) {
+                    const particle = document.createElement('div');
+                    particle.classList.add('particle');
+                    
+                    // Random properties
+                    const size = Math.random() * 5 + 2;
+                    const left = Math.random() * 100;
+                    const animationDuration = Math.random() * 20 + 10;
+                    const animationDelay = Math.random() * 5;
+                    
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    particle.style.left = `${left}%`;
+                    particle.style.animationDuration = `${animationDuration}s`;
+                    particle.style.animationDelay = `${animationDelay}s`;
+                    
+                    particlesContainer.appendChild(particle);
+                }
+            }
+            
+            // Show notification
+            function showNotification(message, duration = 3000) {
+                notificationMessage.textContent = message;
+                notification.classList.add('show');
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, duration);
+            }
+            
+            // Toggle favorite
+            function toggleFavorite(channel) {
+                const index = favorites.findIndex(fav => fav.name === channel.name);
+                
+                if (index === -1) {
+                    favorites.push(channel);
+                    showNotification(`Added ${channel.name} to favorites`);
+                } else {
+                    favorites.splice(index, 1);
+                    showNotification(`Removed ${channel.name} from favorites`);
+                }
+                
+                localStorage.setItem('eagleRoyalFavorites', JSON.stringify(favorites));
+                updateFavoritesDisplay();
+                updateChannelCards();
+            }
+            
+            // Update favorites display
+            function updateFavoritesDisplay() {
+                favoritesList.innerHTML = '';
+                
+                if (favorites.length === 0) {
+                    favoritesList.innerHTML = '<p>No favorites yet</p>';
+                    return;
+                }
+                
+                favorites.forEach(channel => {
+                    const favItem = document.createElement('div');
+                    favItem.classList.add('channel-card');
+                    favItem.style.marginBottom = '10px';
+                    favItem.innerHTML = `
+                        <div class="channel-image">
+                            <img src="${channel.icon}" alt="${channel.name} logo" onerror="this.onerror=null;this.src='https://placehold.co/120x60/1a3a5f/e0f0ff?text=Logo';">
+                        </div>
+                        <div class="channel-info">
+                            <h3 class="channel-name">${channel.name}</h3>
+                            <div class="play-btn" style="position: relative; opacity: 1; transform: none; margin-top: 10px;">Play</div>
+                        </div>
+                        <div class="favorite-indicator">
+                            <i class="fas fa-star"></i>
+                        </div>
+                    `;
+                    
+                    favItem.addEventListener('click', (e) => {
+                        if (!e.target.classList.contains('play-btn')) return;
+                        
+                        const streamUrl = btoa(channel.url);
+                        const channelName = channel.name;
+                        const channelIcon = channel.icon;
+                        const backUrl = window.location.href;
+                        
+                        ogPlayerLink.href = `player.html?s=${encodeURIComponent(streamUrl)}&name=${encodeURIComponent(channelName)}&icon=${encodeURIComponent(channelIcon)}&back=${encodeURIComponent(backUrl)}`;
+                        simplePlayerLink.href = `simple-player.html?s=${encodeURIComponent(streamUrl)}&name=${encodeURIComponent(channelName)}&back=${encodeURIComponent(backUrl)}`;
+                        advancedPlayerLink.href = `advanced-player.html?s=${encodeURIComponent(streamUrl)}&name=${encodeURIComponent(channelName)}&back=${encodeURIComponent(backUrl)}`;
+                        
+                        modal.style.display = 'flex';
+                    });
+                    
+                    favoritesList.appendChild(favItem);
+                });
+            }
+            
+            // Update channel cards with favorite status
+            function updateChannelCards() {
+                document.querySelectorAll('.channel-card').forEach(card => {
+                    const channelName = card.dataset.name;
+                    const isFavorite = favorites.some(fav => fav.name === channelName);
+                    
+                    if (isFavorite) {
+                        card.classList.add('favorite');
+                    } else {
+                        card.classList.remove('favorite');
+                    }
+                });
+            }
+            
+            // Theme switching functionality
+            themeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const theme = button.dataset.theme;
+                    
+                    // Remove all theme classes
+                    document.body.classList.remove('sky-mode', 'rainbow-mode', 'tv-mode', 'windows-mode', 'neon-mode');
+                    
+                    // Add the selected theme class
+                    document.body.classList.add(`${theme}-mode`);
+                    
+                    // Update active button
+                    themeButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    
+                    // Special handling for rainbow theme
+                    if (theme === 'rainbow') {
+                        document.querySelector('h1').classList.add('rainbow-text');
+                    } else {
+                        document.querySelector('h1').classList.remove('rainbow-text');
+                    }
+                    
+                    showNotification(`Theme changed to ${theme} mode`);
+                });
+            });
+            
+            // Playlist switching functionality
+            playlistButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const playlist = button.dataset.playlist;
+                    
+                    // Update active button
+                    playlistButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    
+                    // Change playlist
+                    currentPlaylist = playlist;
+                    showNotification(`Loading ${playlist} playlist...`);
+                    fetchAndPrepareChannels();
+                });
+            });
+
+            // Settings event listeners
+            animationSpeed.addEventListener('change', () => {
+                settings.animationSpeed = animationSpeed.value;
+                localStorage.setItem('eagleRoyalSettings', JSON.stringify(settings));
+                applyAnimationSpeed();
+            });
+            
+            particleDensity.addEventListener('change', () => {
+                settings.particleDensity = particleDensity.value;
+                localStorage.setItem('eagleRoyalSettings', JSON.stringify(settings));
+                createParticles();
+            });
+            
+            autoPlay.addEventListener('change', () => {
+                settings.autoPlay = autoPlay.checked;
+                localStorage.setItem('eagleRoyalSettings', JSON.stringify(settings));
+            });
+            
+            darkMode.addEventListener('change', () => {
+                settings.darkMode = darkMode.checked;
+                localStorage.setItem('eagleRoyalSettings', JSON.stringify(settings));
+                
+                if (!darkMode.checked) {
+                    document.body.style.setProperty('--bg-primary', '#f0f0f0');
+                    document.body.style.setProperty('--bg-secondary', '#ffffff');
+                    document.body.style.setProperty('--text-primary', '#333333');
+                    document.body.style.setProperty('--text-secondary', '#666666');
+                } else {
+                    // Reset to theme colors
+                    const activeTheme = document.querySelector('.theme-btn.active').dataset.theme;
+                    document.body.classList.remove('sky-mode', 'rainbow-mode', 'tv-mode', 'windows-mode', 'neon-mode');
+                    document.body.classList.add(`${activeTheme}-mode`);
+                }
+            });
+            
+            // FAB event listeners
+            settingsFab.addEventListener('click', () => {
+                sidebar.classList.add('open');
+            });
+            
+            favoritesFab.addEventListener('click', () => {
+                updateFavoritesDisplay();
+                sidebar.classList.add('open');
+            });
+            
+            themeFab.addEventListener('click', () => {
+                document.querySelector('.theme-selector').scrollIntoView({ behavior: 'smooth' });
+            });
+            
+            sidebarClose.addEventListener('click', () => {
+                sidebar.classList.remove('open');
+            });
+
+            /**
+             * Fetches a URL with a retry mechanism.
+             */
+            async function fetchWithRetries(url, retries = MAX_RETRIES, delay = 1000) {
+                try {
+                    return await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest', 'Referer': 'http://demonji.onrender.com/' } });
+                } catch (error) {
+                    if (retries > 0) {
+                        console.warn(`Fetch failed. Retrying in ${delay / 1000}s... (${retries} retries left)`);
+                        showMessage(`Could not load channels. Retrying... (${MAX_RETRIES - retries + 1}/${MAX_RETRIES})`);
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        return fetchWithRetries(url, retries - 1, delay * 2);
+                    } else {
+                        console.error("Max retries reached. Fetch failed.", error);
+                        throw new Error("Failed to fetch playlist after multiple attempts.");
+                    }
+                }
+            }
+
+            async function fetchAndPrepareChannels() {
+                try {
+                    showLoading();
+                    hideError();
+                    showMessage('Loading channels, please wait...');
+                    
+                    const playlistUrl = PLAYLISTS[currentPlaylist];
+                    const proxiedUrl = `${CORS_PROXY_URL}${playlistUrl}`;
+                    const response = await fetchWithRetries(proxiedUrl);
+
+                    if (!response.ok) {
+                        throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const data = await response.text();
+                    allChannels = parseM3uData(data);
+                    
+                    if (allChannels.length === 0) {
+                        showMessage('No channels were found in the playlist.');
+                    } else {
+                        hideMessage();
+                        displayCategories();
+                        applyFiltersAndRender();
+                        showNotification(`Loaded ${allChannels.length} channels from ${currentPlaylist} playlist`);
+                    }
+                } catch (error) {
+                    console.error('Error during channel preparation:', error);
+                    showError(`Error loading channels: ${error.message}. Please try refreshing the page later.`);
+                } finally {
+                    hideLoading();
+                }
+            }
+            
+            function parseM3uData(data) {
+                const channels = [];
+                const lines = data.split('\n');
+                let currentChannel = {};
+
+                for (const line of lines) {
+                    const trimmedLine = line.trim();
+                    if (trimmedLine.startsWith('#EXTINF')) {
+                        const infoMatch = /#EXTINF:-1\s+(.*),(.*)/.exec(trimmedLine);
+                        if (infoMatch) {
+                            const attributesString = infoMatch[1];
+                            const name = infoMatch[2].trim();
+                            
+                            const logoMatch = /tvg-logo="([^"]*)"/.exec(attributesString);
+                            const groupMatch = /group-title="([^"]*)"/.exec(attributesString);
+
+                            currentChannel = {
+                                name: name,
+                                icon: logoMatch ? logoMatch[1] : 'https://placehold.co/120x60/1a3a5f/e0f0ff?text=Logo',
+                                category: groupMatch ? groupMatch[1] : 'General',
+                                playlist: currentPlaylist
+                            };
+                        }
+                    } else if (trimmedLine.startsWith('http')) {
+                        if (currentChannel.name) {
+                            currentChannel.url = trimmedLine;
+                            channels.push(currentChannel);
+                        }
+                        currentChannel = {};
+                    }
+                }
+                return channels;
+            }
+
+            function displayCategories() {
+                const categories = ['All', ...new Set(allChannels.map(channel => channel.category).sort())];
+                categoryFiltersContainer.innerHTML = categories.map(category => 
+                    `<button class="category-btn ${category === 'All' ? 'active' : ''}" data-category="${category}">${category}</button>`
+                ).join('');
+            }
+            
+            function applyFiltersAndRender() {
+                hideMessage();
+                let filteredChannels = allChannels;
+
+                if (selectedCategory !== 'All') {
+                    filteredChannels = allChannels.filter(channel => channel.category === selectedCategory);
+                }
+
+                if (currentSearchTerm) {
+                    const searchTerm = currentSearchTerm.toLowerCase();
+                    filteredChannels = filteredChannels.filter(channel => 
+                        channel.name.toLowerCase().includes(searchTerm)
+                    );
+                }
+                
+                currentlyVisibleChannels = filteredChannels;
+                renderChannels(true);
+            }
+
+            function renderChannels(isNewRender) {
+                if (isNewRender) {
+                    channelGrid.innerHTML = '';
+                    renderedChannelCount = 0;
+                    if (currentlyVisibleChannels.length === 0) {
+                        showMessage('No channels match your selection.');
+                        hideLoadMore();
+                        return;
+                    }
+                }
+
+                const startIndex = renderedChannelCount;
+                const endIndex = Math.min(startIndex + CHANNELS_PER_PAGE, currentlyVisibleChannels.length);
+
+                for (let i = startIndex; i < endIndex; i++) {
+                    const channel = currentlyVisibleChannels[i];
+                    const isFavorite = favorites.some(fav => fav.name === channel.name);
+                    
+                    const card = document.createElement('a');
+                    card.className = `channel-card ${isFavorite ? 'favorite' : ''}`;
+                    card.href = `#`;
+                    card.dataset.stream = btoa(channel.url);
+                    card.dataset.name = channel.name;
+                    card.dataset.icon = channel.icon;
+                    card.innerHTML = `
+                        <div class="channel-image">
+                            <img src="${channel.icon}" alt="${channel.name} logo" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/120x60/1a3a5f/e0f0ff?text=Logo';">
+                        </div>
+                        <div class="channel-info">
+                            <div>
+                                <h3 class="channel-name" title="${channel.name}">${channel.name}</h3>
+                                <div class="channel-category">
+                                    <i class="fas fa-tag"></i>
+                                    <span>${channel.category}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="play-btn">Play Now</div>
+                        <div class="favorite-indicator">
+                            <i class="fas fa-star"></i>
+                        </div>
+                    `;
+                    
+                    // Add double click for favorite
+                    let clickTimer;
+                    card.addEventListener('click', (e) => {
+                        clearTimeout(clickTimer);
+                        
+                        if (e.target.classList.contains('favorite-indicator') || e.target.classList.contains('fa-star')) {
+                            toggleFavorite(channel);
+                            return;
+                        }
+                        
+                        if (e.target.classList.contains('play-btn')) {
+                            handleChannelClick(e);
+                            return;
+                        }
+                        
+                        // Single click - prepare for double click
+                        clickTimer = setTimeout(() => {
+                            handleChannelClick(e);
+                        }, 300);
+                    });
+                    
+                    card.addEventListener('dblclick', (e) => {
+                        clearTimeout(clickTimer);
+                        toggleFavorite(channel);
+                    });
+                    
+                    channelGrid.appendChild(card);
+                }
+
+                renderedChannelCount = endIndex;
+                if (renderedChannelCount < currentlyVisibleChannels.length) showLoadMore();
+                else hideLoadMore();
+            }
+
+            function handleChannelClick(e) {
+                e.preventDefault();
+                const item = e.currentTarget;
+                const streamUrl = item.dataset.stream;
+                const channelName = item.dataset.name;
+                const channelIcon = item.dataset.icon;
+                const backUrl = window.location.href;
+                
+                ogPlayerLink.href = `player.html?s=${encodeURIComponent(streamUrl)}&name=${encodeURIComponent(channelName)}&icon=${encodeURIComponent(channelIcon)}&back=${encodeURIComponent(backUrl)}`;
+                simplePlayerLink.href = `simple-player.html?s=${encodeURIComponent(streamUrl)}&name=${encodeURIComponent(channelName)}&back=${encodeURIComponent(backUrl)}`;
+                advancedPlayerLink.href = `advanced-player.html?s=${encodeURIComponent(streamUrl)}&name=${encodeURIComponent(channelName)}&back=${encodeURIComponent(backUrl)}`;
+                
+                modal.style.display = 'flex';
+            }
+
+            // --- EVENT LISTENERS ---
+            loadMoreBtn.addEventListener('click', () => renderChannels(false));
+
+            let searchTimeout;
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    currentSearchTerm = this.value.trim();
+                    applyFiltersAndRender();
+                }, 300);
+            });
+
+            categoryFiltersContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('category-btn')) {
+                    selectedCategory = e.target.dataset.category;
+                    
+                    document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+                    
+                    applyFiltersAndRender();
+                }
+            });
+
+            closeButton.addEventListener('click', () => { modal.style.display = 'none'; });
+            window.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+            
+            // --- UI HELPER FUNCTIONS ---
+            function showLoading() { loadingSpinner.style.display = 'flex'; }
+            function hideLoading() { loadingSpinner.style.display = 'none'; }
+            function showMessage(message) { messageContainer.textContent = message; messageContainer.style.display = 'block'; }
+            function hideMessage() { messageContainer.style.display = 'none'; }
+            function showError(message) { errorContainer.textContent = message; errorContainer.style.display = 'block'; }
+            function hideError() { errorContainer.style.display = 'none'; }
+            function showLoadMore() { loadMoreContainer.style.display = 'flex'; }
+            function hideLoadMore() { loadMoreContainer.style.display = 'none'; }
+
+            // Initialize the application
+            initializeSettings();
+            updateFavoritesDisplay();
+            fetchAndPrepareChannels();
+        });
+    </script>
+</body>
+</html>
