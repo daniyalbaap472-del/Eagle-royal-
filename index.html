@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EAGLE ROYAL 🦅 - Ultimate Streaming</title>
+    <title>EAGLE ROYAL 🦅 - Premium Streaming</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -16,180 +15,897 @@
             --accent: #4da6ff;
             --accent-hover: #66b3ff;
             --card-bg: #2b4a6f;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            --rainbow-gradient: linear-gradient(90deg, 
+                #ff0000, #ff8000, #ffff00, #80ff00, 
+                #00ff00, #00ff80, #00ffff, #0080ff, 
+                #0000ff, #8000ff, #ff00ff, #ff0080);
+            --neon-glow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #fff, 0 0 20px var(--accent);
         }
-        .tv-mode { --bg-primary: #0a0a2a; --bg-secondary: #1a1a4a; --accent: #ff3333; --accent-hover: #ff5555; --card-bg: #2a2a6a; }
-        .windows-mode { --bg-primary: #0078d7; --bg-secondary: #106ebe; --accent: #107c10; --accent-hover: #128712; --card-bg: #1c5a9c; }
-        .neon-mode { --bg-primary: #0a0a1a; --bg-secondary: #1a1a3a; --accent: #ff00ff; --accent-hover: #ff33ff; --card-bg: #2a2a5a; }
         
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; overflow-x: hidden; position: relative; }
+        /* TV Mode Variables */
+        .tv-mode {
+            --bg-primary: #0a0a2a;
+            --bg-secondary: #1a1a4a;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0ff;
+            --accent: #ff3333;
+            --accent-hover: #ff5555;
+            --card-bg: #2a2a6a;
+            --card-shadow: 0 6px 20px rgba(0, 0, 0, 0.7);
+            --neon-glow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #ff3333, 0 0 20px #ff3333;
+        }
         
-        .aurora-effect { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(ellipse at 20% 30%, rgba(77,166,255,0.3) 0%, transparent 50%), radial-gradient(ellipse at 80% 70%, rgba(255,0,255,0.3) 0%, transparent 50%); animation: aurora 15s infinite alternate; pointer-events: none; z-index: 0; filter: blur(60px); }
+        /* Windows Mode Variables */
+        .windows-mode {
+            --bg-primary: #0078d7;
+            --bg-secondary: #106ebe;
+            --text-primary: #ffffff;
+            --text-secondary: #e1e1e1;
+            --accent: #107c10;
+            --accent-hover: #128712;
+            --card-bg: #1c5a9c;
+            --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            --neon-glow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #107c10, 0 0 20px #107c10;
+        }
         
-        .light-orbs { position: fixed; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
-        .light-orb { position: absolute; border-radius: 50%; filter: blur(40px); animation: floatOrb 20s infinite ease-in-out; }
+        /* Neon Mode Variables */
+        .neon-mode {
+            --bg-primary: #0a0a1a;
+            --bg-secondary: #1a1a3a;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0ff;
+            --accent: #ff00ff;
+            --accent-hover: #ff33ff;
+            --card-bg: #2a2a5a;
+            --card-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+            --neon-glow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #ff00ff, 0 0 20px #ff00ff;
+        }
         
-        .particles { position: fixed; width: 100%; height: 100%; z-index: 1; overflow: hidden; pointer-events: none; }
-        .particle { position: absolute; background: rgba(255,255,255,0.3); border-radius: 50%; animation: floatParticle 15s infinite linear; box-shadow: 0 0 10px rgba(255,255,255,0.5); }
+        /* TV Mode Specific Styles */
+        .tv-mode .channel-card {
+            border-radius: 10px;
+        }
+        .tv-mode .channel-card:hover {
+            transform: scale(1.05);
+        }
+        .tv-mode header {
+            background: linear-gradient(to bottom, #0a0a2a, rgba(10, 10, 42, 0.95));
+        }
+        .tv-mode .banner {
+            background: linear-gradient(135deg, #1a1a4a 0%, #2a2a6a 100%);
+        }
         
-        .container { max-width: 1600px; margin: 0 auto; padding: 20px; position: relative; z-index: 2; }
+        /* Windows Mode Specific Styles */
+        .windows-mode header {
+            background: linear-gradient(to bottom, #0078d7, rgba(0, 120, 215, 0.95));
+        }
+        .windows-mode .banner {
+            background: linear-gradient(135deg, #106ebe 0%, #1c5a9c 100%);
+        }
+        .windows-mode .channel-card {
+            border-radius: 5px;
+        }
         
-        header { position: sticky; top: 0; background: linear-gradient(to bottom, rgba(10,31,53,0.98), rgba(10,31,53,0.95)); backdrop-filter: blur(20px); z-index: 100; padding: 15px 20px; border-bottom: 2px solid rgba(77,166,255,0.3); box-shadow: 0 5px 30px rgba(0,0,0,0.5); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px; }
+        /* Neon Mode Specific Styles */
+        .neon-mode .channel-card {
+            border: 1px solid var(--accent);
+            box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+        }
+        .neon-mode .channel-card:hover {
+            box-shadow: var(--neon-glow);
+        }
+        .neon-mode header {
+            background: linear-gradient(to bottom, #0a0a1a, rgba(10, 10, 26, 0.95));
+            border-bottom: 1px solid var(--accent);
+        }
+        .neon-mode .banner {
+            background: linear-gradient(135deg, #1a1a3a 0%, #2a2a5a 100%);
+            border: 1px solid var(--accent);
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+        }
         
-        h1 { font-size: 3rem; font-weight: 900; background: linear-gradient(135deg, #4da6ff, #66b3ff, #80c1ff, #99ceff, #4da6ff); background-size: 300%; -webkit-background-clip: text; background-clip: text; color: transparent; display: flex; align-items: center; gap: 15px; animation: gradientShift 5s infinite; filter: drop-shadow(0 0 20px rgba(77,166,255,0.6)); }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 0;
+            transition: all 0.5s ease;
+            overflow-x: hidden;
+        }
+        .container {
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            position: sticky;
+            top: 0;
+            background: linear-gradient(to bottom, var(--bg-primary), rgba(10, 31, 53, 0.95));
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 10;
+            padding: 15px 20px;
+            border-bottom: 1px solid #335;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #4da6ff, #66b3ff, #80c1ff, #99ceff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: 0 0 10px rgba(77, 166, 255, 0.5);
+        }
+        .eagle-icon {
+            font-size: 2.5rem;
+            animation: float 3s ease-in-out infinite;
+        }
+        .search-container {
+            flex: 1;
+            max-width: 600px;
+            position: relative;
+        }
+        #searchInput {
+            width: 100%;
+            padding: 14px 20px;
+            border-radius: 30px;
+            border: 2px solid #335;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            padding-left: 50px;
+        }
+        #searchInput:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 10px rgba(77, 166, 255, 0.5);
+        }
+        #searchInput::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.8;
+        }
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+        .category-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 25px 0 10px;
+            justify-content: center;
+        }
+        .category-btn {
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            background-color: var(--bg-secondary);
+            border: 2px solid #335;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .category-btn:hover {
+            color: var(--text-primary);
+            background-color: #335;
+            transform: translateY(-2px);
+        }
+        .category-btn.active {
+            color: #fff;
+            background-color: var(--accent);
+            border-color: var(--accent-hover);
+            box-shadow: 0 0 10px rgba(77, 166, 255, 0.5);
+        }
+        .channels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+        .channel-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: var(--card-shadow);
+            border: 2px solid transparent;
+            animation: fadeIn 0.5s ease-in;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            /* Channel Light Effect */
+            position: relative;
+            overflow: visible;
+        }
+        /* Channel Light Glow Effect */
+        .channel-card::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            background: linear-gradient(45deg, 
+                rgba(77, 166, 255, 0.2), 
+                rgba(102, 179, 255, 0.2), 
+                rgba(128, 193, 255, 0.2), 
+                rgba(153, 206, 255, 0.2));
+            border-radius: 25px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .channel-card:hover::before {
+            opacity: 1;
+            animation: channelGlow 2s infinite alternate;
+        }
+        .channel-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.6);
+            border-color: var(--accent);
+        }
+        .channel-image {
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #1a3a5f;
+            padding: 15px;
+            position: relative;
+            flex-shrink: 0;
+            /* Image Light Effect */
+            position: relative;
+            overflow: hidden;
+        }
+        .channel-image::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .channel-card:hover .channel-image::after {
+            opacity: 1;
+        }
+        .channel-image img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: transform 0.5s ease;
+            filter: brightness(1);
+            transition: all 0.3s ease;
+        }
+        .channel-card:hover .channel-image img {
+            transform: scale(1.05);
+            filter: brightness(1.2) drop-shadow(0 0 8px rgba(77, 166, 255, 0.6));
+        }
+        .channel-info {
+            padding: 20px;
+            text-align: center;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+        /* Text Light Effect */
+        .channel-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-shadow: 0 0 5px rgba(255,255,255,0.3);
+            transition: text-shadow 0.3s ease;
+        }
+        .channel-card:hover .channel-name {
+            text-shadow: 0 0 10px rgba(77, 166, 255, 0.8);
+        }
+        .channel-category {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .play-btn {
+            display: block;
+            width: calc(100% - 40px);
+            padding: 14px;
+            background: var(--accent);
+            color: white;
+            text-align: center;
+            border-radius: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) scale(0.95);
+            opacity: 0;
+            /* Play Button Light */
+            box-shadow: 0 0 0 rgba(77, 166, 255, 0.4);
+        }
+        .channel-card:hover .play-btn {
+            opacity: 1;
+            transform: translateX(-50%) scale(1);
+            box-shadow: 0 0 15px rgba(77, 166, 255, 0.8);
+            animation: buttonPulse 2s infinite;
+        }
+        .play-btn:hover {
+            background: var(--accent-hover);
+            box-shadow: 0 0 20px rgba(77, 166, 255, 1);
+        }
+        .loading-container, .load-more-container {
+            display: flex;
+            justify-content: center;
+            padding: 40px 0;
+        }
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            border-top-color: var(--accent);
+            animation: spin 1s ease-in-out infinite;
+        }
+        .message {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+        .error-message {
+            color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 1rem;
+        }
+        .load-more-btn {
+            padding: 14px 28px;
+            border-radius: 30px;
+            background-color: var(--accent);
+            color: white;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            box-shadow: 0 0 10px rgba(77, 166, 255, 0.5);
+        }
+        .load-more-btn:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(77, 166, 255, 0.8);
+        }
         
-        .eagle-icon { font-size: 3rem; animation: eagleFloat 3s ease-in-out infinite; filter: drop-shadow(0 0 15px rgba(255,215,0,0.8)); }
+        /* Banner Styles */
+        .banner {
+            background: linear-gradient(135deg, #1a3a5f 0%, #2b4a6f 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            border: 2px solid #335;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(77, 166, 255, 0.3);
+        }
+        .banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            animation: shine 3s infinite;
+        }
+        .banner-title {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #66b3ff;
+            text-shadow: 0 0 10px rgba(102, 179, 255, 0.5);
+        }
+        .banner-features {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .feature {
+            background: var(--card-bg);
+            padding: 12px 20px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 0 10px rgba(77, 166, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        .feature:hover {
+            box-shadow: 0 0 15px rgba(77, 166, 255, 0.4);
+            transform: translateY(-2px);
+        }
+        .join-button {
+            display: inline-block;
+            padding: 14px 28px;
+            background: var(--accent);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 0 15px rgba(77, 166, 255, 0.5);
+        }
+        .join-button:hover {
+            background: var(--accent-hover);
+            transform: translateY(-3px);
+            box-shadow: 0 7px 25px rgba(77, 166, 255, 0.7);
+        }
         
-        .search-container { flex: 1; max-width: 700px; position: relative; }
-        #searchInput { width: 100%; padding: 16px 60px; border-radius: 50px; border: 3px solid transparent; background: linear-gradient(135deg, var(--bg-secondary), var(--card-bg)); color: var(--text-primary); font-size: 1.1rem; transition: all 0.3s; box-shadow: 0 5px 20px rgba(0,0,0,0.3), inset 0 2px 10px rgba(255,255,255,0.1); }
-        #searchInput:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 30px rgba(77,166,255,0.6); transform: scale(1.02); }
-        .search-icon { position: absolute; left: 25px; top: 50%; transform: translateY(-50%); color: var(--accent); font-size: 1.3rem; animation: searchPulse 2s infinite; }
+        /* Theme Selector */
+        .theme-selector {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .theme-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: var(--bg-secondary);
+            border: 2px solid #335;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            box-shadow: 0 0 5px rgba(77, 166, 255, 0.2);
+        }
+        .theme-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 10px rgba(77, 166, 255, 0.4);
+        }
+        .theme-btn.active {
+            background: var(--accent);
+            border-color: var(--accent-hover);
+            box-shadow: 0 0 15px rgba(77, 166, 255, 0.6);
+        }
+        .rainbow-theme-btn {
+            background: var(--rainbow-gradient);
+            color: #000;
+            font-weight: bold;
+        }
         
-        .theme-selector, .playlist-selector { display: flex; gap: 12px; margin: 20px 0; justify-content: center; flex-wrap: wrap; }
-        .theme-btn, .playlist-btn { padding: 12px 24px; border-radius: 25px; background: linear-gradient(135deg, var(--bg-secondary), var(--card-bg)); border: 2px solid transparent; color: var(--text-primary); cursor: pointer; transition: all 0.3s; font-weight: 700; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        .theme-btn:hover, .playlist-btn:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 8px 25px rgba(77,166,255,0.5); border-color: var(--accent); }
-        .theme-btn.active, .playlist-btn.active { background: linear-gradient(135deg, var(--accent), var(--accent-hover)); box-shadow: 0 0 30px rgba(77,166,255,0.8); animation: activePulse 2s infinite; }
+        /* Playlist Selector */
+        .playlist-selector {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .playlist-btn {
+            padding: 10px 20px;
+            border-radius: 20px;
+            background: var(--bg-secondary);
+            border: 2px solid #335;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 0 5px rgba(77, 166, 255, 0.2);
+        }
+        .playlist-btn:hover {
+            transform: translateY(-2px);
+            background: #335;
+            box-shadow: 0 0 10px rgba(77, 166, 255, 0.4);
+        }
+        .playlist-btn.active {
+            background: var(--accent);
+            border-color: var(--accent-hover);
+            box-shadow: 0 0 15px rgba(77, 166, 255, 0.6);
+        }
         
-        .category-filters { display: flex; flex-wrap: wrap; gap: 12px; padding: 25px 0; justify-content: center; }
-        .category-btn { padding: 12px 24px; font-weight: 700; background: linear-gradient(135deg, var(--bg-secondary), var(--card-bg)); border: 2px solid transparent; border-radius: 25px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        .category-btn:hover { transform: translateY(-3px) scale(1.05); border-color: var(--accent); }
-        .category-btn.active { color: #fff; background: linear-gradient(135deg, var(--accent), var(--accent-hover)); animation: activePulse 2s infinite; }
+        /* Floating Particles Background */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            animation: floatParticle 15s infinite linear;
+        }
         
-        .channels-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 35px; margin-top: 30px; }
+        /* Light Effects */
+        .light-beam {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: -1;
+            background: radial-gradient(circle at 20% 80%, rgba(77, 166, 255, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(255, 0, 255, 0.1) 0%, transparent 50%);
+        }
         
-        .channel-card { background: linear-gradient(135deg, var(--card-bg), var(--bg-secondary)); border-radius: 25px; overflow: hidden; transition: all 0.4s cubic-bezier(0.175,0.885,0.32,1.275); box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 3px solid transparent; cursor: pointer; position: relative; display: flex; flex-direction: column; transform-style: preserve-3d; }
+        /* Channel Light Beams */
+        .channel-light {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .channel-card:hover .channel-light {
+            opacity: 1;
+        }
         
-        .channel-card::before { content: ''; position: absolute; top: -10px; left: -10px; right: -10px; bottom: -10px; background: linear-gradient(45deg, rgba(77,166,255,0.4), rgba(255,0,255,0.4), rgba(0,255,255,0.4), rgba(255,215,0,0.4), rgba(77,166,255,0.4)); background-size: 400%; border-radius: 30px; z-index: -1; opacity: 0; filter: blur(20px); animation: megaGlow 8s infinite; }
-        .channel-card:hover::before { opacity: 1; }
+        /* Floating Action Buttons */
+        .fab-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 100;
+        }
+        .fab {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        .fab::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: radial-gradient(circle, rgba(77, 166, 255, 0.3) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .fab:hover {
+            transform: scale(1.1);
+            background: var(--accent-hover);
+            box-shadow: 0 6px 20px rgba(77, 166, 255, 0.6);
+        }
+        .fab:hover::before {
+            opacity: 1;
+        }
         
-        .channel-card::after { content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, transparent 70%); border-radius: 50%; transform: translate(-50%, -50%); transition: all 0.6s; pointer-events: none; z-index: 10; }
-        .channel-card:hover::after { width: 300px; height: 300px; }
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+            border-left: 4px solid var(--accent);
+        }
+        .notification.show {
+            transform: translateX(0);
+        }
         
-        .channel-card:hover { transform: translateY(-15px) scale(1.03) rotateX(5deg); box-shadow: 0 25px 50px rgba(0,0,0,0.8), 0 0 50px rgba(77,166,255,0.6); border-color: var(--accent); }
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100%;
+            background: var(--bg-secondary);
+            z-index: 100;
+            transition: right 0.3s ease;
+            padding: 20px;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
+            overflow-y: auto;
+        }
+        .sidebar.open {
+            right: 0;
+        }
+        .sidebar h3 {
+            margin-bottom: 20px;
+            color: var(--accent);
+            border-bottom: 1px solid #335;
+            padding-bottom: 10px;
+        }
+        .sidebar-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .settings-option {
+            margin-bottom: 15px;
+        }
+        .settings-option label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .settings-option select, .settings-option input {
+            width: 100%;
+            padding: 8px;
+            border-radius: 5px;
+            background: var(--card-bg);
+            border: 1px solid #335;
+            color: var(--text-primary);
+        }
         
-        .channel-image { height: 140px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #1a3a5f, #2b4a6f); padding: 20px; position: relative; overflow: hidden; }
-        .channel-image::before { content: ''; position: absolute; top: -100%; left: -100%; width: 300%; height: 300%; background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.8) 50%, transparent 70%); animation: scanBeam 3s infinite; }
-        .channel-image::after { content: ''; position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; background: radial-gradient(circle, rgba(77,166,255,0.4) 0%, rgba(255,0,255,0.3) 30%, transparent 70%); transform: translate(-50%, -50%); opacity: 0; transition: opacity 0.5s; animation: radialGlow 3s infinite alternate; }
-        .channel-card:hover .channel-image::after { opacity: 1; }
+        /* 3D Effect for Favorites */
+        .channel-card.favorite {
+            transform: perspective(1000px) rotateY(5deg);
+            border: 2px solid gold;
+            box-shadow: 0 10px 20px rgba(255, 215, 0, 0.3);
+        }
+        .favorite-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: gold;
+            font-size: 20px;
+            z-index: 2;
+            opacity: 0;
+            transition: opacity 0.3s;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+        }
+        .channel-card:hover .favorite-indicator {
+            opacity: 1;
+        }
+        .channel-card.favorite .favorite-indicator {
+            opacity: 1;
+            animation: pulse 2s infinite;
+        }
         
-        .channel-image img { max-width: 100%; max-height: 100%; object-fit: contain; transition: all 0.5s; filter: brightness(1) contrast(1.1); z-index: 2; position: relative; }
-        .channel-card:hover .channel-image img { transform: scale(1.15) rotateY(5deg); filter: brightness(1.4) contrast(1.2) drop-shadow(0 0 20px rgba(77,166,255,1)) drop-shadow(0 0 40px rgba(255,0,255,0.8)) drop-shadow(0 0 60px rgba(0,255,255,0.6)); }
+        /* New Light Animations */
+        @keyframes channelGlow {
+            0% {
+                box-shadow: 0 0 5px rgba(77, 166, 255, 0.5);
+            }
+            100% {
+                box-shadow: 0 0 20px rgba(77, 166, 255, 0.8), 0 0 30px rgba(77, 166, 255, 0.6);
+            }
+        }
         
-        .channel-info { padding: 25px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; position: relative; }
+        @keyframes buttonPulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(77, 166, 255, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(77, 166, 255, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(77, 166, 255, 0);
+            }
+        }
         
-        .channel-name { font-size: 1.3rem; font-weight: 700; margin-bottom: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 0 10px rgba(255,255,255,0.5), 0 0 20px rgba(77,166,255,0.5); transition: all 0.3s; letter-spacing: 0.5px; }
-        .channel-card:hover .channel-name { text-shadow: 0 0 20px rgba(255,255,255,1), 0 0 40px rgba(77,166,255,1), 0 0 60px rgba(255,0,255,0.8); animation: textWave 1.5s infinite; transform: scale(1.05); }
+        @keyframes imageGlow {
+            0% {
+                filter: brightness(1) drop-shadow(0 0 5px rgba(77, 166, 255, 0.5));
+            }
+            100% {
+                filter: brightness(1.2) drop-shadow(0 0 15px rgba(77, 166, 255, 0.8));
+            }
+        }
         
-        .channel-category { font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        /* Existing Animations */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes rainbow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+        @keyframes floatParticle {
+            0% { transform: translateY(100vh) translateX(0); }
+            100% { transform: translateY(-100vh) translateX(100px); }
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        @keyframes glow {
+            0% { box-shadow: 0 0 5px var(--accent); }
+            50% { box-shadow: 0 0 20px var(--accent); }
+            100% { box-shadow: 0 0 5px var(--accent); }
+        }
         
-        .play-btn { width: calc(100% - 40px); padding: 16px; background: linear-gradient(135deg, var(--accent), var(--accent-hover)); color: white; text-align: center; border-radius: 20px; font-weight: 700; font-size: 1.1rem; transition: all 0.4s; position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%) scale(0.9); opacity: 0; box-shadow: 0 5px 20px rgba(77,166,255,0.5), inset 0 2px 10px rgba(255,255,255,0.3); overflow: hidden; }
-        .play-btn::before { content: ''; position: absolute; top: -100%; left: -100%; width: 300%; height: 300%; background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.6) 50%, transparent 70%); transform: rotate(45deg); animation: buttonShine 4s infinite; }
-        .channel-card:hover .play-btn { opacity: 1; transform: translateX(-50%) scale(1); box-shadow: 0 10px 40px rgba(77,166,255,1), 0 0 60px rgba(255,0,255,0.8); animation: buttonMegaPulse 1.5s infinite; }
-        .play-btn:hover { transform: translateX(-50%) scale(1.08); }
+        .rainbow-text {
+            background: var(--rainbow-gradient);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: rainbow 3s ease infinite;
+        }
+        .glow {
+            animation: glow 2s infinite;
+        }
         
-        .favorite-indicator { position: absolute; top: 15px; right: 15px; color: gold; font-size: 28px; z-index: 20; opacity: 0; transition: all 0.3s; text-shadow: 0 0 15px gold; filter: drop-shadow(0 0 10px gold); }
-        .channel-card:hover .favorite-indicator { opacity: 1; transform: scale(1.3) rotate(15deg); }
-        .channel-card.favorite .favorite-indicator { opacity: 1; animation: starSpin 3s infinite linear, starPulse 1.5s infinite; }
-        .channel-card.favorite { border: 4px solid gold; box-shadow: 0 20px 50px rgba(255,215,0,0.6), 0 0 50px gold; animation: favoriteFloat 4s infinite ease-in-out; }
-        
-        .tv-mode .channel-card { border-radius: 15px; }
-        .tv-mode .channel-card:hover { transform: scale(1.08); box-shadow: 0 0 40px rgba(255,51,51,0.9); }
-        .tv-mode.scanlines-enabled::after { content: ''; position: fixed; width: 100%; height: 100%; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.15) 0px, transparent 2px, transparent 4px); pointer-events: none; z-index: 1000; animation: scanlineMove 8s infinite linear; }
-        
-        .windows-mode.glass-enabled .channel-card { backdrop-filter: blur(15px); background: rgba(28,90,156,0.7); border: 2px solid rgba(255,255,255,0.2); }
-        
-        .neon-mode .channel-card { border: 3px solid var(--accent); box-shadow: 0 0 20px rgba(255,0,255,0.7), inset 0 0 20px rgba(255,0,255,0.3); }
-        .neon-mode::before { content: ''; position: fixed; width: 100%; height: 100%; background-image: linear-gradient(rgba(255,0,255,0.1) 2px, transparent 2px), linear-gradient(90deg, rgba(255,0,255,0.1) 2px, transparent 2px); background-size: 60px 60px; pointer-events: none; z-index: 1; animation: gridMove 20s infinite linear; }
-        
-        .fab-container { position: fixed; bottom: 30px; right: 30px; z-index: 1000; display: flex; flex-direction: column; gap: 15px; }
-        .fab { width: 65px; height: 65px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-hover)); color: white; display: flex; align-items: center; justify-content: center; font-size: 26px; box-shadow: 0 8px 25px rgba(77,166,255,0.6); cursor: pointer; transition: all 0.3s; animation: fabFloat 3s infinite ease-in-out; position: relative; }
-        .fab::before { content: ''; position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 3px solid rgba(77,166,255,0.5); animation: fabRipple 2s infinite; }
-        .fab:hover { transform: scale(1.25) rotate(15deg); box-shadow: 0 12px 40px rgba(77,166,255,0.9), 0 0 60px rgba(255,0,255,0.7); }
-        .fab:nth-child(2) { animation-delay: 0.5s; }
-        .fab:nth-child(3) { animation-delay: 1s; }
-        .fab:nth-child(4) { animation-delay: 1.5s; }
-        
-        .sidebar { position: fixed; top: 0; right: -400px; width: 400px; height: 100%; background: linear-gradient(135deg, var(--bg-secondary), var(--card-bg)); z-index: 2000; transition: right 0.4s cubic-bezier(0.68,-0.55,0.265,1.55); padding: 30px; box-shadow: -10px 0 40px rgba(0,0,0,0.5); overflow-y: auto; backdrop-filter: blur(20px); }
-        .sidebar.open { right: 0; }
-        .sidebar h3 { margin: 30px 0 20px; color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 10px; font-size: 1.4rem; text-shadow: 0 0 10px rgba(77,166,255,0.5); }
-        .sidebar-close { position: absolute; top: 20px; right: 20px; font-size: 32px; cursor: pointer; transition: all 0.3s; }
-        .sidebar-close:hover { transform: rotate(90deg) scale(1.2); color: var(--accent); }
-        
-        .settings-option { margin-bottom: 20px; }
-        .settings-option label { display: block; margin-bottom: 8px; font-weight: 600; }
-        .settings-option select { width: 100%; padding: 12px; border-radius: 10px; background: var(--card-bg); border: 2px solid var(--accent); color: var(--text-primary); }
-        .settings-option input[type="checkbox"] { width: 20px; height: 20px; margin-right: 10px; }
-        
-        .modal { display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; backdrop-filter: blur(10px); }
-        .modal-content { background: linear-gradient(135deg, var(--bg-secondary), var(--card-bg)); padding: 40px; border-radius: 25px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.8); width: 90%; max-width: 500px; border: 3px solid var(--accent); position: relative; }
-        .modal-close-button { position: absolute; top: 15px; right: 20px; font-size: 32px; cursor: pointer; transition: all 0.3s; }
-        .modal-close-button:hover { transform: rotate(90deg); color: var(--accent); }
-        .modal-title { font-size: 2rem; margin-bottom: 25px; color: var(--text-primary); }
-        .modal-buttons { display: flex; flex-direction: column; gap: 15px; }
-        .modal-button { padding: 16px 28px; background: var(--bg-secondary); color: #fff; border-radius: 20px; font-size: 1.1rem; font-weight: 700; transition: all 0.3s; cursor: pointer; text-decoration: none; display: block; }
-        .modal-button:hover { transform: translateY(-3px); background: var(--accent); box-shadow: 0 5px 20px rgba(77,166,255,0.5); }
-        .modal-button.og { background: linear-gradient(135deg, var(--accent), var(--accent-hover)); }
-        
-        .notification { position: fixed; top: 20px; right: 20px; background: var(--card-bg); color: var(--text-primary); padding: 18px 25px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.5); z-index: 5000; transform: translateX(150%); transition: transform 0.4s; border-left: 4px solid var(--accent); }
-        .notification.show { transform: translateX(0); }
-        
-        .banner { background: linear-gradient(135deg, #1a3a5f 0%, #2b4a6f 100%); border-radius: 20px; padding: 30px; margin: 30px 0; border: 2px solid var(--accent); text-align: center; position: relative; overflow: hidden; box-shadow: 0 0 30px rgba(77,166,255,0.4); }
-        .banner::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent); transform: rotate(45deg); animation: shine 3s infinite; }
-        .banner-title { font-size: 2.2rem; margin-bottom: 15px; color: #66b3ff; text-shadow: 0 0 15px rgba(102,179,255,0.7); }
-        .banner-features { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin: 20px 0; }
-        .feature { background: var(--card-bg); padding: 14px 24px; border-radius: 20px; display: flex; align-items: center; gap: 10px; box-shadow: 0 0 15px rgba(77,166,255,0.3); transition: all 0.3s; }
-        .feature:hover { transform: translateY(-3px); box-shadow: 0 0 20px rgba(77,166,255,0.5); }
-        .join-button { display: inline-block; padding: 16px 32px; background: linear-gradient(135deg, var(--accent), var(--accent-hover)); color: white; text-decoration: none; border-radius: 30px; font-weight: 700; font-size: 1.1rem; margin-top: 15px; transition: all 0.3s; box-shadow: 0 0 20px rgba(77,166,255,0.6); }
-        .join-button:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(77,166,255,0.8); }
-        
-        .spinner { width: 60px; height: 60px; border: 6px solid rgba(255,255,255,0.1); border-radius: 50%; border-top-color: var(--accent); animation: spin 1s ease-in-out infinite; }
-        .loading-container, .load-more-container { display: flex; justify-content: center; padding: 40px 0; }
-        .message { text-align: center; padding: 30px; color: var(--text-secondary); font-size: 1.1rem; }
-        .error-message { color: #ff6b6b; background: rgba(255,107,107,0.1); padding: 15px; border-radius: 12px; margin: 20px 0; text-align: center; display: none; }
-        .load-more-btn { padding: 16px 32px; border-radius: 30px; background: linear-gradient(135deg, var(--accent), var(--accent-hover)); color: white; font-weight: 700; border: none; cursor: pointer; transition: all 0.3s; box-shadow: 0 0 15px rgba(77,166,255,0.5); }
-        .load-more-btn:hover { transform: translateY(-3px); box-shadow: 0 0 25px rgba(77,166,255,0.8); }
-        
-        @keyframes aurora { 0% { filter: blur(60px) hue-rotate(0deg); } 100% { filter: blur(60px) hue-rotate(360deg); } }
-        @keyframes floatOrb { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(100px, 100px) scale(1.2); } }
-        @keyframes floatParticle { 0% { transform: translateY(100vh); } 100% { transform: translateY(-100vh); } }
-        @keyframes gradientShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
-        @keyframes eagleFloat { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-10px) rotate(5deg); } }
-        @keyframes searchPulse { 0%, 100% { transform: translateY(-50%) scale(1); } 50% { transform: translateY(-50%) scale(1.1); } }
-        @keyframes activePulse { 0%, 100% { box-shadow: 0 0 30px rgba(77,166,255,0.8); } 50% { box-shadow: 0 0 50px rgba(77,166,255,1); } }
-        @keyframes megaGlow { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
-        @keyframes scanBeam { 0% { transform: translate(-100%, -100%); } 100% { transform: translate(100%, 100%); } }
-        @keyframes radialGlow { 0% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.2); } }
-        @keyframes textWave { 0%, 100% { transform: scale(1.05) translateY(0); } 50% { transform: scale(1.05) translateY(-3px); } }
-        @keyframes buttonShine { 0% { transform: translate(-100%, -100%) rotate(45deg); } 100% { transform: translate(200%, 200%) rotate(45deg); } }
-        @keyframes buttonMegaPulse { 0%, 100% { box-shadow: 0 10px 40px rgba(77,166,255,1); } 50% { box-shadow: 0 10px 60px rgba(77,166,255,1), 0 0 80px rgba(255,0,255,1); } }
-        @keyframes starSpin { 0% { transform: scale(1.3) rotate(0deg); } 100% { transform: scale(1.3) rotate(360deg); } }
-        @keyframes starPulse { 0%, 100% { filter: drop-shadow(0 0 10px gold); } 50% { filter: drop-shadow(0 0 30px gold); } }
-        @keyframes favoriteFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        @keyframes scanlineMove { 0% { transform: translateY(0); } 100% { transform: translateY(4px); } }
-        @keyframes gridMove { 0% { background-position: 0 0; } 100% { background-position: 60px 60px; } }
-        @keyframes fabFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        @keyframes fabRipple { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(2); opacity: 0; } }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        @keyframes shine { 0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); } 100% { transform: translateX(100%) translateY(100%) rotate(45deg); } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        
+        /* Responsive Design */
         @media (max-width: 768px) {
-            h1 { font-size: 2rem; }
+            .container { padding: 15px; }
+            header { flex-direction: column; padding: 10px 15px; }
+            h1 { font-size: 2.2rem; }
+            .search-container { max-width: 100%; }
             .channels-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
-            .sidebar { width: 100%; right: -100%; }
+            .banner-title { font-size: 1.6rem; }
+            .banner-features { flex-direction: column; }
             .fab-container { bottom: 15px; right: 15px; }
-            .fab { width: 55px; height: 55px; font-size: 22px; }
+            .fab { width: 50px; height: 50px; font-size: 20px; }
         }
+        @media (max-width: 480px) {
+            .container { padding: 10px; }
+            .channels-grid { grid-template-columns: 1fr; }
+            h1 { font-size: 1.8rem; }
+            .sidebar { width: 100%; right: -100%; }
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 100; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7); 
+            justify-content: center; 
+            align-items: center;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background-color: var(--bg-secondary); 
+            padding: 30px; 
+            border-radius: 12px; 
+            text-align: center;
+            position: relative; 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            width: 90%; 
+            max-width: 400px;
+            animation: fadeIn 0.3s ease-out;
+            border: 1px solid var(--accent);
+            box-shadow: 0 0 20px rgba(77, 166, 255, 0.5);
+        }
+        .modal-close-button {
+            position: absolute; 
+            top: 10px; 
+            right: 15px; 
+            color: var(--text-secondary);
+            font-size: 28px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: color 0.2s;
+        }
+        .modal-close-button:hover { color: var(--accent); }
+        .modal-title { color: var(--text-primary); font-size: 20px; margin-bottom: 20px; }
+        .modal-buttons { display: flex; flex-direction: column; gap: 15px; }
+        .modal-button {
+            text-decoration: none; 
+            color: #fff; 
+            background-color: #335; 
+            padding: 12px 20px;
+            border-radius: 20px; 
+            font-size: 16px; 
+            font-weight: 600; 
+            transition: background-color 0.2s, transform 0.2s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .modal-button:hover { transform: translateY(-2px); background-color: #447; }
+        .modal-button.og { background-color: var(--accent); }
+        .modal-button.og:hover { background-color: var(--accent-hover); }
     </style>
 </head>
 <body class="sky-mode">
-    <div class="aurora-effect"></div>
-    <div class="light-orbs" id="lightOrbs"></div>
+    <!-- Floating Particles Background -->
     <div class="particles" id="particles"></div>
     
+    <!-- Light Beam Effects -->
+    <div class="light-beam"></div>
+    
+    <!-- Notification -->
     <div class="notification" id="notification">
+        <div id="notificationMessage">Notification message</div>
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <span class="sidebar-close" id="sidebarClose">&times;</span>
+        <h3>Settings & Features</h3>
+        
         <div class="settings-option">
-            <label for="animationSpeed">🚀 Animation Speed</label>
+            <label for="animationSpeed">Animation Speed</label>
             <select id="animationSpeed">
                 <option value="slow">Slow</option>
                 <option value="normal" selected>Normal</option>
@@ -198,7 +914,7 @@
         </div>
         
         <div class="settings-option">
-            <label for="particleDensity">✨ Particle Density</label>
+            <label for="particleDensity">Particle Density</label>
             <select id="particleDensity">
                 <option value="low">Low</option>
                 <option value="medium" selected>Medium</option>
@@ -207,33 +923,24 @@
         </div>
         
         <div class="settings-option">
-            <label><input type="checkbox" id="channelLights" checked> 💡 Channel Lights</label>
+            <label>
+                <input type="checkbox" id="autoPlay" checked> Auto-play preview
+            </label>
         </div>
         
         <div class="settings-option">
-            <label><input type="checkbox" id="auroraEffect" checked> 🌌 Aurora Effect</label>
+            <label>
+                <input type="checkbox" id="darkMode" checked> Dark mode
+            </label>
         </div>
         
         <div class="settings-option">
-            <label><input type="checkbox" id="scanlineEffect"> 📺 TV Scanlines</label>
+            <label>
+                <input type="checkbox" id="channelLights" checked> Channel Lights
+            </label>
         </div>
         
-        <div class="settings-option">
-            <label><input type="checkbox" id="glassEffect"> 🪟 Aero Glass</label>
-        </div>
-        
-        <div class="settings-option">
-            <label><input type="checkbox" id="autoPlay" checked> ▶️ Auto-play Preview</label>
-        </div>
-        
-        <h3>⭐ Quick Actions</h3>
-        <div class="settings-option">
-            <button class="modal-button" id="clearCache" style="width: 100%; margin-bottom: 10px;">🗑️ Clear Cache</button>
-            <button class="modal-button" id="exportFavorites" style="width: 100%; margin-bottom: 10px;">💾 Export Favorites</button>
-            <button class="modal-button" id="importFavorites" style="width: 100%;">📥 Import Favorites</button>
-        </div>
-        
-        <h3>💖 Favorites</h3>
+        <h3>Favorites</h3>
         <div id="favoritesList"></div>
     </div>
     
@@ -241,76 +948,121 @@
         <header>
             <h1><span class="eagle-icon">🦅</span> EAGLE ROYAL</h1>
             <div class="search-container">
-                <div class="search-icon"><i class="fas fa-search"></i></div>
-                <input type="text" id="searchInput" placeholder="Search channels..." autocomplete="off">
+                <div class="search-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <input type="text" id="searchInput" placeholder="Search current category..." autocomplete="off">
             </div>
         </header>
         
+        <!-- Theme Selector -->
         <div class="theme-selector">
-            <button class="theme-btn active" data-theme="sky">🌊 Sky</button>
-            <button class="theme-btn" data-theme="rainbow">🌈 Rainbow</button>
-            <button class="theme-btn" data-theme="tv">📺 TV Mode</button>
-            <button class="theme-btn" data-theme="windows">🪟 Windows</button>
-            <button class="theme-btn" data-theme="neon">💜 Neon</button>
+            <button class="theme-btn active" data-theme="sky">Sky Theme</button>
+            <button class="theme-btn" data-theme="rainbow">Rainbow Theme</button>
+            <button class="theme-btn" data-theme="tv">TV Mode</button>
+            <button class="theme-btn" data-theme="windows">Windows Mode</button>
+            <button class="theme-btn" data-theme="neon">Neon Mode</button>
         </div>
         
+        <!-- Playlist Selector -->
         <div class="playlist-selector">
-            <button class="playlist-btn active" data-playlist="allinone"><i class="fas fa-globe"></i> All in One</button>
-            <button class="playlist-btn" data-playlist="zee5"><i class="fas fa-play-circle"></i> Zee5</button>
-            <button class="playlist-btn" data-playlist="sonyliv"><i class="fas fa-tv"></i> SonyLiv</button>
-            <button class="playlist-btn" data-playlist="jio"><i class="fas fa-bolt"></i> Jio TV</button>
-            <button class="playlist-btn" data-playlist="airtel"><i class="fas fa-broadcast-tower"></i> Airtel 4K</button>
-            <button class="playlist-btn" data-playlist="eaglespecial"><i class="fas fa-crown"></i> Eagle Special</button>
-            <button class="playlist-btn" data-playlist="tatasky"><i class="fas fa-satellite"></i> Tata Sky</button>
+            <button class="playlist-btn active" data-playlist="allinone">
+                <i class="fas fa-globe"></i> All in One
+            </button>
+            <button class="playlist-btn" data-playlist="zee5">
+                <i class="fas fa-play-circle"></i> Zee5
+            </button>
+            <button class="playlist-btn" data-playlist="sonyliv">
+                <i class="fas fa-tv"></i> SonyLiv
+            </button>
+            <button class="playlist-btn" data-playlist="jio">
+                <i class="fas fa-bolt"></i> Jio TV
+            </button>
+            <button class="playlist-btn" data-playlist="airtel">
+                <i class="fas fa-broadcast-tower"></i> Airtel 4K
+            </button>
+            <button class="playlist-btn" data-playlist="eaglespecial">
+                <i class="fas fa-crown"></i> Eagle Special
+            </button>
+            <button class="playlist-btn" data-playlist="tatasky">
+                <i class="fas fa-satellite"></i> Tata Sky
+            </button>
         </div>
         
+        <!-- Promotional Banner -->
         <div class="banner">
-            <h2 class="banner-title">🎯 Join Premium Telegram Group</h2>
-            <p style="font-size: 1.1rem; margin: 10px 0;">Get exclusive access to all features</p>
+            <h2 class="banner-title">Join Our Premium Telegram Group</h2>
+            <p>Get access to exclusive content and features</p>
+            
             <div class="banner-features">
-                <div class="feature"><span>✅</span> 3D Lock Favorites</div>
-                <div class="feature"><span>✅</span> Future Updates</div>
-                <div class="feature"><span>✅</span> Professional Website</div>
-                <div class="feature"><span>✅</span> Advanced Players</div>
-                <div class="feature"><span>✅</span> Legendary Lights</div>
+                <div class="feature">
+                    <span>✅</span> 3D Lock Favourite Channel
+                </div>
+                <div class="feature">
+                    <span>✅</span> All Future Updates
+                </div>
+                <div class="feature">
+                    <span>✅</span> Professional Website
+                </div>
+                <div class="feature">
+                    <span>✅</span> Advanced Player Options
+                </div>
+                <div class="feature">
+                    <span>✅</span> Channel Light Effects
+                </div>
             </div>
-            <a href="https://t.me/EAGLEROYALM3u8" class="join-button" target="_blank">🚀 Join Now</a>
+            
+            <a href="https://t.me/EAGLEROYALM3u8" class="join-button" target="_blank">
+                Join Telegram Group
+            </a>
         </div>
         
         <div id="categoryFilters" class="category-filters"></div>
-        
         <main>
             <div id="channelGrid" class="channels-grid"></div>
-            <div id="loadingSpinner" class="loading-container" style="display: none;"><div class="spinner"></div></div>
+            <div id="loadingSpinner" class="loading-container" style="display: none;">
+                <div class="spinner"></div>
+            </div>
             <div id="messageContainer" class="message"></div>
-            <div id="errorContainer" class="error-message"></div>
+            <div id="errorContainer" class="error-message" style="display: none;"></div>
             <div id="loadMoreContainer" class="load-more-container" style="display: none;">
                 <button id="loadMoreBtn" class="load-more-btn">Load More Channels</button>
             </div>
         </main>
     </div>
     
+    <!-- Floating Action Buttons -->
     <div class="fab-container">
-        <div class="fab" id="settingsFab" title="Settings"><i class="fas fa-cog"></i></div>
-        <div class="fab" id="favoritesFab" title="Favorites"><i class="fas fa-star"></i></div>
-        <div class="fab" id="themeFab" title="Themes"><i class="fas fa-palette"></i></div>
-        <div class="fab" id="lightsFab" title="Toggle Lights"><i class="fas fa-lightbulb"></i></div>
+        <div class="fab" id="settingsFab">
+            <i class="fas fa-cog"></i>
+        </div>
+        <div class="fab" id="favoritesFab">
+            <i class="fas fa-star"></i>
+        </div>
+        <div class="fab" id="themeFab">
+            <i class="fas fa-palette"></i>
+        </div>
+        <div class="fab" id="lightsFab">
+            <i class="fas fa-lightbulb"></i>
+        </div>
     </div>
     
+    <!-- Player Modal -->
     <div id="playerModal" class="modal">
         <div class="modal-content">
             <span class="modal-close-button">×</span>
-            <h2 class="modal-title">🎬 Choose Player</h2>
+            <h2 class="modal-title">Choose Player</h2>
             <div class="modal-buttons">
-                <a id="ogPlayerLink" href="#" target="_blank" class="modal-button og">🎯 Original Player</a>
-                <a id="simplePlayerLink" href="#" target="_blank" class="modal-button">⚡ Simple Player</a>
-                <a id="advancedPlayerLink" href="#" target="_blank" class="modal-button">🚀 Advanced Player</a>
+                <a id="ogPlayerLink" href="#" target="_blank" class="modal-button og">Original Player</a> 
+                <a id="simplePlayerLink" href="#" target="_blank" class="modal-button">Simple Player</a>
+                <a id="advancedPlayerLink" href="#" target="_blank" class="modal-button">Advanced Player</a>
             </div>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Playlist URLs
             const PLAYLISTS = {
                 allinone: 'https://servertvhub.site/playlist.php',
                 zee5: 'https://servertvhub.site/zee5-main/playlist.php',
@@ -325,306 +1077,370 @@
             const CHANNELS_PER_PAGE = 30;
             const MAX_RETRIES = 3;
             
-            const elements = {
-                channelGrid: document.getElementById('channelGrid'),
-                loadingSpinner: document.getElementById('loadingSpinner'),
-                searchInput: document.getElementById('searchInput'),
-                messageContainer: document.getElementById('messageContainer'),
-                errorContainer: document.getElementById('errorContainer'),
-                loadMoreBtn: document.getElementById('loadMoreBtn'),
-                loadMoreContainer: document.getElementById('loadMoreContainer'),
-                modal: document.getElementById('playerModal'),
-                ogPlayerLink: document.getElementById('ogPlayerLink'),
-                simplePlayerLink: document.getElementById('simplePlayerLink'),
-                advancedPlayerLink: document.getElementById('advancedPlayerLink'),
-                closeButton: document.querySelector('.modal-close-button'),
-                categoryFilters: document.getElementById('categoryFilters'),
-                particles: document.getElementById('particles'),
-                lightOrbs: document.getElementById('lightOrbs'),
-                notification: document.getElementById('notification'),
-                notificationMessage: document.getElementById('notificationMessage'),
-                sidebar: document.getElementById('sidebar'),
-                sidebarClose: document.getElementById('sidebarClose'),
-                favoritesList: document.getElementById('favoritesList')
-            };
+            // UI Element references
+            const channelGrid = document.getElementById('channelGrid');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const searchInput = document.getElementById('searchInput');
+            const messageContainer = document.getElementById('messageContainer');
+            const errorContainer = document.getElementById('errorContainer');
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            const loadMoreContainer = document.getElementById('loadMoreContainer');
+            const modal = document.getElementById('playerModal');
+            const ogPlayerLink = document.getElementById('ogPlayerLink');
+            const simplePlayerLink = document.getElementById('simplePlayerLink');
+            const advancedPlayerLink = document.getElementById('advancedPlayerLink');
+            const closeButton = document.querySelector('.modal-close-button');
+            const categoryFiltersContainer = document.getElementById('categoryFilters');
+            const themeButtons = document.querySelectorAll('.theme-btn');
+            const playlistButtons = document.querySelectorAll('.playlist-btn');
+            const particlesContainer = document.getElementById('particles');
+            const notification = document.getElementById('notification');
+            const notificationMessage = document.getElementById('notificationMessage');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarClose = document.getElementById('sidebarClose');
+            const settingsFab = document.getElementById('settingsFab');
+            const favoritesFab = document.getElementById('favoritesFab');
+            const themeFab = document.getElementById('themeFab');
+            const lightsFab = document.getElementById('lightsFab');
+            const favoritesList = document.getElementById('favoritesList');
+            const animationSpeed = document.getElementById('animationSpeed');
+            const particleDensity = document.getElementById('particleDensity');
+            const autoPlay = document.getElementById('autoPlay');
+            const darkMode = document.getElementById('darkMode');
+            const channelLights = document.getElementById('channelLights');
             
-            let state = {
-                allChannels: [],
-                currentlyVisibleChannels: [],
-                renderedChannelCount: 0,
-                selectedCategory: 'All',
-                currentSearchTerm: '',
-                currentPlaylist: 'allinone',
-                favorites: JSON.parse(localStorage.getItem('eagleRoyalFavorites')) || [],
-                settings: JSON.parse(localStorage.getItem('eagleRoyalSettings')) || {
-                    animationSpeed: 'normal',
-                    particleDensity: 'medium',
-                    autoPlay: true,
-                    channelLights: true,
-                    auroraEffect: true,
-                    scanlineEffect: false,
-                    glassEffect: false
-                }
+            // State variables
+            let allChannels = [];
+            let currentlyVisibleChannels = [];
+            let renderedChannelCount = 0;
+            let selectedCategory = 'All';
+            let currentSearchTerm = '';
+            let currentPlaylist = 'allinone';
+            let favorites = JSON.parse(localStorage.getItem('eagleRoyalFavorites')) || [];
+            let settings = JSON.parse(localStorage.getItem('eagleRoyalSettings')) || {
+                animationSpeed: 'normal',
+                particleDensity: 'medium',
+                autoPlay: true,
+                darkMode: true,
+                channelLights: true
             };
 
-            // Initialize visual effects
+            // Initialize settings
+            function initializeSettings() {
+                animationSpeed.value = settings.animationSpeed;
+                particleDensity.value = settings.particleDensity;
+                autoPlay.checked = settings.autoPlay;
+                darkMode.checked = settings.darkMode;
+                channelLights.checked = settings.channelLights;
+                
+                // Apply settings
+                applyAnimationSpeed();
+                createParticles();
+                applyChannelLights();
+            }
+            
+            // Apply animation speed
+            function applyAnimationSpeed() {
+                const speed = settings.animationSpeed;
+                const speedMultiplier = speed === 'slow' ? 1.5 : speed === 'fast' ? 0.5 : 1;
+                
+                document.documentElement.style.setProperty('--animation-speed', speedMultiplier);
+                
+                // Update CSS animations
+                const style = document.createElement('style');
+                style.textContent = `
+                    * {
+                        animation-duration: ${speedMultiplier}s !important;
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            // Apply channel lights setting
+            function applyChannelLights() {
+                if (settings.channelLights) {
+                    document.body.classList.add('channel-lights-enabled');
+                    document.body.classList.remove('channel-lights-disabled');
+                } else {
+                    document.body.classList.add('channel-lights-disabled');
+                    document.body.classList.remove('channel-lights-enabled');
+                }
+            }
+            
+            // Create floating particles
             function createParticles() {
-                elements.particles.innerHTML = '';
-                const density = state.settings.particleDensity;
-                const count = density === 'low' ? 30 : density === 'high' ? 100 : 60;
+                particlesContainer.innerHTML = '';
+                const density = settings.particleDensity;
+                const count = density === 'low' ? 20 : density === 'high' ? 80 : 50;
                 
                 for (let i = 0; i < count; i++) {
                     const particle = document.createElement('div');
                     particle.classList.add('particle');
-                    particle.style.width = `${Math.random() * 5 + 2}px`;
-                    particle.style.height = particle.style.width;
-                    particle.style.left = `${Math.random() * 100}%`;
-                    particle.style.animationDuration = `${Math.random() * 20 + 10}s`;
-                    particle.style.animationDelay = `${Math.random() * 5}s`;
-                    elements.particles.appendChild(particle);
+                    
+                    // Random properties
+                    const size = Math.random() * 5 + 2;
+                    const left = Math.random() * 100;
+                    const animationDuration = Math.random() * 20 + 10;
+                    const animationDelay = Math.random() * 5;
+                    
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    particle.style.left = `${left}%`;
+                    particle.style.animationDuration = `${animationDuration}s`;
+                    particle.style.animationDelay = `${animationDelay}s`;
+                    
+                    particlesContainer.appendChild(particle);
                 }
             }
             
-            function createLightOrbs() {
-                elements.lightOrbs.innerHTML = '';
-                const colors = ['rgba(77,166,255,0.3)', 'rgba(255,0,255,0.3)', 'rgba(0,255,255,0.3)', 'rgba(255,215,0,0.3)'];
-                
-                for (let i = 0; i < 5; i++) {
-                    const orb = document.createElement('div');
-                    orb.classList.add('light-orb');
-                    orb.style.width = `${Math.random() * 300 + 200}px`;
-                    orb.style.height = orb.style.width;
-                    orb.style.left = `${Math.random() * 100}%`;
-                    orb.style.top = `${Math.random() * 100}%`;
-                    orb.style.background = colors[Math.floor(Math.random() * colors.length)];
-                    orb.style.animationDuration = `${Math.random() * 20 + 15}s`;
-                    orb.style.animationDelay = `${Math.random() * 5}s`;
-                    elements.lightOrbs.appendChild(orb);
-                }
-            }
-
-            function initializeSettings() {
-                document.getElementById('animationSpeed').value = state.settings.animationSpeed;
-                document.getElementById('particleDensity').value = state.settings.particleDensity;
-                document.getElementById('autoPlay').checked = state.settings.autoPlay;
-                document.getElementById('channelLights').checked = state.settings.channelLights;
-                document.getElementById('auroraEffect').checked = state.settings.auroraEffect;
-                document.getElementById('scanlineEffect').checked = state.settings.scanlineEffect;
-                document.getElementById('glassEffect').checked = state.settings.glassEffect;
-                
-                createParticles();
-                createLightOrbs();
-                applySettings();
-            }
-            
-            function applySettings() {
-                document.querySelector('.aurora-effect').style.display = state.settings.auroraEffect ? 'block' : 'none';
-                
-                if (state.settings.scanlineEffect) {
-                    document.body.classList.add('scanlines-enabled');
-                } else {
-                    document.body.classList.remove('scanlines-enabled');
-                }
-                
-                if (state.settings.glassEffect) {
-                    document.body.classList.add('glass-enabled');
-                } else {
-                    document.body.classList.remove('glass-enabled');
-                }
-            }
-
+            // Show notification
             function showNotification(message, duration = 3000) {
-                elements.notificationMessage.textContent = message;
-                elements.notification.classList.add('show');
-                setTimeout(() => elements.notification.classList.remove('show'), duration);
+                notificationMessage.textContent = message;
+                notification.classList.add('show');
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, duration);
             }
-
+            
+            // Toggle favorite
             function toggleFavorite(channel) {
-                const index = state.favorites.findIndex(fav => fav.name === channel.name);
+                const index = favorites.findIndex(fav => fav.name === channel.name);
                 
                 if (index === -1) {
-                    state.favorites.push(channel);
-                    showNotification(`⭐ Added ${channel.name} to favorites`);
+                    favorites.push(channel);
+                    showNotification(`Added ${channel.name} to favorites`);
                 } else {
-                    state.favorites.splice(index, 1);
-                    showNotification(`💔 Removed ${channel.name} from favorites`);
+                    favorites.splice(index, 1);
+                    showNotification(`Removed ${channel.name} from favorites`);
                 }
                 
-                localStorage.setItem('eagleRoyalFavorites', JSON.stringify(state.favorites));
+                localStorage.setItem('eagleRoyalFavorites', JSON.stringify(favorites));
                 updateFavoritesDisplay();
                 updateChannelCards();
             }
-
+            
+            // Update favorites display
             function updateFavoritesDisplay() {
-                if (state.favorites.length === 0) {
-                    elements.favoritesList.innerHTML = '<p style="padding: 20px; text-align: center;">No favorites yet</p>';
+                favoritesList.innerHTML = '';
+                
+                if (favorites.length === 0) {
+                    favoritesList.innerHTML = '<p>No favorites yet</p>';
                     return;
                 }
                 
-                elements.favoritesList.innerHTML = state.favorites.map(channel => `
-                    <div class="channel-card favorite" style="margin-bottom: 15px;" data-url="${btoa(channel.url)}" data-name="${channel.name}" data-icon="${channel.icon}">
+                favorites.forEach(channel => {
+                    const favItem = document.createElement('div');
+                    favItem.classList.add('channel-card');
+                    favItem.style.marginBottom = '10px';
+                    favItem.innerHTML = `
                         <div class="channel-image">
-                            <img src="${channel.icon}" alt="${channel.name}" onerror="this.src='https://placehold.co/120x60/1a3a5f/e0f0ff?text=Logo';">
+                            <img src="${channel.icon}" alt="${channel.name} logo" onerror="this.onerror=null;this.src='https://placehold.co/120x60/1a3a5f/e0f0ff?text=Logo';">
                         </div>
                         <div class="channel-info">
                             <h3 class="channel-name">${channel.name}</h3>
+                            <div class="play-btn" style="position: relative; opacity: 1; transform: none; margin-top: 10px;">Play</div>
                         </div>
-                        <div class="favorite-indicator"><i class="fas fa-star"></i></div>
-                    </div>
-                `).join('');
-                
-                elements.favoritesList.querySelectorAll('.channel-card').forEach(card => {
-                    card.addEventListener('click', (e) => {
-                        handleChannelClick({ currentTarget: card, preventDefault: () => {} });
+                        <div class="favorite-indicator">
+                            <i class="fas fa-star"></i>
+                        </div>
+                    `;
+                    
+                    favItem.addEventListener('click', (e) => {
+                        if (!e.target.classList.contains('play-btn')) return;
+                        
+                        const streamUrl = btoa(channel.url);
+                        const channelName = channel.name;
+                        const channelIcon = channel.icon;
+                        const backUrl = window.location.href;
+                        
+                        ogPlayerLink.href = `player.html?s=${encodeURIComponent(streamUrl)}&name=${encodeURIComponent(channelName)}&icon=${encodeURIComponent(channelIcon)}&back=${encodeURIComponent(backUrl)}`;
+                        simplePlayerLink.href = `simple-player.html?s=${encodeURIComponent(streamUrl)}&name=${encodeURIComponent(channelName)}&back=${encodeURIComponent(backUrl)}`;
+                        advancedPlayerLink.href = `advanced-player.html?s=${encodeURIComponent(streamUrl)}&name=${encodeURIComponent(channelName)}&back=${encodeURIComponent(backUrl)}`;
+                        
+                        modal.style.display = 'flex';
                     });
+                    
+                    favoritesList.appendChild(favItem);
                 });
             }
-
+            
+            // Update channel cards with favorite status
             function updateChannelCards() {
                 document.querySelectorAll('.channel-card').forEach(card => {
                     const channelName = card.dataset.name;
-                    const isFavorite = state.favorites.some(fav => fav.name === channelName);
-                    card.classList.toggle('favorite', isFavorite);
+                    const isFavorite = favorites.some(fav => fav.name === channelName);
+                    
+                    if (isFavorite) {
+                        card.classList.add('favorite');
+                    } else {
+                        card.classList.remove('favorite');
+                    }
                 });
             }
-
-            // Theme switching
-            document.querySelectorAll('.theme-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const theme = btn.dataset.theme;
-                    document.body.className = `${theme}-mode`;
-                    document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    applySettings();
-                    showNotification(`🎨 Theme changed to ${theme}`);
+            
+            // Theme switching functionality
+            themeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const theme = button.dataset.theme;
+                    
+                    // Remove all theme classes
+                    document.body.classList.remove('sky-mode', 'rainbow-mode', 'tv-mode', 'windows-mode', 'neon-mode');
+                    
+                    // Add the selected theme class
+                    document.body.classList.add(`${theme}-mode`);
+                    
+                    // Update active button
+                    themeButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    
+                    // Special handling for rainbow theme
+                    if (theme === 'rainbow') {
+                        document.querySelector('h1').classList.add('rainbow-text');
+                    } else {
+                        document.querySelector('h1').classList.remove('rainbow-text');
+                    }
+                    
+                    showNotification(`Theme changed to ${theme} mode`);
                 });
             });
-
-            // Playlist switching
-            document.querySelectorAll('.playlist-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    state.currentPlaylist = btn.dataset.playlist;
-                    document.querySelectorAll('.playlist-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    showNotification(`📡 Loading ${btn.dataset.playlist}...`);
+            
+            // Playlist switching functionality
+            playlistButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const playlist = button.dataset.playlist;
+                    
+                    // Update active button
+                    playlistButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    
+                    // Change playlist
+                    currentPlaylist = playlist;
+                    showNotification(`Loading ${playlist} playlist...`);
                     fetchAndPrepareChannels();
                 });
             });
 
-            // Settings listeners
-            ['animationSpeed', 'particleDensity', 'autoPlay', 'channelLights', 'auroraEffect', 'scanlineEffect', 'glassEffect'].forEach(setting => {
-                const element = document.getElementById(setting);
-                element.addEventListener('change', () => {
-                    state.settings[setting] = element.type === 'checkbox' ? element.checked : element.value;
-                    localStorage.setItem('eagleRoyalSettings', JSON.stringify(state.settings));
-                    if (setting === 'particleDensity') createParticles();
-                    applySettings();
-                    showNotification(`✅ ${setting} updated`);
-                });
+            // Settings event listeners
+            animationSpeed.addEventListener('change', () => {
+                settings.animationSpeed = animationSpeed.value;
+                localStorage.setItem('eagleRoyalSettings', JSON.stringify(settings));
+                applyAnimationSpeed();
             });
-
-            // Quick actions
-            document.getElementById('clearCache').addEventListener('click', () => {
-                if (confirm('🗑️ Clear all cache and settings?')) {
-                    localStorage.clear();
-                    showNotification('✅ Cache cleared! Refreshing...');
-                    setTimeout(() => window.location.reload(), 1500);
+            
+            particleDensity.addEventListener('change', () => {
+                settings.particleDensity = particleDensity.value;
+                localStorage.setItem('eagleRoyalSettings', JSON.stringify(settings));
+                createParticles();
+            });
+            
+            autoPlay.addEventListener('change', () => {
+                settings.autoPlay = autoPlay.checked;
+                localStorage.setItem('eagleRoyalSettings', JSON.stringify(settings));
+            });
+            
+            darkMode.addEventListener('change', () => {
+                settings.darkMode = darkMode.checked;
+                localStorage.setItem('eagleRoyalSettings', JSON.stringify(settings));
+                
+                if (!darkMode.checked) {
+                    document.body.style.setProperty('--bg-primary', '#f0f0f0');
+                    document.body.style.setProperty('--bg-secondary', '#ffffff');
+                    document.body.style.setProperty('--text-primary', '#333333');
+                    document.body.style.setProperty('--text-secondary', '#666666');
+                } else {
+                    // Reset to theme colors
+                    const activeTheme = document.querySelector('.theme-btn.active').dataset.theme;
+                    document.body.classList.remove('sky-mode', 'rainbow-mode', 'tv-mode', 'windows-mode', 'neon-mode');
+                    document.body.classList.add(`${activeTheme}-mode`);
                 }
             });
-
-            document.getElementById('exportFavorites').addEventListener('click', () => {
-                if (state.favorites.length === 0) return showNotification('⚠️ No favorites to export');
-                const blob = new Blob([JSON.stringify(state.favorites, null, 2)], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = 'eagle-royal-favorites.json';
-                link.click();
-                showNotification('💾 Favorites exported!');
+            
+            channelLights.addEventListener('change', () => {
+                settings.channelLights = channelLights.checked;
+                localStorage.setItem('eagleRoyalSettings', JSON.stringify(settings));
+                applyChannelLights();
+                showNotification(channelLights.checked ? 'Channel lights enabled' : 'Channel lights disabled');
             });
-
-            document.getElementById('importFavorites').addEventListener('click', () => {
-                const input = document.createElement('input');
-                input.type = 'file';
-                input.accept = 'application/json';
-                input.onchange = (e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = (event) => {
-                            try {
-                                state.favorites = JSON.parse(event.target.result);
-                                localStorage.setItem('eagleRoyalFavorites', JSON.stringify(state.favorites));
-                                updateFavoritesDisplay();
-                                updateChannelCards();
-                                showNotification('📥 Favorites imported!');
-                            } catch {
-                                showNotification('❌ Invalid file format');
-                            }
-                        };
-                        reader.readAsText(file);
-                    }
-                };
-                input.click();
+            
+            // FAB event listeners
+            settingsFab.addEventListener('click', () => {
+                sidebar.classList.add('open');
             });
-
-            // FAB buttons
-            document.getElementById('settingsFab').addEventListener('click', () => elements.sidebar.classList.add('open'));
-            document.getElementById('favoritesFab').addEventListener('click', () => {
+            
+            favoritesFab.addEventListener('click', () => {
                 updateFavoritesDisplay();
-                elements.sidebar.classList.add('open');
+                sidebar.classList.add('open');
             });
-            document.getElementById('themeFab').addEventListener('click', () => document.querySelector('.theme-selector').scrollIntoView({ behavior: 'smooth' }));
-            document.getElementById('lightsFab').addEventListener('click', () => {
-                const lightsCheckbox = document.getElementById('channelLights');
-                lightsCheckbox.checked = !lightsCheckbox.checked;
-                lightsCheckbox.dispatchEvent(new Event('change'));
+            
+            themeFab.addEventListener('click', () => {
+                document.querySelector('.theme-selector').scrollIntoView({ behavior: 'smooth' });
+            });
+            
+            lightsFab.addEventListener('click', () => {
+                channelLights.checked = !channelLights.checked;
+                settings.channelLights = channelLights.checked;
+                localStorage.setItem('eagleRoyalSettings', JSON.stringify(settings));
+                applyChannelLights();
+                showNotification(channelLights.checked ? 'Channel lights enabled' : 'Channel lights disabled');
+            });
+            
+            sidebarClose.addEventListener('click', () => {
+                sidebar.classList.remove('open');
             });
 
-            elements.sidebarClose.addEventListener('click', () => elements.sidebar.classList.remove('open'));
-
-            // Fetch channels
-            async function fetchWithRetries(url, retries = MAX_RETRIES) {
+            /**
+             * Fetches a URL with a retry mechanism.
+             */
+            async function fetchWithRetries(url, retries = MAX_RETRIES, delay = 1000) {
                 try {
-                    return await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                    return await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest', 'Referer': 'http://demonji.onrender.com/' } });
                 } catch (error) {
                     if (retries > 0) {
-                        await new Promise(resolve => setTimeout(resolve, 1000));
-                        return fetchWithRetries(url, retries - 1);
+                        console.warn(`Fetch failed. Retrying in ${delay / 1000}s... (${retries} retries left)`);
+                        showMessage(`Could not load channels. Retrying... (${MAX_RETRIES - retries + 1}/${MAX_RETRIES})`);
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        return fetchWithRetries(url, retries - 1, delay * 2);
+                    } else {
+                        console.error("Max retries reached. Fetch failed.", error);
+                        throw new Error("Failed to fetch playlist after multiple attempts.");
                     }
-                    throw error;
                 }
             }
 
             async function fetchAndPrepareChannels() {
                 try {
-                    elements.loadingSpinner.style.display = 'flex';
-                    elements.errorContainer.style.display = 'none';
-                    elements.messageContainer.textContent = '🚀 Loading channels...';
-                    elements.messageContainer.style.display = 'block';
+                    showLoading();
+                    hideError();
+                    showMessage('Loading channels, please wait...');
                     
-                    const response = await fetchWithRetries(`${CORS_PROXY_URL}${PLAYLISTS[state.currentPlaylist]}`);
-                    if (!response.ok) throw new Error(`Server error: ${response.status}`);
+                    const playlistUrl = PLAYLISTS[currentPlaylist];
+                    const proxiedUrl = `${CORS_PROXY_URL}${playlistUrl}`;
+                    const response = await fetchWithRetries(proxiedUrl);
+
+                    if (!response.ok) {
+                        throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
+                    }
                     
                     const data = await response.text();
-                    state.allChannels = parseM3uData(data);
+                    allChannels = parseM3uData(data);
                     
-                    if (state.allChannels.length === 0) {
-                        elements.messageContainer.textContent = '⚠️ No channels found';
+                    if (allChannels.length === 0) {
+                        showMessage('No channels were found in the playlist.');
                     } else {
-                        elements.messageContainer.style.display = 'none';
+                        hideMessage();
                         displayCategories();
                         applyFiltersAndRender();
-                        showNotification(`✅ Loaded ${state.allChannels.length} channels`);
+                        showNotification(`Loaded ${allChannels.length} channels from ${currentPlaylist} playlist`);
                     }
                 } catch (error) {
-                    elements.errorContainer.textContent = `❌ Error: ${error.message}`;
-                    elements.errorContainer.style.display = 'block';
+                    console.error('Error during channel preparation:', error);
+                    showError(`Error loading channels: ${error.message}. Please try refreshing the page later.`);
                 } finally {
-                    elements.loadingSpinner.style.display = 'none';
+                    hideLoading();
                 }
             }
-
+            
             function parseM3uData(data) {
                 const channels = [];
                 const lines = data.split('\n');
@@ -633,20 +1449,26 @@
                 for (const line of lines) {
                     const trimmedLine = line.trim();
                     if (trimmedLine.startsWith('#EXTINF')) {
-                        const match = /#EXTINF:-1\s+(.*),(.*)/.exec(trimmedLine);
-                        if (match) {
-                            const logoMatch = /tvg-logo="([^"]*)"/.exec(match[1]);
-                            const groupMatch = /group-title="([^"]*)"/.exec(match[1]);
+                        const infoMatch = /#EXTINF:-1\s+(.*),(.*)/.exec(trimmedLine);
+                        if (infoMatch) {
+                            const attributesString = infoMatch[1];
+                            const name = infoMatch[2].trim();
+                            
+                            const logoMatch = /tvg-logo="([^"]*)"/.exec(attributesString);
+                            const groupMatch = /group-title="([^"]*)"/.exec(attributesString);
+
                             currentChannel = {
-                                name: match[2].trim(),
+                                name: name,
                                 icon: logoMatch ? logoMatch[1] : 'https://placehold.co/120x60/1a3a5f/e0f0ff?text=Logo',
                                 category: groupMatch ? groupMatch[1] : 'General',
-                                playlist: state.currentPlaylist
+                                playlist: currentPlaylist
                             };
                         }
-                    } else if (trimmedLine.startsWith('http') && currentChannel.name) {
-                        currentChannel.url = trimmedLine;
-                        channels.push(currentChannel);
+                    } else if (trimmedLine.startsWith('http')) {
+                        if (currentChannel.name) {
+                            currentChannel.url = trimmedLine;
+                            channels.push(currentChannel);
+                        }
                         currentChannel = {};
                     }
                 }
@@ -654,74 +1476,93 @@
             }
 
             function displayCategories() {
-                const categories = ['All', ...new Set(state.allChannels.map(ch => ch.category).sort())];
-                elements.categoryFilters.innerHTML = categories.map(cat => 
-                    `<button class="category-btn ${cat === 'All' ? 'active' : ''}" data-category="${cat}">${cat}</button>`
+                const categories = ['All', ...new Set(allChannels.map(channel => channel.category).sort())];
+                categoryFiltersContainer.innerHTML = categories.map(category => 
+                    `<button class="category-btn ${category === 'All' ? 'active' : ''}" data-category="${category}">${category}</button>`
                 ).join('');
             }
-
+            
             function applyFiltersAndRender() {
-                let filtered = state.allChannels;
-                if (state.selectedCategory !== 'All') {
-                    filtered = filtered.filter(ch => ch.category === state.selectedCategory);
+                hideMessage();
+                let filteredChannels = allChannels;
+
+                if (selectedCategory !== 'All') {
+                    filteredChannels = allChannels.filter(channel => channel.category === selectedCategory);
                 }
-                if (state.currentSearchTerm) {
-                    filtered = filtered.filter(ch => ch.name.toLowerCase().includes(state.currentSearchTerm.toLowerCase()));
+
+                if (currentSearchTerm) {
+                    const searchTerm = currentSearchTerm.toLowerCase();
+                    filteredChannels = filteredChannels.filter(channel => 
+                        channel.name.toLowerCase().includes(searchTerm)
+                    );
                 }
-                state.currentlyVisibleChannels = filtered;
+                
+                currentlyVisibleChannels = filteredChannels;
                 renderChannels(true);
             }
 
-            function renderChannels(isNew) {
-                if (isNew) {
-                    elements.channelGrid.innerHTML = '';
-                    state.renderedChannelCount = 0;
-                    if (state.currentlyVisibleChannels.length === 0) {
-                        elements.messageContainer.textContent = '🔍 No channels match your search';
-                        elements.messageContainer.style.display = 'block';
-                        elements.loadMoreContainer.style.display = 'none';
+            function renderChannels(isNewRender) {
+                if (isNewRender) {
+                    channelGrid.innerHTML = '';
+                    renderedChannelCount = 0;
+                    if (currentlyVisibleChannels.length === 0) {
+                        showMessage('No channels match your selection.');
+                        hideLoadMore();
                         return;
                     }
                 }
 
-                const start = state.renderedChannelCount;
-                const end = Math.min(start + CHANNELS_PER_PAGE, state.currentlyVisibleChannels.length);
+                const startIndex = renderedChannelCount;
+                const endIndex = Math.min(startIndex + CHANNELS_PER_PAGE, currentlyVisibleChannels.length);
 
-                for (let i = start; i < end; i++) {
-                    const channel = state.currentlyVisibleChannels[i];
-                    const isFavorite = state.favorites.some(fav => fav.name === channel.name);
+                for (let i = startIndex; i < endIndex; i++) {
+                    const channel = currentlyVisibleChannels[i];
+                    const isFavorite = favorites.some(fav => fav.name === channel.name);
                     
-                    const card = document.createElement('div');
+                    const card = document.createElement('a');
                     card.className = `channel-card ${isFavorite ? 'favorite' : ''}`;
+                    card.href = `#`;
                     card.dataset.stream = btoa(channel.url);
                     card.dataset.name = channel.name;
                     card.dataset.icon = channel.icon;
                     card.innerHTML = `
                         <div class="channel-image">
-                            <img src="${channel.icon}" alt="${channel.name}" loading="lazy" onerror="this.src='https://placehold.co/120x60/1a3a5f/e0f0ff?text=Logo';">
+                            <img src="${channel.icon}" alt="${channel.name} logo" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/120x60/1a3a5f/e0f0ff?text=Logo';">
                         </div>
                         <div class="channel-info">
                             <div>
                                 <h3 class="channel-name" title="${channel.name}">${channel.name}</h3>
-                                <div class="channel-category"><i class="fas fa-tag"></i> ${channel.category}</div>
+                                <div class="channel-category">
+                                    <i class="fas fa-tag"></i>
+                                    <span>${channel.category}</span>
+                                </div>
                             </div>
                         </div>
-                        <div class="play-btn">▶️ Play Now</div>
-                        <div class="favorite-indicator"><i class="fas fa-star"></i></div>
+                        <div class="play-btn">Play Now</div>
+                        <div class="favorite-indicator">
+                            <i class="fas fa-star"></i>
+                        </div>
                     `;
                     
+                    // Add double click for favorite
                     let clickTimer;
                     card.addEventListener('click', (e) => {
                         clearTimeout(clickTimer);
-                        if (e.target.closest('.favorite-indicator')) {
+                        
+                        if (e.target.classList.contains('favorite-indicator') || e.target.classList.contains('fa-star')) {
                             toggleFavorite(channel);
                             return;
                         }
+                        
                         if (e.target.classList.contains('play-btn')) {
                             handleChannelClick(e);
                             return;
                         }
-                        clickTimer = setTimeout(() => handleChannelClick(e), 300);
+                        
+                        // Single click - prepare for double click
+                        clickTimer = setTimeout(() => {
+                            handleChannelClick(e);
+                        }, 300);
                     });
                     
                     card.addEventListener('dblclick', (e) => {
@@ -729,11 +1570,12 @@
                         toggleFavorite(channel);
                     });
                     
-                    elements.channelGrid.appendChild(card);
+                    channelGrid.appendChild(card);
                 }
 
-                state.renderedChannelCount = end;
-                elements.loadMoreContainer.style.display = state.renderedChannelCount < state.currentlyVisibleChannels.length ? 'flex' : 'none';
+                renderedChannelCount = endIndex;
+                if (renderedChannelCount < currentlyVisibleChannels.length) showLoadMore();
+                else hideLoadMore();
             }
 
             function handleChannelClick(e) {
@@ -744,47 +1586,54 @@
                 const channelIcon = item.dataset.icon;
                 const backUrl = window.location.href;
                 
-                elements.ogPlayerLink.href = `player.html?s=${encodeURIComponent(streamUrl)}&name=${encodeURIComponent(channelName)}&icon=${encodeURIComponent(channelIcon)}&back=${encodeURIComponent(backUrl)}`;
-                elements.simplePlayerLink.href = `simple-player.html?s=${encodeURIComponent(streamUrl)}&name=${encodeURIComponent(channelName)}&back=${encodeURIComponent(backUrl)}`;
-                elements.advancedPlayerLink.href = `advanced-player.html?s=${encodeURIComponent(streamUrl)}&name=${encodeURIComponent(channelName)}&back=${encodeURIComponent(backUrl)}`;
+                ogPlayerLink.href = `player.html?s=${encodeURIComponent(streamUrl)}&name=${encodeURIComponent(channelName)}&icon=${encodeURIComponent(channelIcon)}&back=${encodeURIComponent(backUrl)}`;
+                simplePlayerLink.href = `simple-player.html?s=${encodeURIComponent(streamUrl)}&name=${encodeURIComponent(channelName)}&back=${encodeURIComponent(backUrl)}`;
+                advancedPlayerLink.href = `advanced-player.html?s=${encodeURIComponent(streamUrl)}&name=${encodeURIComponent(channelName)}&back=${encodeURIComponent(backUrl)}`;
                 
-                elements.modal.style.display = 'flex';
+                modal.style.display = 'flex';
             }
 
-            elements.loadMoreBtn.addEventListener('click', () => renderChannels(false));
+            // --- EVENT LISTENERS ---
+            loadMoreBtn.addEventListener('click', () => renderChannels(false));
 
             let searchTimeout;
-            elements.searchInput.addEventListener('input', function() {
+            searchInput.addEventListener('input', function() {
                 clearTimeout(searchTimeout);
                 searchTimeout = setTimeout(() => {
-                    state.currentSearchTerm = this.value.trim();
+                    currentSearchTerm = this.value.trim();
                     applyFiltersAndRender();
                 }, 300);
             });
 
-            elements.categoryFilters.addEventListener('click', (e) => {
+            categoryFiltersContainer.addEventListener('click', (e) => {
                 if (e.target.classList.contains('category-btn')) {
-                    state.selectedCategory = e.target.dataset.category;
+                    selectedCategory = e.target.dataset.category;
+                    
                     document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
                     e.target.classList.add('active');
+                    
                     applyFiltersAndRender();
                 }
             });
 
-            elements.closeButton.addEventListener('click', () => elements.modal.style.display = 'none');
-            window.addEventListener('click', (e) => { if (e.target === elements.modal) elements.modal.style.display = 'none'; });
+            closeButton.addEventListener('click', () => { modal.style.display = 'none'; });
+            window.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+            
+            // --- UI HELPER FUNCTIONS ---
+            function showLoading() { loadingSpinner.style.display = 'flex'; }
+            function hideLoading() { loadingSpinner.style.display = 'none'; }
+            function showMessage(message) { messageContainer.textContent = message; messageContainer.style.display = 'block'; }
+            function hideMessage() { messageContainer.style.display = 'none'; }
+            function showError(message) { errorContainer.textContent = message; errorContainer.style.display = 'block'; }
+            function hideError() { errorContainer.style.display = 'none'; }
+            function showLoadMore() { loadMoreContainer.style.display = 'flex'; }
+            function hideLoadMore() { loadMoreContainer.style.display = 'none'; }
 
+            // Initialize the application
             initializeSettings();
             updateFavoritesDisplay();
             fetchAndPrepareChannels();
         });
     </script>
 </body>
-</html> id="notificationMessage"></div>
-    </div>
-    
-    <div class="sidebar" id="sidebar">
-        <span class="sidebar-close" id="sidebarClose">&times;</span>
-        <h3>⚙️ Settings & Features</h3>
-        
-        <div
+</html>
