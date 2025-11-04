@@ -1,58 +1,331 @@
 <!doctype html>
 <html lang="en">
- <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>@allinone_reborn</title>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demons Player</title>
+  <!-- JW Player -->
+  <script src="https://cdn.jwplayer.com/libraries/IDzF9Zmk.js"></script>
+  <!-- Bootstrap for responsive layout -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Fonts and Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+    :root {
+      --bg-primary: #121212;
+      --bg-secondary: #1e1e1e;
+      --text-primary: #e0e0e0;
+      --text-secondary: #b0b0b0;
+      --accent: #FF5722;
+      --accent-hover: #ff7043;
+      --success: #4CAF50;
+      --error: #f44336;
+      --warning: #ff9800;
+      --card-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+      --transition: all 0.3s ease;
+    }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
     body {
-      margin: 0;
-      padding: 0;
-      background: #0a0a0a;
-      color: #fff;
-      font-family: Inter, system-ui, Segoe UI, Roboto, 'Helvetica Neue', Arial;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      min-height: 100vh;
     }
-
+    
     .main-container {
       width: 100%;
-      max-width: 1200px;
+      max-width: 900px;
       display: flex;
       flex-direction: column;
-      padding: 10px;
-      box-sizing: border-box;
+      gap: 20px;
     }
-
-    .player-container {
+    
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       width: 100%;
-      position: relative;
+      flex-wrap: wrap;
+      gap: 15px;
     }
-
-    .player-wrap {
+    
+    .back-button {
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+      border: none;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .back-button:hover {
+      background-color: #333;
+      transform: translateY(-2px);
+    }
+    
+    .header-controls {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .header-button {
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+      border: none;
+      padding: 10px 15px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .header-button:hover {
+      background-color: #333;
+    }
+    
+    .player-container {
+      position: relative;
       width: 100%;
       aspect-ratio: 16/9;
-      position: relative;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
       border-radius: 12px;
       overflow: hidden;
+      box-shadow: var(--card-shadow);
       background: #000;
     }
-
+    
     #my-jwplayer {
       width: 100% !important;
       height: 100% !important;
     }
-
+    
+    .channels-info {
+      width: 100%;
+      background-color: var(--bg-secondary);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      animation: fadeIn 0.5s ease-in;
+      border-left: 4px solid var(--accent);
+    }
+    
+    .channels-info img {
+      width: 100px;
+      height: 56px;
+      object-fit: contain;
+      border-radius: 8px;
+      border: 1px solid #333;
+    }
+    
+    .channels-info .info-text { flex: 1; }
+    
+    .channels-info h2 {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      background: linear-gradient(90deg, #FF9800, #FF5722);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    
+    .channels-info p { font-size: 16px; color: var(--text-secondary); margin: 0; }
+    
+    .channels-info .channel-name { font-size: 20px; font-weight: 700; color: var(--text-primary); }
+    
+    .status-message {
+      text-align: center;
+      color: #ef4444;
+      background: rgba(239, 68, 68, 0.1);
+      padding: 15px;
+      border-radius: 12px;
+      margin: 20px auto;
+      display: none;
+      width: 100%;
+      max-width: 600px;
+      font-weight: 600;
+    }
+    
+    .video-controls {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+      padding: 15px;
+      background: var(--bg-secondary);
+      border-radius: 12px;
+      box-shadow: var(--card-shadow);
+      width: 100%;
+      flex-wrap: wrap;
+    }
+    
+    .control-group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    
+    .fit-button {
+      background-color: #333;
+      color: var(--text-primary);
+      border: none;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .fit-button:hover { background-color: #444; transform: translateY(-1px); }
+    
+    .fit-button.active {
+      background-color: var(--accent);
+      box-shadow: 0 0 10px rgba(255, 87, 34, 0.5);
+    }
+    
+    .quality-selector {
+      background-color: #333;
+      color: var(--text-primary);
+      border: none;
+      padding: 10px 15px;
+      border-radius: 20px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    
+    .stats-panel {
+      background-color: var(--bg-secondary);
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: var(--card-shadow);
+      margin-top: 20px;
+      display: none;
+      width: 100%;
+    }
+    
+    .stats-panel h3 {
+      margin-bottom: 10px;
+      color: var(--accent);
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+    }
+    
+    .stat-item {
+      background-color: rgba(255, 255, 255, 0.05);
+      padding: 10px;
+      border-radius: 8px;
+    }
+    
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    
+    .stat-value {
+      font-size: 14px;
+      font-weight: 600;
+    }
+    
+    .loading-spinner {
+      display: none;
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      border-top: 4px solid var(--accent);
+      animation: spin 1s linear infinite;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin-top: -20px;
+      margin-left: -20px;
+      z-index: 10;
+    }
+    
+    .error-overlay {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 9;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    .error-overlay button {
+      margin-top: 15px;
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .error-overlay button:hover {
+      background-color: var(--accent-hover);
+    }
+    
+    .pip-button {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      z-index: 8;
+      background-color: rgba(0, 0, 0, 0.6);
+      color: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .pip-button:hover {
+      background-color: var(--accent);
+    }
+    
     .ad-container {
       width: 100%;
       overflow: hidden;
       margin: 5px 0;
     }
-
+    
     .ad-box {
       background: #111;
       color: #fff;
@@ -64,13 +337,7 @@
       justify-content: center;
       overflow: hidden;
     }
-
-    @media (max-width: 600px) {
-      .ad-box {
-        min-height: 50px;
-      }
-    }
-
+    
     .adb {
       position: fixed;
       width: 100%;
@@ -94,11 +361,6 @@
       width: 90%;
     }
     
-    @keyframes glow {
-      from { text-shadow: 0 0 0px #ff0000; }
-      to { text-shadow: 0 0 10px #ff0000; }
-    }
-    
     .adbs h3 {
       color: #d00;
       font-size: 24px;
@@ -110,224 +372,496 @@
       color: #333;
     }
     
-    .error-message {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      text-align: center;
-      padding: 20px;
-      color: #fff;
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     
-    .hidden {
-      display: none !important;
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
     
-    .loading {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      color: #fff;
-      font-size: 18px;
+    @media (max-width: 768px) {
+      body { padding: 15px; }
+      .main-container { gap: 15px; }
+      .back-button { padding: 10px 20px; font-size: 14px; }
+      .channels-info { flex-direction: column; align-items: flex-start; }
+      .channels-info img { width: 100%; height: auto; max-width: 120px; }
+      .channels-info h2 { font-size: 18px; }
+      .channels-info .channel-name { font-size: 16px; }
+      .video-controls { flex-direction: column; align-items: center; }
+      .control-group { width: 100%; justify-content: center; }
+      .ad-box {
+        min-height: 50px;
+      }
     }
   </style>
- </head>
- <body>
+</head>
+<body>
   <div class="main-container">
-   <!-- Top Ad -->
-   <div class="ad-container">
-    <div class="ad-box">
-     <script type="text/javascript">
-        atOptions = {
-          'key' : 'db78e49a3c97dc3562c3b48559ea4a28',
-          'format' : 'iframe',
-          'height' : 50,
-          'width' : 320,
-          'params' : {}
-        };
-      </script>
-     <script type="text/javascript" src="//staunchtownsegg.com/db78e49a3c97dc3562c3b48559ea4a28/invoke.js"></script>
+    <!-- Top Ad -->
+    <div class="ad-container">
+      <div class="ad-box">
+        <script type="text/javascript">
+          atOptions = {
+            'key' : 'db78e49a3c97dc3562c3b48559ea4a28',
+            'format' : 'iframe',
+            'height' : 50,
+            'width' : 320,
+            'params' : {}
+          };
+        </script>
+        <script type="text/javascript" src="//staunchtownsegg.com/db78e49a3c97dc3562c3b48559ea4a28/invoke.js"></script>
+      </div>
     </div>
-   </div>
-   <!-- Player -->
-   <div class="player-container">
-    <div class="player-wrap">
-     <div id="my-jwplayer">
-        <div class="loading">Loading player...</div>
-     </div>
+    
+    <div class="header">
+      <button class="back-button" id="backButton">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+          <path d="M15 18l-6-6 6-6"></path>
+        </svg>
+        Back
+      </button>
+      <div class="header-controls">
+        <button class="header-button" id="statsToggle"><i class="fas fa-chart-bar"></i> Stats</button>
+        <button class="header-button" id="reloadStream"><i class="fas fa-sync-alt"></i> Reload</button>
+      </div>
     </div>
-   </div>
-   <!-- Bottom Ad -->
-   <div class="ad-container">
-    <div class="ad-box">
-     <script type="text/javascript">
-        atOptions = {
-          'key' : 'db78e49a3c97dc3562c3b48559ea4a28',
-          'format' : 'iframe',
-          'height' : 50,
-          'width' : 320,
-          'params' : {}
-        };
-      </script>
-     <script type="text/javascript" src="//staunchtownsegg.com/db78e49a3c97dc3562c3b48559ea4a28/invoke.js"></script>
+    
+    <div class="channels-info">
+      <img id="channelIcon" src="https://placehold.co/100x56/222/e0e0e0?text=Logo" alt="Channel Logo">
+      <div class="info-text">
+        <h2>Now Playing</h2>
+        <p>Channel: <span id="channelName" class="channel-name">Loading...</span></p>
+      </div>
     </div>
-   </div>
+    
+    <div id="statusMessage" class="status-message"></div>
+    
+    <div class="player-container">
+      <div class="loading-spinner" id="loadingSpinner"></div>
+      <div class="error-overlay" id="errorOverlay">
+        <h3 id="errorTitle">Stream Error</h3>
+        <p id="errorMessage">An error occurred while loading the stream.</p>
+        <button id="retryButton">Retry</button>
+      </div>
+      <div id="my-jwplayer"></div>
+    </div>
+    
+    <!-- Bottom Ad -->
+    <div class="ad-container">
+      <div class="ad-box">
+        <script type="text/javascript">
+          atOptions = {
+            'key' : 'db78e49a3c97dc3562c3b48559ea4a28',
+            'format' : 'iframe',
+            'height' : 50,
+            'width' : 320,
+            'params' : {}
+          };
+        </script>
+        <script type="text/javascript" src="//staunchtownsegg.com/db78e49a3c97dc3562c3b48559ea4a28/invoke.js"></script>
+      </div>
+    </div>
+    
+    <div class="video-controls">
+      <div class="control-group">
+        <span>Video Fit:</span>
+        <button class="fit-button active" data-fit="fit">Fit</button>
+        <button class="fit-button" data-fit="fill">Fill</button>
+        <button class="fit-button" data-fit="stretch">Stretch</button>
+      </div>
+      <div class="control-group">
+        <button class="fit-button" id="muteButton"><i class="fas fa-volume-up"></i> Mute</button>
+        <button class="fit-button" id="fullscreenButton"><i class="fas fa-expand"></i> Fullscreen</button>
+      </div>
+    </div>
+    
+    <div class="stats-panel" id="statsPanel">
+      <h3>Stream Statistics</h3>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-label">Buffer Length</div>
+          <div class="stat-value" id="statBuffer">0 s</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Bitrate</div>
+          <div class="stat-value" id="statBitrate">0 Mbps</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Resolution</div>
+          <div class="stat-value" id="statResolution">0x0</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Volume</div>
+          <div class="stat-value" id="statVolume">100%</div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Anti-Adblock Popup -->
   <div class="adb" id="adb">
-   <div class="adbs">
-    <h3>Adblock/Brave Shields Detected</h3>
-    <p>Please disable your adblocker or Brave Shields to continue browsing this site.</p>
-    <button id="continue-btn" style="margin-top: 15px; padding: 8px 16px; background: #d00; color: white; border: none; border-radius: 4px; cursor: pointer;">
-      Continue Anyway
-    </button>
-   </div>
+    <div class="adbs">
+      <h3>Adblock/Brave Shields Detected</h3>
+      <p>Please disable your adblocker or Brave Shields to continue browsing this site.</p>
+      <button id="continue-btn" style="margin-top: 15px; padding: 8px 16px; background: #d00; color: white; border: none; border-radius: 4px; cursor: pointer;">
+        Continue Anyway
+      </button>
+    </div>
   </div>
 
-  <!-- JW Player Script -->
-  <script src="https://cdn.jwplayer.com/libraries/IDzF9Zmk.js"></script>
-  
   <script>
-// Initialize JW Player
-function initializePlayer() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const streamUrl = urlParams.get('url') || '';
-  
-  console.log('Stream URL:', streamUrl);
-  
-  if(!streamUrl) {
-    document.getElementById("my-jwplayer").innerHTML = "<div class='error-message'>No stream URL provided</div>";
-    return;
-  }
+    let currentPlayer = null;
+    let isMuted = false;
+    let statsInterval = null;
 
-  try {
-    console.log('Initializing JW Player...');
+    // DOM Elements
+    const backButton = document.getElementById('backButton');
+    const channelName = document.getElementById('channelName');
+    const channelIcon = document.getElementById('channelIcon');
+    const statusMessage = document.getElementById('statusMessage');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const errorOverlay = document.getElementById('errorOverlay');
+    const errorTitle = document.getElementById('errorTitle');
+    const errorMessage = document.getElementById('errorMessage');
+    const retryButton = document.getElementById('retryButton');
+    const statsToggle = document.getElementById('statsToggle');
+    const reloadStreamBtn = document.getElementById('reloadStream');
+    const muteButton = document.getElementById('muteButton');
+    const fullscreenButton = document.getElementById('fullscreenButton');
+    const statsPanel = document.getElementById('statsPanel');
+    const fitButtons = document.querySelectorAll('.fit-button');
     
-    // Check if JW Player is loaded
-    if(typeof jwplayer === 'undefined') {
-      console.error('JW Player not loaded');
-      document.getElementById("my-jwplayer").innerHTML = "<div class='error-message'>JW Player failed to load</div>";
-      return;
+    // Stats elements
+    const statBuffer = document.getElementById('statBuffer');
+    const statBitrate = document.getElementById('statBitrate');
+    const statResolution = document.getElementById('statResolution');
+    const statVolume = document.getElementById('statVolume');
+
+    // Initialize the player
+    function init() {
+      setupEventListeners();
+      setChannelInfo();
+      
+      // Check for URL parameter on page load
+      const urlParams = new URLSearchParams(window.location.search);
+      const streamUrl = urlParams.get('url');
+      
+      if(streamUrl) {
+        initializePlayer(streamUrl);
+      } else {
+        showErrorMessage("No stream URL provided. Please check the URL.");
+      }
+    }
+
+    function setupEventListeners() {
+      backButton.addEventListener('click', navigateBack);
+      retryButton.addEventListener('click', reloadPlayer);
+      statsToggle.addEventListener('click', toggleStats);
+      reloadStreamBtn.addEventListener('click', reloadPlayer);
+      muteButton.addEventListener('click', toggleMute);
+      fullscreenButton.addEventListener('click', toggleFullscreen);
+      
+      fitButtons.forEach(button => {
+        if (button.dataset.fit) {
+          button.addEventListener('click', () => {
+            handleFitChange(button.dataset.fit);
+            fitButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+          });
+        }
+      });
+
+      // Continue button event for adblock popup
+      const continueBtn = document.getElementById('continue-btn');
+      if(continueBtn) {
+        continueBtn.addEventListener('click', hidePopup);
+      }
+    }
+
+    function navigateBack() {
+      window.history.back();
+    }
+
+    function setChannelInfo() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const channelNameParam = urlParams.get('name') || 'Unknown Channel';
+      const channelIconParam = urlParams.get('icon') || '';
+      
+      channelName.textContent = decodeURIComponent(channelNameParam);
+      if (channelIconParam) {
+        channelIcon.src = decodeURIComponent(channelIconParam);
+        channelIcon.alt = decodeURIComponent(channelNameParam) + ' Logo';
+      }
+    }
+
+    function showStatus(message, isError = false) {
+      statusMessage.textContent = message;
+      statusMessage.style.display = 'block';
+      statusMessage.style.color = isError ? '#ef4444' : 'var(--text-primary)';
+      statusMessage.style.background = isError ? 'rgba(239, 68, 68, 0.1)' : 'var(--bg-secondary)';
     }
     
-    const player = jwplayer("my-jwplayer").setup({
-      file: streamUrl,
-      type: "hls",
-      width: "100%",
-      height: "100%",
-      aspectratio: "16:9",
-      autostart: true,
-      mute: false,
-      controls: true,
-      preload: "auto",
-      stretching: "uniform",
-      skin: { 
-        name: "seven",
-        active: "#ff0000",
-        inactive: "#ffffff",
-        background: "#000000"
+    function hideStatus() {
+      statusMessage.style.display = 'none';
+    }
+
+    function showLoading() {
+      loadingSpinner.style.display = 'block';
+    }
+    
+    function hideLoading() {
+      loadingSpinner.style.display = 'none';
+    }
+
+    function showError(title, message) {
+      errorTitle.textContent = title;
+      errorMessage.textContent = message;
+      errorOverlay.style.display = 'flex';
+    }
+    
+    function hideError() {
+      errorOverlay.style.display = 'none';
+    }
+
+    function showErrorMessage(message) {
+      document.getElementById("my-jwplayer").innerHTML = 
+        `<div class="error-message">
+           <h4>Stream Error</h4>
+           <p>${message}</p>
+           <button class="load-btn" onclick="showUrlInput()">Try Another URL</button>
+         </div>`;
+    }
+
+    function handleFitChange(fitType) {
+      // JW Player handles this internally, but we can adjust the container
+      const playerContainer = document.querySelector('.player-container');
+      if (fitType === 'fill') {
+        playerContainer.style.objectFit = 'cover';
+      } else if (fitType === 'stretch') {
+        playerContainer.style.objectFit = 'fill';
+      } else {
+        playerContainer.style.objectFit = 'contain';
       }
-    });
-    
-    player.on('ready', function() {
-      console.log('JW Player is ready and playing');
-    });
-    
-    player.on('error', function(e) {
-      console.error('JW Player error:', e);
-      document.getElementById("my-jwplayer").innerHTML = 
-        "<div class='error-message'><p>Error loading stream: " + e.message + "</p></div>";
-    });
-    
-    player.on('setupError', function(e) {
-      console.error('JW Player setup error:', e);
-      document.getElementById("my-jwplayer").innerHTML = 
-        "<div class='error-message'><p>Setup error: " + e.message + "</p></div>";
-    });
-    
-  } catch (error) {
-    console.error('Error initializing JW Player:', error);
-    document.getElementById("my-jwplayer").innerHTML = 
-      "<div class='error-message'><p>Failed to initialize player: " + error.message + "</p></div>";
-  }
-}
+    }
 
-// Wait for DOM to be ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initializePlayer);
-} else {
-  initializePlayer();
-}
+    function toggleStats() {
+      statsPanel.style.display = statsPanel.style.display === 'none' ? 'block' : 'none';
+      if (statsPanel.style.display === 'block') {
+        startStatsMonitoring();
+      } else {
+        stopStatsMonitoring();
+      }
+    }
 
-// ----------------- Popup Functions -----------------
-function showPopup(reason = "Adblock Detected") {
-  const popup = document.getElementById("adb");
-  const title = popup.querySelector(".adbs h3");
-  
-  popup.style.display = "flex";
-  title.innerText = reason;
-  console.warn("⚠️ Popup Triggered:", reason);
-}
+    function reloadPlayer() {
+      if (currentPlayer) {
+        currentPlayer.load();
+      }
+    }
 
-function hidePopup() {
-  document.getElementById("adb").style.display = "none";
-}
+    function toggleMute() {
+      if (currentPlayer) {
+        currentPlayer.setMute(!currentPlayer.getMute());
+        updateMuteButton();
+      }
+    }
 
-// Continue button event
-document.addEventListener('DOMContentLoaded', function() {
-  const continueBtn = document.getElementById('continue-btn');
-  if(continueBtn) {
-    continueBtn.addEventListener('click', hidePopup);
-  }
-});
+    function updateMuteButton() {
+      if (currentPlayer && currentPlayer.getMute()) {
+        muteButton.innerHTML = '<i class="fas fa-volume-mute"></i> Unmute';
+      } else {
+        muteButton.innerHTML = '<i class="fas fa-volume-up"></i> Mute';
+      }
+    }
 
-// ----------------- Simplified Adblock Detection -----------------
-function detectAdblock() {
-  return new Promise((resolve) => {
-    const testAd = document.createElement('div');
-    testAd.innerHTML = '&nbsp;';
-    testAd.className = 'adsbox';
-    testAd.style.position = 'absolute';
-    testAd.style.left = '-9999px';
-    testAd.style.top = '-9999px';
-    document.body.appendChild(testAd);
-    
-    setTimeout(() => {
-      const detected = window.getComputedStyle(testAd).display === 'none' || 
-                      testAd.offsetHeight === 0;
-      testAd.remove();
-      resolve(detected);
-    }, 100);
-  });
-}
+    function toggleFullscreen() {
+      if (currentPlayer) {
+        currentPlayer.setFullscreen(true);
+      }
+    }
 
-// ----------------- Brave Shields Detection -----------------
-async function detectBraveShields() {
-  try {
-    const res = await fetch('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js', {
-      method: 'HEAD',
-      mode: 'no-cors',
-      cache: 'no-store'
-    });
-    return false;
-  } catch (e) {
-    console.log('Brave Shields might be active');
-    return true;
-  }
-}
+    function startStatsMonitoring() {
+      stopStatsMonitoring();
+      statsInterval = setInterval(updateStats, 1000);
+    }
 
-// ----------------- Delayed Detection -----------------
-setTimeout(async () => {
-  const shieldsOn = await detectBraveShields();
-  const adblocker = await detectAdblock();
-  
-  if (shieldsOn || adblocker) {
-    showPopup("Adblock/Brave Shields Detected");
-  }
-}, 3000);
-</script>
- </body>
+    function stopStatsMonitoring() {
+      if (statsInterval) {
+        clearInterval(statsInterval);
+        statsInterval = null;
+      }
+    }
+
+    function updateStats() {
+      if (!currentPlayer) return;
+      
+      // Buffer length (approximation)
+      const bufferLength = 0; // JW Player doesn't expose this directly
+      statBuffer.textContent = `${bufferLength} s`;
+      
+      // Current bitrate (approximation)
+      const bitrate = 0; // JW Player doesn't expose this directly
+      statBitrate.textContent = `${bitrate} Mbps`;
+      
+      // Resolution
+      const width = currentPlayer.getWidth();
+      const height = currentPlayer.getHeight();
+      statResolution.textContent = `${width}x${height}`;
+      
+      // Volume
+      const volume = Math.round(currentPlayer.getVolume());
+      statVolume.textContent = `${volume}%`;
+    }
+
+    // Initialize JW Player
+    function initializePlayer(streamUrl) {
+      console.log('Initializing JW Player with URL:', streamUrl);
+      
+      if(!streamUrl) {
+        showError('No Stream URL', 'No stream URL provided.');
+        return;
+      }
+
+      try {
+        // Clear previous player
+        if(currentPlayer) {
+          try {
+            currentPlayer.remove();
+          } catch(e) {
+            console.log('Removing previous player:', e);
+          }
+        }
+        
+        // Show loading state
+        document.getElementById("my-jwplayer").innerHTML = "";
+        showLoading();
+        showStatus("Loading stream...");
+        
+        // Check if JW Player is loaded
+        if(typeof jwplayer === 'undefined') {
+          showError("Player Error", "JW Player failed to load. Please refresh the page.");
+          return;
+        }
+        
+        // Initialize new player
+        currentPlayer = jwplayer("my-jwplayer").setup({
+          file: streamUrl,
+          type: "hls",
+          width: "100%",
+          height: "100%",
+          aspectratio: "16:9",
+          autostart: true,
+          mute: false,
+          controls: true,
+          preload: "auto",
+          stretching: "uniform"
+        });
+        
+        currentPlayer.on('ready', function() {
+          console.log('JW Player is ready and playing');
+          hideLoading();
+          hideStatus();
+          hideError();
+          updateMuteButton();
+        });
+        
+        currentPlayer.on('play', function() {
+          hideError();
+          startStatsMonitoring();
+        });
+
+        currentPlayer.on('pause', function() {
+          stopStatsMonitoring();
+        });
+
+        currentPlayer.on('volume', function() {
+          updateMuteButton();
+          updateStats();
+        });
+        
+        currentPlayer.on('error', function(e) {
+          console.error('JW Player error:', e);
+          hideLoading();
+          showError("Stream Error", "Error loading stream. Please check the URL and try again.");
+        });
+        
+        currentPlayer.on('setupError', function(e) {
+          console.error('JW Player setup error:', e);
+          hideLoading();
+          showError("Setup Error", "Setup error. Please try a different stream URL.");
+        });
+        
+      } catch (error) {
+        console.error('Error initializing JW Player:', error);
+        hideLoading();
+        showError("Initialization Error", "Failed to initialize player: " + error.message);
+      }
+    }
+
+    // ----------------- Popup Functions -----------------
+    function showPopup(reason = "Adblock Detected") {
+      const popup = document.getElementById("adb");
+      const title = popup.querySelector(".adbs h3");
+      
+      popup.style.display = "flex";
+      title.innerText = reason;
+      console.warn("⚠️ Popup Triggered:", reason);
+    }
+
+    function hidePopup() {
+      document.getElementById("adb").style.display = "none";
+    }
+
+    // ----------------- Simplified Adblock Detection -----------------
+    function detectAdblock() {
+      return new Promise((resolve) => {
+        const testAd = document.createElement('div');
+        testAd.innerHTML = '&nbsp;';
+        testAd.className = 'adsbox';
+        testAd.style.position = 'absolute';
+        testAd.style.left = '-9999px';
+        testAd.style.top = '-9999px';
+        document.body.appendChild(testAd);
+        
+        setTimeout(() => {
+          const detected = window.getComputedStyle(testAd).display === 'none' || 
+                          testAd.offsetHeight === 0;
+          testAd.remove();
+          resolve(detected);
+        }, 100);
+      });
+    }
+
+    // ----------------- Brave Shields Detection -----------------
+    async function detectBraveShields() {
+      try {
+        const res = await fetch('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js', {
+          method: 'HEAD',
+          mode: 'no-cors',
+          cache: 'no-store'
+        });
+        return false;
+      } catch (e) {
+        console.log('Brave Shields might be active');
+        return true;
+      }
+    }
+
+    // ----------------- Delayed Detection -----------------
+    setTimeout(async () => {
+      const shieldsOn = await detectBraveShields();
+      const adblocker = await detectAdblock();
+      
+      if (shieldsOn || adblocker) {
+        showPopup("Adblock/Brave Shields Detected");
+      }
+    }, 3000);
+
+    // Initialize the player when the page loads
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
 </html>
