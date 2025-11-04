@@ -65,6 +65,13 @@
             background-color: #333;
             transform: translateY(-2px);
         }
+        .back-button svg {
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
         .header-controls {
             display: flex;
             gap: 10px;
@@ -397,7 +404,13 @@
         import 'https://cdn.jsdelivr.net/npm/player.style/yt/+esm';
 
         (function(){
-            const CORS_PROXY_URL = 'https://proxy-js.onrender.com/';
+            // Updated CORS proxy with fallback options
+            const CORS_PROXY_URLS = [
+                'https://proxy-js.onrender.com/',
+                'https://corsproxy.io/?'
+            ];
+            let currentProxyIndex = 0;
+            
             const urlParams = new URLSearchParams(window.location.search);
             const streamParam = urlParams.get('s') || ''; 
             const channelNameParam = urlParams.get('name') || 'Unknown Channel';
@@ -651,6 +664,16 @@
                 statSpeed.textContent = `${bwEstimate.toFixed(2)} Mbps`;
             }
 
+            function getCurrentProxyUrl() {
+                return CORS_PROXY_URLS[currentProxyIndex];
+            }
+
+            function switchToNextProxy() {
+                currentProxyIndex = (currentProxyIndex + 1) % CORS_PROXY_URLS.length;
+                console.log(`Switching to proxy: ${getCurrentProxyUrl()}`);
+                return getCurrentProxyUrl();
+            }
+
             function initHls() {
                 if (!decodedStreamUrl) {
                     showError('No Stream URL', 'No stream URL provided.');
@@ -674,13 +697,23 @@
                         lowLatencyMode: true,
                         enableWorker: true,
                         xhrSetup: (xhr, url) => {
-                            xhr.open('GET', CORS_PROXY_URL + url, true);
-                            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-                            xhr.setRequestHeader('Referer', 'http://demonji.onrender.com/');
+                            const proxyUrl = getCurrentProxyUrl();
+                            if (proxyUrl.includes('corsproxy.io')) {
+                                xhr.open('GET', proxyUrl + encodeURIComponent(url), true);
+                            } else {
+                                xhr.open('GET', proxyUrl + url, true);
+                                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                                xhr.setRequestHeader('Referer', 'http://demonji.onrender.com/');
+                            }
                         }
                     });
                     
-                    hls.loadSource(CORS_PROXY_URL + decodedStreamUrl);
+                    const proxyUrl = getCurrentProxyUrl();
+                    const sourceUrl = proxyUrl.includes('corsproxy.io') 
+                        ? proxyUrl + encodeURIComponent(decodedStreamUrl)
+                        : proxyUrl + decodedStreamUrl;
+                    
+                    hls.loadSource(sourceUrl);
                     hls.attachMedia(player);
                     
                     hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
@@ -713,7 +746,12 @@
                     });
                 } else if (player.canPlayType('application/vnd.apple.mpegurl')) {
                     // Native HLS support (Safari)
-                    player.src = CORS_PROXY_URL + decodedStreamUrl;
+                    const proxyUrl = getCurrentProxyUrl();
+                    const sourceUrl = proxyUrl.includes('corsproxy.io') 
+                        ? proxyUrl + encodeURIComponent(decodedStreamUrl)
+                        : proxyUrl + decodedStreamUrl;
+                    
+                    player.src = sourceUrl;
                     player.addEventListener('loadedmetadata', () => {
                         hideStatus();
                         hideLoading();
@@ -766,6 +804,12 @@
                 if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
                     reconnectAttempts++;
                     showStatus(`Stream lost. Reconnecting... (Attempt ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`, true);
+                    
+                    // Try switching proxy on every other attempt
+                    if (reconnectAttempts % 2 === 0) {
+                        switchToNextProxy();
+                    }
+                    
                     setTimeout(initHls, RECONNECT_DELAY);
                 } else {
                     showError('Connection Failed', 'Could not reconnect to the stream. Please try again later.');
