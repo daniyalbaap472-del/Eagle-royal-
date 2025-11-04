@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>@allinone_reborn</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- JW Player Library -->
-  <script src="https://cdn.jwplayer.com/libraries/IDzF9Zmk.js"></script>
   <style>
     body {
       margin: 0;
@@ -72,8 +70,69 @@
         min-height: 50px;
       }
     }
+
+    .adb {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      left: 0;
+      top: 0;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 99999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .adbs {
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.4);
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+    }
+    
+    @keyframes glow {
+      from { text-shadow: 0 0 0px #ff0000; }
+      to { text-shadow: 0 0 10px #ff0000; }
+    }
+    
+    .adbs h3 {
+      color: #d00;
+      font-size: 24px;
+      margin-bottom: 15px;
+    }
+    
+    .adbs p {
+      font-size: 16px;
+      color: #333;
+    }
+    
+    .error-message {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      text-align: center;
+      padding: 20px;
+      color: #fff;
+    }
+    
+    .hidden {
+      display: none !important;
+    }
+    
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: #fff;
+      font-size: 18px;
+    }
   </style>
-  <script type="text/javascript" src="//checkupoceandip.com/f7/bc/6b/f7bc6b128423106720db2ba226b22541.js"></script>
  </head>
  <body>
   <div class="main-container">
@@ -95,7 +154,9 @@
    <!-- Player -->
    <div class="player-container">
     <div class="player-wrap">
-     <div id="my-jwplayer"></div>
+     <div id="my-jwplayer">
+        <div class="loading">Loading player...</div>
+     </div>
     </div>
    </div>
    <!-- Bottom Ad -->
@@ -114,190 +175,159 @@
     </div>
    </div>
   </div>
-  <script>
-(function(){
-  const urlParams = new URLSearchParams(window.location.search);
-  const streamUrl = urlParams.get('url') || '';
 
-  if(streamUrl){
-    jwplayer("my-jwplayer").setup({
-      file: streamUrl,
-      type: "hls",          // Force HLS playback
-      width: "100%",
-      aspectratio: "16:9",
-      autostart: true,      // Autoplay on page load
-      mute: false,           // Required for autoplay on mobile
-      controls: true,
-      preload: "auto",
-      stretching: "uniform",
-      skin: { name: "seven" }
-    });
-  } else {
-    document.getElementById("my-jwplayer").innerHTML =
-      "<p style='color:#fff;text-align:center;padding:20px;'>No stream URL provided</p>";
-  }
-})();
-</script>
   <!-- Anti-Adblock Popup -->
-  <div class="adb" id="adb" style="display: none;">
+  <div class="adb" id="adb">
    <div class="adbs">
     <h3>Adblock/Brave Shields Detected</h3>
     <p>Please disable your adblocker or Brave Shields to continue browsing this site.</p>
+    <button id="continue-btn" style="margin-top: 15px; padding: 8px 16px; background: #d00; color: white; border: none; border-radius: 4px; cursor: pointer;">
+      Continue Anyway
+    </button>
    </div>
   </div>
-  <style>
-.adb {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  left: 0;
-  top: 0;
-  background: rgba(0, 0, 0, 0.85);
-  z-index: 99999;
-  display: none;
-  align-items: center;
-  justify-content: center;
-}
-.adbs {
-  background: #fff;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.4);
-  text-align: center;
-  max-width: 400px;
-  width: 90%;
-}
-@keyframes glow {
-  from { text-shadow: 0 0 0px #ff0000; }
-  to { text-shadow: 0 0 1px #ff0000; }
-}
-.adbs h3 {
-  color: #d00;
-  font-size: 24px;
-  margin-bottom: 15px;
-}
-.adbs p {
-  font-size: 16px;
-  color: #333;
-}
-</style>
-  <script>
-// ----------------- Popup Function -----------------
-function showPopup(reason = "Adblock Detected") {
-  document.getElementById("adb").style.display = "flex";
-  document.querySelector("#adb .adbs h3").innerText = reason;
 
-  if (reason.includes("Brave")) {
-  document.querySelector("#adb .adbs p").innerHTML = `
-    Please disable Brave Shields (click Brave logo → toggle Shields off) to continue browsing.<br>
-    <span style="
-      color: #ff0000;
-      font-weight: bold;
-      animation: glow 1s ease-in-out infinite alternate;
-    ">
-      If still showing message after disabling please reload page
-    </span>
-  `;
+  <!-- JW Player Script -->
+  <script src="https://cdn.jwplayer.com/libraries/IDzF9Zmk.js"></script>
+  
+  <script>
+// Initialize JW Player
+function initializePlayer() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const streamUrl = urlParams.get('url') || '';
+  
+  console.log('Stream URL:', streamUrl);
+  
+  if(!streamUrl) {
+    document.getElementById("my-jwplayer").innerHTML = "<div class='error-message'>No stream URL provided</div>";
+    return;
+  }
+
+  try {
+    console.log('Initializing JW Player...');
+    
+    // Check if JW Player is loaded
+    if(typeof jwplayer === 'undefined') {
+      console.error('JW Player not loaded');
+      document.getElementById("my-jwplayer").innerHTML = "<div class='error-message'>JW Player failed to load</div>";
+      return;
+    }
+    
+    const player = jwplayer("my-jwplayer").setup({
+      file: streamUrl,
+      type: "hls",
+      width: "100%",
+      height: "100%",
+      aspectratio: "16:9",
+      autostart: true,
+      mute: false,
+      controls: true,
+      preload: "auto",
+      stretching: "uniform",
+      skin: { 
+        name: "seven",
+        active: "#ff0000",
+        inactive: "#ffffff",
+        background: "#000000"
+      }
+    });
+    
+    player.on('ready', function() {
+      console.log('JW Player is ready and playing');
+    });
+    
+    player.on('error', function(e) {
+      console.error('JW Player error:', e);
+      document.getElementById("my-jwplayer").innerHTML = 
+        "<div class='error-message'><p>Error loading stream: " + e.message + "</p></div>";
+    });
+    
+    player.on('setupError', function(e) {
+      console.error('JW Player setup error:', e);
+      document.getElementById("my-jwplayer").innerHTML = 
+        "<div class='error-message'><p>Setup error: " + e.message + "</p></div>";
+    });
+    
+  } catch (error) {
+    console.error('Error initializing JW Player:', error);
+    document.getElementById("my-jwplayer").innerHTML = 
+      "<div class='error-message'><p>Failed to initialize player: " + error.message + "</p></div>";
+  }
 }
+
+// Wait for DOM to be ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializePlayer);
+} else {
+  initializePlayer();
+}
+
+// ----------------- Popup Functions -----------------
+function showPopup(reason = "Adblock Detected") {
+  const popup = document.getElementById("adb");
+  const title = popup.querySelector(".adbs h3");
+  
+  popup.style.display = "flex";
+  title.innerText = reason;
   console.warn("⚠️ Popup Triggered:", reason);
 }
 
-// ----------------- PC Browser Adblock Detection -----------------
-async function detectAdblock() {
-  let detected = false;
+function hidePopup() {
+  document.getElementById("adb").style.display = "none";
+}
 
-  // bait div
-  const bait = document.createElement("div");
-  bait.className = "ad adsbox ad-banner adsense ad-container sponsored";
-  bait.style.cssText = "width:1px;height:1px;position:absolute;left:-9999px;top:-9999px;";
-  document.body.appendChild(bait);
-
-  // bait img
-  const img = document.createElement("img");
-  img.src = "https://pagead2.googlesyndication.com/pagead/imgad?id=CAASFeDxyz";
-  img.style.cssText = "width:1px;height:1px;position:absolute;left:-9999px;top:-9999px;";
-  img.onerror = () => { detected = true; };
-  document.body.appendChild(img);
-
-  // bait iframe
-  const iframe = document.createElement("iframe");
-  iframe.src = "https://googleads.g.doubleclick.net/pagead/html/r2023/sample-ad.html";
-  iframe.style.cssText = "width:1px;height:1px;position:absolute;left:-9999px;top:-9999px;";
-  iframe.onerror = () => { detected = true; };
-  document.body.appendChild(iframe);
-
-  // bait script
-  const script = document.createElement("script");
-  script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js";
-  script.async = true;
-  script.onerror = () => { detected = true; };
-  document.head.appendChild(script);
-
-  await new Promise(resolve => setTimeout(resolve, 500));
-
-  if (
-    window.getComputedStyle(bait).display === "none" ||
-    bait.offsetHeight === 0 ||
-    bait.offsetParent === null
-  ) {
-    detected = true;
+// Continue button event
+document.addEventListener('DOMContentLoaded', function() {
+  const continueBtn = document.getElementById('continue-btn');
+  if(continueBtn) {
+    continueBtn.addEventListener('click', hidePopup);
   }
+});
 
-  bait.remove();
-  img.remove();
-  iframe.remove();
-  script.remove();
-
-  return detected;
+// ----------------- Simplified Adblock Detection -----------------
+function detectAdblock() {
+  return new Promise((resolve) => {
+    const testAd = document.createElement('div');
+    testAd.innerHTML = '&nbsp;';
+    testAd.className = 'adsbox';
+    testAd.style.position = 'absolute';
+    testAd.style.left = '-9999px';
+    testAd.style.top = '-9999px';
+    document.body.appendChild(testAd);
+    
+    setTimeout(() => {
+      const detected = window.getComputedStyle(testAd).display === 'none' || 
+                      testAd.offsetHeight === 0;
+      testAd.remove();
+      resolve(detected);
+    }, 100);
+  });
 }
 
 // ----------------- Brave Shields Detection -----------------
 async function detectBraveShields() {
   try {
-    let res = await fetch("https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js", {
-      method: "GET",
-      cache: "no-store",
-      mode: "no-cors"
+    const res = await fetch('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js', {
+      method: 'HEAD',
+      mode: 'no-cors',
+      cache: 'no-store'
     });
-
-    if (res.type === "opaque") {
-      try {
-        const buf = await res.clone().arrayBuffer();
-        console.log("🟡 Brave Response Size:", buf.byteLength);
-
-        // Corrected Logic:
-        // Size < 100 = Shields OFF
-        // Size >= 100 = Shields ON
-        if (buf.byteLength < 100) {
-          return false; // Shields OFF
-        } else {
-          return true;  // Shields ON
-        }
-      } catch (e) {
-        console.warn("🟡 Brave fetch blocked", e);
-        return true; // Shields ON
-      }
-    }
-    return true; // default treat as ON
+    return false;
   } catch (e) {
-    console.error("🛑 Brave Shields hard blocked", e);
-    return true; // Shields ON
+    console.log('Brave Shields might be active');
+    return true;
   }
 }
 
-// ----------------- Main -----------------
-window.addEventListener("load", async () => {
+// ----------------- Delayed Detection -----------------
+setTimeout(async () => {
   const shieldsOn = await detectBraveShields();
-  if (shieldsOn) {
-    showPopup("Brave Shields Detected");
-    return;
-  }
-
   const adblocker = await detectAdblock();
-  if (adblocker) {
-    showPopup("Adblock Detected");
+  
+  if (shieldsOn || adblocker) {
+    showPopup("Adblock/Brave Shields Detected");
   }
-});
+}, 3000);
 </script>
  </body>
 </html>
