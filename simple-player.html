@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* All your CSS styles remain the same */
         :root {
             --bg-primary: #0a1f35;
             --bg-secondary: #1a3a5f;
@@ -569,6 +568,7 @@
 
     <script>
         (function() {
+            const CORS_PROXY_URL = 'https://proxy-js.onrender.com/';
             const urlParams = new URLSearchParams(window.location.search);
             const streamParam = urlParams.get('s') || '';
             const channelNameParam = urlParams.get('name') || 'Unknown Channel';
@@ -831,25 +831,27 @@
                                 showStatus(`Reconnecting... (${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`, 'error');
                                 setTimeout(initHls, RECONNECT_DELAY);
                             } else {
-                                showError('Stream Error', 'Failed to load stream after multiple attempts.');
+                                showError('Connection Failed', 'Unable to connect to the stream. Please try again later.');
                             }
                         }
                     });
                 } else if (player.canPlayType('application/vnd.apple.mpegurl')) {
-                    // For Safari
+                    // Native HLS (Safari)
                     player.src = decodedStreamUrl;
                     player.addEventListener('loadedmetadata', () => {
                         hideLoading();
-                        player.play().catch(() => {
-                            showStatus('Click to play', 'info');
-                        });
+                        hideStatus();
+                        player.play();
+                    });
+                    player.addEventListener('error', () => {
+                        showError('Playback Error', 'Unable to play this stream.');
                     });
                 } else {
-                    showError('Not Supported', 'HLS is not supported in this browser.');
+                    showError('Not Supported', 'HLS streaming is not supported on this browser.');
                 }
             }
 
-            // Initialize the player
+            // Initialize
             init();
         })();
     </script>
