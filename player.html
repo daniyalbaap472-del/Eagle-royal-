@@ -3,8 +3,9 @@
  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Demons Player</title>
+  <title>Demons Player - Universal Video Player</title>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dashjs/dist/dash.all.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -64,6 +65,13 @@
         .back-button:hover {
             background-color: #333;
             transform: translateY(-2px);
+        }
+        .back-button svg {
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
         .header-controls {
             display: flex;
@@ -129,6 +137,16 @@
         }
         .channels-info p { font-size: 16px; color: var(--text-secondary); margin: 0; }
         .channels-info .channel-name { font-size: 20px; font-weight: 700; color: var(--text-primary); }
+        .format-badge {
+            display: inline-block;
+            background-color: var(--accent);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
         .status-message {
             text-align: center;
             color: #ef4444;
@@ -280,6 +298,59 @@
         .pip-button:hover {
             background-color: var(--accent);
         }
+        .format-fallback {
+            display: none;
+            background-color: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            margin-top: 20px;
+            width: 100%;
+        }
+        .format-fallback h3 {
+            margin-bottom: 15px;
+            color: var(--warning);
+        }
+        .fallback-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .fallback-option {
+            background-color: #333;
+            color: var(--text-primary);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .fallback-option:hover {
+            background-color: #444;
+        }
+        .fallback-option.active {
+            background-color: var(--accent);
+        }
+        .browser-support {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: rgba(255, 152, 0, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid var(--warning);
+        }
+        .browser-support h4 {
+            margin-bottom: 10px;
+            color: var(--warning);
+        }
+        .browser-support ul {
+            padding-left: 20px;
+            margin-bottom: 10px;
+        }
+        .browser-support li {
+            margin-bottom: 5px;
+        }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -298,6 +369,7 @@
             .channels-info .channel-name { font-size: 16px; }
             .video-controls { flex-direction: column; align-items: center; }
             .control-group { width: 100%; justify-content: center; }
+            .fallback-options { flex-direction: column; }
         }
     </style>
  </head>
@@ -311,80 +383,128 @@
      Back
     </button>
     <div class="header-controls">
-     <button class="header-button" id="statsToggle"><i class="fas fa-chart-bar"></i> Stats</button>
-     <button class="header-button" id="reloadStream"><i class="fas fa-sync-alt"></i> Reload</button>
+        <button class="header-button" id="statsToggle">
+            <i class="fas fa-chart-bar"></i> Stats
+        </button>
+        <button class="header-button" id="reloadStream">
+            <i class="fas fa-sync-alt"></i> Reload
+        </button>
     </div>
    </div>
    <div class="channels-info">
     <img id="channelIcon" src="https://placehold.co/100x56/222/e0e0e0?text=Logo" alt="Channel Logo">
     <div class="info-text">
-     <h2>Now Playing</h2>
+     <h2>Now Playing <span id="formatBadge" class="format-badge">Loading...</span></h2>
      <p>Channel: <span id="channelName" class="channel-name">Loading...</span></p>
     </div>
    </div>
    <div id="statusMessage" class="status-message"></div>
    <div class="player-container">
-    <div class="loading-spinner" id="loadingSpinner"></div>
-    <div class="error-overlay" id="errorOverlay">
-     <h3 id="errorTitle">Stream Error</h3>
-     <p id="errorMessage">An error occurred while loading the stream.</p>
-     <button id="retryButton">Retry</button>
-    </div>
-    <media-theme-yt>
-     <video id="player" slot="media" playsinline crossorigin="anonymous"></video>
-    </media-theme-yt>
-    <button class="pip-button" id="pipButton" title="Picture-in-Picture"><i class="fas fa-compress"></i></button>
+        <div class="loading-spinner" id="loadingSpinner"></div>
+        <div class="error-overlay" id="errorOverlay">
+            <h3 id="errorTitle">Stream Error</h3>
+            <p id="errorMessage">An error occurred while loading the stream.</p>
+            <button id="retryButton">Retry</button>
+        </div>
+        <media-theme-yt>
+            <video id="player" slot="media" playsinline crossorigin="anonymous"></video>
+        </media-theme-yt>
+        <button class="pip-button" id="pipButton" title="Picture-in-Picture">
+            <i class="fas fa-compress"></i>
+        </button>
    </div>
+   
+   <!-- New Format Fallback Section -->
+   <div class="format-fallback" id="formatFallback">
+        <h3><i class="fas fa-exclamation-triangle"></i> Format Compatibility Issue</h3>
+        <p>Your browser doesn't support the current video/audio format. Try these options:</p>
+        <div class="fallback-options">
+            <button class="fallback-option" data-action="try-proxy">Try Different Proxy</button>
+            <button class="fallback-option" data-action="force-hls">Force HLS Stream</button>
+            <button class="fallback-option" data-action="force-dash">Force DASH Stream</button>
+            <button class="fallback-option" data-action="external-player">Open in External Player</button>
+        </div>
+        <div class="browser-support">
+            <h4>Browser Support Information:</h4>
+            <ul>
+                <li><strong>HEVC/H.265:</strong> Limited to Safari on macOS/iOS</li>
+                <li><strong>AC3 Audio:</strong> Limited browser support</li>
+                <li><strong>H.264/AVC:</strong> Widely supported across all browsers</li>
+                <li><strong>AAC Audio:</strong> Widely supported across all browsers</li>
+            </ul>
+            <p>For best compatibility, try using Chrome, Firefox, or Edge with H.264/AAC content.</p>
+        </div>
+   </div>
+   
    <div class="video-controls">
-    <div class="control-group">
-     <span>Video Fit:</span>
-     <button class="fit-button active" data-fit="fit">Fit</button>
-     <button class="fit-button" data-fit="fill">Fill</button>
-     <button class="fit-button" data-fit="stretch">Stretch</button>
-    </div>
-    <div class="control-group">
-     <span>Quality:</span> <select class="quality-selector" id="qualitySelector"> <option value="auto">Auto</option> </select>
-    </div>
-    <div class="control-group">
-     <button class="fit-button" id="muteButton"><i class="fas fa-volume-up"></i> Mute</button>
-     <button class="fit-button" id="fullscreenButton"><i class="fas fa-expand"></i> Fullscreen</button>
-    </div>
+        <div class="control-group">
+            <span>Video Fit:</span>
+            <button class="fit-button active" data-fit="fit">Fit</button>
+            <button class="fit-button" data-fit="fill">Fill</button>
+            <button class="fit-button" data-fit="stretch">Stretch</button>
+        </div>
+        <div class="control-group">
+            <span>Quality:</span>
+            <select class="quality-selector" id="qualitySelector">
+                <option value="auto">Auto</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <button class="fit-button" id="muteButton">
+                <i class="fas fa-volume-up"></i> Mute
+            </button>
+            <button class="fit-button" id="fullscreenButton">
+                <i class="fas fa-expand"></i> Fullscreen
+            </button>
+        </div>
    </div>
    <div class="stats-panel" id="statsPanel">
-    <h3>Stream Statistics</h3>
-    <div class="stats-grid">
-     <div class="stat-item">
-      <div class="stat-label">Buffer Length</div>
-      <div class="stat-value" id="statBuffer">0 s</div>
-     </div>
-     <div class="stat-item">
-      <div class="stat-label">Bitrate</div>
-      <div class="stat-value" id="statBitrate">0 Mbps</div>
-     </div>
-     <div class="stat-item">
-      <div class="stat-label">Resolution</div>
-      <div class="stat-value" id="statResolution">0x0</div>
-     </div>
-     <div class="stat-item">
-      <div class="stat-label">Dropped Frames</div>
-      <div class="stat-value" id="statDropped">0</div>
-     </div>
-     <div class="stat-item">
-      <div class="stat-label">Volume</div>
-      <div class="stat-value" id="statVolume">100%</div>
-     </div>
-     <div class="stat-item">
-      <div class="stat-label">Connection Speed</div>
-      <div class="stat-value" id="statSpeed">0 Mbps</div>
-     </div>
-    </div>
+        <h3>Stream Statistics</h3>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-label">Buffer Length</div>
+                <div class="stat-value" id="statBuffer">0 s</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Bitrate</div>
+                <div class="stat-value" id="statBitrate">0 Mbps</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Resolution</div>
+                <div class="stat-value" id="statResolution">0x0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Dropped Frames</div>
+                <div class="stat-value" id="statDropped">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Volume</div>
+                <div class="stat-value" id="statVolume">100%</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Connection Speed</div>
+                <div class="stat-value" id="statSpeed">0 Mbps</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Format</div>
+                <div class="stat-value" id="statFormat">Unknown</div>
+            </div>
+        </div>
    </div>
   </div>
   <script type="module">
         import 'https://cdn.jsdelivr.net/npm/player.style/yt/+esm';
 
         (function(){
-            const CORS_PROXY_URL = 'https://proxy-js.onrender.com/';
+            // Updated CORS proxy with fallback options
+            const CORS_PROXY_URLS = [
+                'https://proxy-js.onrender.com/',
+                'https://corsproxy.io/?',
+                'https://api.allorigins.win/raw?url=',
+                'https://cors-anywhere.herokuapp.com/'
+            ];
+            let currentProxyIndex = 0;
+            
             const urlParams = new URLSearchParams(window.location.search);
             const streamParam = urlParams.get('s') || ''; 
             const channelNameParam = urlParams.get('name') || 'Unknown Channel';
@@ -394,6 +514,7 @@
             const player = document.getElementById('player');
             const channelName = document.getElementById('channelName');
             const channelIcon = document.getElementById('channelIcon');
+            const formatBadge = document.getElementById('formatBadge');
             const backButton = document.querySelector('.back-button');
             const statusMessage = document.getElementById('statusMessage');
             const fitButtons = document.querySelectorAll('.fit-button');
@@ -409,6 +530,8 @@
             const reloadStreamBtn = document.getElementById('reloadStream');
             const muteButton = document.getElementById('muteButton');
             const fullscreenButton = document.getElementById('fullscreenButton');
+            const formatFallback = document.getElementById('formatFallback');
+            const fallbackOptions = document.querySelectorAll('.fallback-option');
             
             // Stats elements
             const statBuffer = document.getElementById('statBuffer');
@@ -417,9 +540,12 @@
             const statDropped = document.getElementById('statDropped');
             const statVolume = document.getElementById('statVolume');
             const statSpeed = document.getElementById('statSpeed');
+            const statFormat = document.getElementById('statFormat');
 
             let hls;
+            let dashPlayer;
             let decodedStreamUrl = '';
+            let currentFormat = '';
             let reconnectAttempts = 0;
             const MAX_RECONNECT_ATTEMPTS = 10;
             const RECONNECT_DELAY = 3000;
@@ -427,6 +553,7 @@
             let statsInterval = null;
             let isMuted = false;
             let availableQualities = [];
+            let forcedFormat = null;
 
             // Initialize the player
             function init() {
@@ -435,7 +562,7 @@
                 
                 try {
                     decodedStreamUrl = atob(decodeURIComponent(streamParam));
-                    initHls();
+                    detectAndLoadFormat();
                 } catch (e) {
                     showError('Invalid Stream URL', 'The stream URL format is invalid.');
                 }
@@ -443,7 +570,7 @@
 
             function setupEventListeners() {
                 backButton.addEventListener('click', navigateBack);
-                retryButton.addEventListener('click', initHls);
+                retryButton.addEventListener('click', detectAndLoadFormat);
                 pipButton.addEventListener('click', togglePip);
                 statsToggle.addEventListener('click', toggleStats);
                 reloadStreamBtn.addEventListener('click', reloadStream);
@@ -460,8 +587,16 @@
                     }
                 });
 
+                // Fallback option event listeners
+                fallbackOptions.forEach(option => {
+                    option.addEventListener('click', () => {
+                        handleFallbackOption(option.dataset.action);
+                    });
+                });
+
                 player.addEventListener('play', () => {
                     hideError();
+                    hideFormatFallback();
                     startStatsMonitoring();
                 });
 
@@ -506,6 +641,140 @@
                 }
             }
 
+            function detectAndLoadFormat() {
+                if (!decodedStreamUrl) {
+                    showError('No Stream URL', 'No stream URL provided.');
+                    return;
+                }
+
+                // Clean up any existing players
+                if (hls) hls.destroy();
+                if (dashPlayer) dashPlayer.destroy();
+                clearTimeout(stallDetector);
+                stopStatsMonitoring();
+                player.pause();
+                showLoading();
+                showStatus(`Detecting format...`);
+                hideError();
+                hideFormatFallback();
+
+                // If we have a forced format, use it
+                if (forcedFormat) {
+                    switch(forcedFormat) {
+                        case 'hls':
+                            loadHls();
+                            break;
+                        case 'dash':
+                            loadDash();
+                            break;
+                        default:
+                            // Reset forced format and detect normally
+                            forcedFormat = null;
+                            detectFormatNormally();
+                    }
+                    return;
+                }
+
+                detectFormatNormally();
+            }
+
+            function detectFormatNormally() {
+                // Detect format based on URL extension
+                const url = decodedStreamUrl.toLowerCase();
+                let format = 'unknown';
+                
+                if (url.includes('.m3u8')) {
+                    format = 'HLS';
+                    loadHls();
+                } else if (url.includes('.mpd')) {
+                    format = 'DASH';
+                    loadDash();
+                } else if (url.includes('.mp4') || url.includes('.webm') || url.includes('.ogg')) {
+                    format = 'Direct';
+                    loadDirect();
+                } else {
+                    // Try to detect by probing
+                    probeFormat();
+                }
+                
+                setFormatBadge(format);
+            }
+
+            function probeFormat() {
+                showStatus('Probing stream format...');
+                
+                // Try HLS first
+                if (Hls.isSupported()) {
+                    const testHls = new Hls({
+                        maxBufferLength: 10,
+                        maxMaxBufferLength: 20,
+                        fragLoadingMaxRetry: 1,
+                        lowLatencyMode: true,
+                        enableWorker: false
+                    });
+                    
+                    const proxyUrl = getCurrentProxyUrl();
+                    const sourceUrl = proxyUrl.includes('corsproxy.io') 
+                        ? proxyUrl + encodeURIComponent(decodedStreamUrl)
+                        : proxyUrl + decodedStreamUrl;
+                    
+                    testHls.loadSource(sourceUrl);
+                    testHls.attachMedia(player);
+                    
+                    testHls.on(Hls.Events.MANIFEST_PARSED, () => {
+                        testHls.destroy();
+                        setFormatBadge('HLS');
+                        loadHls();
+                    });
+                    
+                    testHls.on(Hls.Events.ERROR, () => {
+                        testHls.destroy();
+                        // Try DASH next
+                        if (dashjs.supportsMediaSource()) {
+                            const testDash = dashjs.MediaPlayer().create();
+                            testDash.initialize(player, decodedStreamUrl, false);
+                            
+                            testDash.on(dashjs.MediaPlayer.events.STREAM_INITIALIZED, () => {
+                                testDash.reset();
+                                setFormatBadge('DASH');
+                                loadDash();
+                            });
+                            
+                            setTimeout(() => {
+                                testDash.reset();
+                                // If neither HLS nor DASH, try direct
+                                setFormatBadge('Direct');
+                                loadDirect();
+                            }, 3000);
+                        } else {
+                            // Fallback to direct
+                            setFormatBadge('Direct');
+                            loadDirect();
+                        }
+                    });
+                } else {
+                    // Fallback to direct
+                    setFormatBadge('Direct');
+                    loadDirect();
+                }
+            }
+
+            function setFormatBadge(format) {
+                currentFormat = format;
+                formatBadge.textContent = format;
+                statFormat.textContent = format;
+                
+                // Set color based on format
+                const colors = {
+                    'HLS': '#4CAF50',
+                    'DASH': '#2196F3',
+                    'Direct': '#FF9800',
+                    'unknown': '#9E9E9E'
+                };
+                
+                formatBadge.style.backgroundColor = colors[format] || colors['unknown'];
+            }
+
             function showStatus(message, isError = false) {
                 statusMessage.textContent = message;
                 statusMessage.style.display = 'block';
@@ -535,6 +804,14 @@
                 errorOverlay.style.display = 'none';
             }
 
+            function showFormatFallback() {
+                formatFallback.style.display = 'block';
+            }
+            
+            function hideFormatFallback() {
+                formatFallback.style.display = 'none';
+            }
+
             function handleFitChange(fitType) {
                 player.style.objectFit = fitType === 'fill' ? 'cover' : fitType === 'stretch' ? 'fill' : 'contain';
             }
@@ -559,8 +836,8 @@
             }
 
             function reloadStream() {
-                if (hls) hls.destroy();
-                initHls();
+                forcedFormat = null;
+                detectAndLoadFormat();
             }
 
             function toggleMute() {
@@ -596,6 +873,41 @@
                 }
             }
 
+            function handleFallbackOption(action) {
+                switch(action) {
+                    case 'try-proxy':
+                        switchToNextProxy();
+                        showStatus('Trying different proxy...');
+                        setTimeout(detectAndLoadFormat, 500);
+                        break;
+                    case 'force-hls':
+                        forcedFormat = 'hls';
+                        showStatus('Forcing HLS format...');
+                        setTimeout(detectAndLoadFormat, 500);
+                        break;
+                    case 'force-dash':
+                        forcedFormat = 'dash';
+                        showStatus('Forcing DASH format...');
+                        setTimeout(detectAndLoadFormat, 500);
+                        break;
+                    case 'external-player':
+                        openExternalPlayer();
+                        break;
+                }
+            }
+
+            function openExternalPlayer() {
+                // Create a VLC/MPV compatible URL
+                const vlcUrl = `vlc://${decodedStreamUrl}`;
+                const mpvUrl = `mpv://${decodedStreamUrl}`;
+                
+                // Try to open in external player
+                window.open(vlcUrl, '_blank');
+                
+                // Show instructions as fallback
+                showStatus('If external player didn\'t open, copy this URL: ' + decodedStreamUrl);
+            }
+
             function startStatsMonitoring() {
                 stopStatsMonitoring();
                 statsInterval = setInterval(updateStats, 1000);
@@ -609,49 +921,63 @@
             }
 
             function updateStats() {
-                if (!hls) return;
-                
                 // Buffer length
                 const bufferLength = player.buffered.length > 0 
                     ? Math.floor(player.buffered.end(player.buffered.length - 1) - player.currentTime)
                     : 0;
                 statBuffer.textContent = `${bufferLength} s`;
                 
-                // Current bitrate
-                const currentLevel = hls.levels[hls.currentLevel];
-                const bitrate = currentLevel ? (currentLevel.bitrate / 1000000).toFixed(2) : 0;
-                statBitrate.textContent = `${bitrate} Mbps`;
-                
-                // Resolution
-                const width = currentLevel ? currentLevel.width : 0;
-                const height = currentLevel ? currentLevel.height : 0;
-                statResolution.textContent = `${width}x${height}`;
+                // Format-specific stats
+                if (currentFormat === 'HLS' && hls) {
+                    // Current bitrate
+                    const currentLevel = hls.levels[hls.currentLevel];
+                    const bitrate = currentLevel ? (currentLevel.bitrate / 1000000).toFixed(2) : 0;
+                    statBitrate.textContent = `${bitrate} Mbps`;
+                    
+                    // Resolution
+                    const width = currentLevel ? currentLevel.width : 0;
+                    const height = currentLevel ? currentLevel.height : 0;
+                    statResolution.textContent = `${width}x${height}`;
+                    
+                    // Connection speed (from HLS)
+                    const bwEstimate = hls.bandwidthEstimate / 1000000;
+                    statSpeed.textContent = `${bwEstimate.toFixed(2)} Mbps`;
+                } else if (currentFormat === 'DASH' && dashPlayer) {
+                    const bitrateInfo = dashPlayer.getBitrateInfoListFor('video');
+                    const currentBitrate = dashPlayer.getQualityFor('video');
+                    const bitrate = bitrateInfo[currentBitrate] ? (bitrateInfo[currentBitrate].bitrate / 1000000).toFixed(2) : 0;
+                    statBitrate.textContent = `${bitrate} Mbps`;
+                    
+                    // For DASH, we don't have direct access to resolution in dash.js
+                    statResolution.textContent = 'Auto';
+                    statSpeed.textContent = 'N/A';
+                } else {
+                    // Direct format
+                    statBitrate.textContent = 'N/A';
+                    statResolution.textContent = `${player.videoWidth}x${player.videoHeight}`;
+                    statSpeed.textContent = 'N/A';
+                }
                 
                 // Dropped frames (approximation)
                 statDropped.textContent = '0'; // Would need more advanced tracking
                 
                 // Volume
                 statVolume.textContent = `${Math.round(player.volume * 100)}%`;
-                
-                // Connection speed (from HLS)
-                const bwEstimate = hls.bandwidthEstimate / 1000000;
-                statSpeed.textContent = `${bwEstimate.toFixed(2)} Mbps`;
             }
 
-            function initHls() {
-                if (!decodedStreamUrl) {
-                    showError('No Stream URL', 'No stream URL provided.');
-                    return;
-                }
-                
-                if (hls) hls.destroy();
-                clearTimeout(stallDetector);
-                stopStatsMonitoring();
-                player.pause();
-                showLoading();
-                showStatus(`Loading channel...`);
-                hideError();
+            function getCurrentProxyUrl() {
+                return CORS_PROXY_URLS[currentProxyIndex];
+            }
 
+            function switchToNextProxy() {
+                currentProxyIndex = (currentProxyIndex + 1) % CORS_PROXY_URLS.length;
+                console.log(`Switching to proxy: ${getCurrentProxyUrl()}`);
+                return getCurrentProxyUrl();
+            }
+
+            function loadHls() {
+                showStatus(`Loading HLS stream...`);
+                
                 if (Hls.isSupported()) {
                     hls = new Hls({
                         maxBufferLength: 300,
@@ -661,13 +987,23 @@
                         lowLatencyMode: true,
                         enableWorker: true,
                         xhrSetup: (xhr, url) => {
-                            xhr.open('GET', CORS_PROXY_URL + url, true);
-                            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-                            xhr.setRequestHeader('Referer', 'http://demonji.onrender.com/');
+                            const proxyUrl = getCurrentProxyUrl();
+                            if (proxyUrl.includes('corsproxy.io')) {
+                                xhr.open('GET', proxyUrl + encodeURIComponent(url), true);
+                            } else {
+                                xhr.open('GET', proxyUrl + url, true);
+                                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                                xhr.setRequestHeader('Referer', 'http://demonji.onrender.com/');
+                            }
                         }
                     });
                     
-                    hls.loadSource(CORS_PROXY_URL + decodedStreamUrl);
+                    const proxyUrl = getCurrentProxyUrl();
+                    const sourceUrl = proxyUrl.includes('corsproxy.io') 
+                        ? proxyUrl + encodeURIComponent(decodedStreamUrl)
+                        : proxyUrl + decodedStreamUrl;
+                    
+                    hls.loadSource(sourceUrl);
                     hls.attachMedia(player);
                     
                     hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
@@ -700,7 +1036,12 @@
                     });
                 } else if (player.canPlayType('application/vnd.apple.mpegurl')) {
                     // Native HLS support (Safari)
-                    player.src = CORS_PROXY_URL + decodedStreamUrl;
+                    const proxyUrl = getCurrentProxyUrl();
+                    const sourceUrl = proxyUrl.includes('corsproxy.io') 
+                        ? proxyUrl + encodeURIComponent(decodedStreamUrl)
+                        : proxyUrl + decodedStreamUrl;
+                    
+                    player.src = sourceUrl;
                     player.addEventListener('loadedmetadata', () => {
                         hideStatus();
                         hideLoading();
@@ -709,6 +1050,72 @@
                 } else {
                     showError('Not Supported', 'HLS is not supported on this browser.');
                 }
+            }
+
+            function loadDash() {
+                showStatus(`Loading DASH stream...`);
+                
+                if (dashjs.supportsMediaSource()) {
+                    dashPlayer = dashjs.MediaPlayer().create();
+                    dashPlayer.initialize(player, decodedStreamUrl, false);
+                    dashPlayer.updateSettings({
+                        streaming: {
+                            abr: {
+                                autoSwitchBitrate: {
+                                    video: true
+                                }
+                            }
+                        }
+                    });
+                    
+                    dashPlayer.on(dashjs.MediaPlayer.events.STREAM_INITIALIZED, () => {
+                        hideStatus();
+                        hideLoading();
+                        reconnectAttempts = 0;
+                        player.play().catch(err => {
+                            showStatus('Autoplay blocked. Tap to play.', true);
+                        });
+                        startStallDetector();
+                    });
+                    
+                    dashPlayer.on(dashjs.MediaPlayer.events.ERROR, (e) => {
+                        if (e.error && e.error.code === dashjs.MediaPlayer.errors.MANIFEST_LOADER_LOADING_FAILED_ERROR) {
+                            handleStreamError({ type: 'DASH_ERROR' });
+                        }
+                    });
+                    
+                    // For DASH, we can't easily populate quality selector without more complex logic
+                    updateQualitySelectorForDash();
+                } else {
+                    showError('Not Supported', 'DASH is not supported on this browser.');
+                }
+            }
+
+            function loadDirect() {
+                showStatus(`Loading direct stream...`);
+                
+                const proxyUrl = getCurrentProxyUrl();
+                const sourceUrl = proxyUrl.includes('corsproxy.io') 
+                    ? proxyUrl + encodeURIComponent(decodedStreamUrl)
+                    : proxyUrl + decodedStreamUrl;
+                
+                player.src = sourceUrl;
+                player.addEventListener('loadedmetadata', () => {
+                    hideStatus();
+                    hideLoading();
+                    reconnectAttempts = 0;
+                    player.play().catch(err => {
+                        showStatus('Autoplay blocked. Tap to play.', true);
+                    });
+                    startStallDetector();
+                });
+                
+                player.addEventListener('error', () => {
+                    handleStreamError({ type: 'DIRECT_ERROR' });
+                });
+                
+                // For direct streams, hide quality selector
+                qualitySelector.style.display = 'none';
             }
             
             function updateQualitySelector() {
@@ -728,18 +1135,31 @@
                 // Set up event listener
                 qualitySelector.onchange = function() {
                     if (this.value === 'auto') {
-                        hls.currentLevel = -1; // Auto
+                        if (hls) hls.currentLevel = -1; // Auto
                     } else {
-                        hls.currentLevel = parseInt(this.value);
+                        if (hls) hls.currentLevel = parseInt(this.value);
                     }
                 };
+                
+                qualitySelector.style.display = 'block';
+            }
+            
+            function updateQualitySelectorForDash() {
+                // For DASH, we can't easily get quality levels without more complex logic
+                // So we'll just show auto for now
+                while (qualitySelector.options.length > 1) {
+                    qualitySelector.remove(1);
+                }
+                qualitySelector.style.display = 'block';
             }
             
             function startStallDetector() {
                 stallDetector = setTimeout(() => {
                     if (player.currentTime > 0.1 && player.videoWidth === 0) {
-                        hls.destroy();
+                        if (hls) hls.destroy();
+                        if (dashPlayer) dashPlayer.destroy();
                         clearTimeout(stallDetector);
+                        showFormatFallback();
                         showError('Format Not Supported', 'Video format (likely HEVC/H.265) or Audio (AC3) is not supported by your browser.');
                     }
                 }, 4000); 
@@ -753,8 +1173,15 @@
                 if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
                     reconnectAttempts++;
                     showStatus(`Stream lost. Reconnecting... (Attempt ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`, true);
-                    setTimeout(initHls, RECONNECT_DELAY);
+                    
+                    // Try switching proxy on every other attempt
+                    if (reconnectAttempts % 2 === 0) {
+                        switchToNextProxy();
+                    }
+                    
+                    setTimeout(detectAndLoadFormat, RECONNECT_DELAY);
                 } else {
+                    showFormatFallback();
                     showError('Connection Failed', 'Could not reconnect to the stream. Please try again later.');
                 }
             }
