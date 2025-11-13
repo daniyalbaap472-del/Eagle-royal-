@@ -1,4 +1,4 @@
-Picture will not show <!doctype html>
+<!doctype html>
 <html lang="en">
  <head>
   <meta charset="UTF-8">
@@ -123,6 +123,19 @@ Picture will not show <!doctype html>
             object-fit: contain;
             border-radius: 8px;
             border: 1px solid #333;
+            background-color: #2a2a2a;
+        }
+        .channel-icon-placeholder {
+            width: 100px;
+            height: 56px;
+            background: linear-gradient(45deg, #333, #555);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 24px;
+            border: 1px solid #444;
         }
         .channels-info .info-text { flex: 1; }
         .channels-info h2 {
@@ -364,7 +377,7 @@ Picture will not show <!doctype html>
             .main-container { gap: 15px; }
             .back-button { padding: 10px 20px; font-size: 14px; }
             .channels-info { flex-direction: column; align-items: flex-start; }
-            .channels-info img { width: 100%; height: auto; max-width: 120px; }
+            .channels-info img, .channel-icon-placeholder { width: 100%; height: auto; max-width: 120px; }
             .channels-info h2 { font-size: 18px; }
             .channels-info .channel-name { font-size: 16px; }
             .video-controls { flex-direction: column; align-items: center; }
@@ -392,7 +405,12 @@ Picture will not show <!doctype html>
     </div>
    </div>
    <div class="channels-info">
-    <img id="channelIcon" src="https://placehold.co/100x56/222/e0e0e0?text=Logo" alt="Channel Logo">
+    <div id="channelIconContainer">
+        <img id="channelIcon" src="" alt="Channel Logo" style="display: none;">
+        <div id="channelIconPlaceholder" class="channel-icon-placeholder">
+            <i class="fas fa-tv"></i>
+        </div>
+    </div>
     <div class="info-text">
      <h2>Now Playing <span id="formatBadge" class="format-badge">Loading...</span></h2>
      <p>Channel: <span id="channelName" class="channel-name">Loading...</span></p>
@@ -514,6 +532,7 @@ Picture will not show <!doctype html>
             const player = document.getElementById('player');
             const channelName = document.getElementById('channelName');
             const channelIcon = document.getElementById('channelIcon');
+            const channelIconPlaceholder = document.getElementById('channelIconPlaceholder');
             const formatBadge = document.getElementById('formatBadge');
             const backButton = document.querySelector('.back-button');
             const statusMessage = document.getElementById('statusMessage');
@@ -635,10 +654,56 @@ Picture will not show <!doctype html>
             function setChannelInfo() {
                 channelName.textContent = decodeURIComponent(channelNameParam);
                 const decodedIcon = decodeURIComponent(channelIconParam);
-                if (decodedIcon) {
-                    channelIcon.src = decodedIcon;
-                    channelIcon.alt = decodeURIComponent(channelNameParam) + ' Logo';
+                
+                if (decodedIcon && decodedIcon !== 'undefined' && decodedIcon !== 'null') {
+                    loadChannelIcon(decodedIcon);
+                } else {
+                    // Keep the placeholder visible
+                    channelIcon.style.display = 'none';
+                    channelIconPlaceholder.style.display = 'flex';
                 }
+            }
+
+            function loadChannelIcon(iconUrl) {
+                // Create a new image to test if it loads successfully
+                const testImage = new Image();
+                
+                testImage.onload = function() {
+                    // Image loaded successfully
+                    channelIcon.src = iconUrl;
+                    channelIcon.style.display = 'block';
+                    channelIconPlaceholder.style.display = 'none';
+                };
+                
+                testImage.onerror = function() {
+                    // Image failed to load, use placeholder
+                    console.warn('Channel icon failed to load:', iconUrl);
+                    channelIcon.style.display = 'none';
+                    channelIconPlaceholder.style.display = 'flex';
+                    
+                    // Try with CORS proxy if the direct URL failed
+                    if (!iconUrl.startsWith('data:') && !iconUrl.startsWith('blob:')) {
+                        const proxyUrl = getCurrentProxyUrl();
+                        const proxiedIconUrl = proxyUrl.includes('corsproxy.io') 
+                            ? proxyUrl + encodeURIComponent(iconUrl)
+                            : proxyUrl + iconUrl;
+                        
+                        const proxyTestImage = new Image();
+                        proxyTestImage.onload = function() {
+                            channelIcon.src = proxiedIconUrl;
+                            channelIcon.style.display = 'block';
+                            channelIconPlaceholder.style.display = 'none';
+                        };
+                        proxyTestImage.onerror = function() {
+                            // Keep placeholder if proxy also fails
+                            channelIcon.style.display = 'none';
+                            channelIconPlaceholder.style.display = 'flex';
+                        };
+                        proxyTestImage.src = proxiedIconUrl;
+                    }
+                };
+                
+                testImage.src = iconUrl;
             }
 
             function detectAndLoadFormat() {
