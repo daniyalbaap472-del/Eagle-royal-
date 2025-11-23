@@ -1,1 +1,2198 @@
-op
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UnknownPlaylists - Network Video Player</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --secondary: #10b981;
+            --background: #ffffff;
+            --surface: #f8fafc;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --shadow: rgba(0, 0, 0, 0.1);
+            --shadow-lg: rgba(0, 0, 0, 0.15);
+            --font-size: 16px;
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+        }
+
+        .dark-theme {
+            --background: #0f172a;
+            --surface: #1e293b;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --shadow: rgba(0, 0, 0, 0.3);
+            --shadow-lg: rgba(0, 0, 0, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            transition: var(--transition);
+            font-size: var(--font-size);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-bottom: 100px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--surface);
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 6px -1px var(--shadow);
+            position: relative;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            font-size: 32px;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px var(--shadow);
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: 0 10px 15px -3px var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title i {
+            color: var(--primary);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .input-field {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: var(--transition);
+            background: var(--background);
+            color: var(--text);
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--background);
+            color: var(--text);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--surface);
+            border-color: var(--primary);
+        }
+
+        .btn-danger {
+            background: var(--error);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #0da271;
+            transform: translateY(-2px);
+        }
+
+        .stream-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stream-item {
+            background: var(--surface);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stream-item:hover {
+            box-shadow: 0 8px 15px var(--shadow-lg);
+            transform: translateY(-3px);
+            border-color: var(--primary);
+        }
+
+        .stream-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary), var(--secondary));
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .stream-item:hover::before {
+            opacity: 1;
+        }
+
+        .stream-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .stream-url {
+            font-size: 14px;
+            color: var(--text-muted);
+            word-break: break-all;
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .stream-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .stream-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 8px;
+            background: var(--background);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .fab {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+            transition: var(--transition);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 25px rgba(99, 102, 241, 0.5);
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--surface);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            padding: 16px 0;
+            z-index: 999;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+            padding: 8px 16px;
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -16px;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--primary);
+        }
+
+        .nav-icon {
+            font-size: 20px;
+        }
+
+        .nav-label {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.show {
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            border-radius: var(--border-radius);
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .modal.show .modal-content {
+            transform: scale(1);
+        }
+
+        .settings-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background: var(--background);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background: var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .toggle-switch.active {
+            background: var(--primary);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .toggle-switch.active::after {
+            transform: translateX(26px);
+        }
+
+        .select-field {
+            padding: 8px 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: var(--background);
+            color: var(--text);
+            cursor: pointer;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 64px;
+            margin: 0 0 16px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 16px 12px 48px;
+            border: 2px solid var(--border);
+            border-radius: var(--border-radius);
+            background: var(--background);
+            color: var(--text);
+            transition: var(--transition);
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px var(--shadow-lg);
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .quick-action-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--border-radius);
+            color: var(--text);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 14px;
+        }
+
+        .quick-action-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: 8px 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 14px;
+        }
+
+        .filter-tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, var(--border) 25%, var(--surface) 50%, var(--border) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 4px;
+        }
+
+        @keyframes loading {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        .skeleton-item {
+            height: 120px;
+            margin-bottom: 16px;
+            border-radius: var(--border-radius);
+        }
+
+        .confirmation-dialog {
+            text-align: center;
+        }
+
+        .confirmation-dialog .icon {
+            font-size: 48px;
+            color: var(--error);
+            margin-bottom: 16px;
+        }
+
+        .confirmation-dialog .actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 24px;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            border-radius: var(--border-radius);
+            color: white;
+            z-index: 9999;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            max-width: 300px;
+            word-wrap: break-word;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            background: var(--success);
+        }
+
+        .toast.error {
+            background: var(--error);
+        }
+
+        .toast.info {
+            background: var(--primary);
+        }
+
+        .toast.warning {
+            background: var(--warning);
+        }
+
+        .toast-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .toast-icon {
+            font-size: 20px;
+        }
+
+        /* Xtream and MAC Portal Styles */
+        .portal-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+        }
+
+        .portal-tab {
+            padding: 10px 20px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px 8px 0 0;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .portal-tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .portal-form {
+            display: none;
+        }
+
+        .portal-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .preview-container {
+            margin-top: 20px;
+            border: 1px solid var(--border);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        .preview-header {
+            background: var(--surface);
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+        }
+
+        .preview-content {
+            background: var(--background);
+            padding: 16px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .preview-item {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .preview-item:hover {
+            background: var(--surface);
+        }
+
+        .preview-item:last-child {
+            border-bottom: none;
+        }
+
+        .preview-item-title {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .preview-item-meta {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: var(--primary-light);
+            color: white;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-right: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+            
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .stream-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-actions {
+                justify-content: center;
+            }
+
+            .fab {
+                bottom: 80px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+
+            .form-row {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-actions {
+                width: 100%;
+            }
+            
+            .header-actions .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                padding: 20px;
+            }
+        }
+    </style>
+ </head>
+ <body>
+  <div class="container">
+   <div class="header">
+    <div class="logo">
+     <i class="fas fa-play-circle logo-icon"></i> 
+     <span>UnknownPlaylists - Network Stream Video Player</span>
+    </div>
+    <div class="header-actions">
+     <button class="btn btn-secondary" onclick="showClearConfirmation()"><i class="fas fa-trash"></i> Clear All</button>
+    </div>
+   </div>
+   <!-- Home Tab -->
+   <div id="home" class="tab-content active">
+    <div class="card">
+     <div class="card-title">
+      <i class="fas fa-stream"></i> Play Stream
+     </div>
+     <div class="portal-tabs">
+        <div class="portal-tab active" onclick="showPortalTab('direct')">Direct URL</div>
+        <div class="portal-tab" onclick="showPortalTab('xtream')">Xtream Codes</div>
+        <div class="portal-tab" onclick="showPortalTab('mac')">MAC Portal</div>
+     </div>
+     
+     <!-- Direct URL Form -->
+     <div id="direct-form" class="portal-form active">
+        <div class="input-group">
+          <input type="text" id="m3u8-url" class="input-field" placeholder="Enter M3U8 or stream URL...">
+          <button class="btn btn-primary" onclick="playStream()"><i class="fas fa-play"></i> Play Now</button>
+        </div>
+        <div class="input-group">
+          <input type="text" id="stream-name" class="input-field" placeholder="Stream name (optional)">
+          <button class="btn btn-secondary" onclick="saveCurrentStream()"><i class="fas fa-save"></i> Save</button>
+        </div>
+     </div>
+     
+     <!-- Xtream Codes Form -->
+     <div id="xtream-form" class="portal-form">
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Server URL</label>
+                <input type="text" id="xtream-server" class="input-field" placeholder="http://example.com:8080">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Username</label>
+                <input type="text" id="xtream-username" class="input-field" placeholder="Your username">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" id="xtream-password" class="input-field" placeholder="Your password">
+            </div>
+        </div>
+        <div class="input-group">
+            <button class="btn btn-secondary" onclick="loadXtreamCategories()"><i class="fas fa-sync"></i> Load Categories</button>
+            <button class="btn btn-primary" onclick="connectXtream()"><i class="fas fa-plug"></i> Connect</button>
+        </div>
+        <div id="xtream-preview" class="preview-container" style="display: none;">
+            <div class="preview-header">
+                <span>Xtream Codes Content</span>
+                <button class="icon-btn" onclick="togglePreview('xtream')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="preview-content" id="xtream-content"></div>
+        </div>
+     </div>
+     
+     <!-- MAC Portal Form -->
+     <div id="mac-form" class="portal-form">
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Portal URL</label>
+                <input type="text" id="mac-server" class="input-field" placeholder="http://example.com:8080/c">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">MAC Address</label>
+                <input type="text" id="mac-address" class="input-field" placeholder="00:1A:2B:3C:4D:5E">
+            </div>
+        </div>
+        <div class="input-group">
+            <button class="btn btn-secondary" onclick="loadMacCategories()"><i class="fas fa-sync"></i> Load Categories</button>
+            <button class="btn btn-primary" onclick="connectMacPortal()"><i class="fas fa-plug"></i> Connect</button>
+        </div>
+        <div id="mac-preview" class="preview-container" style="display: none;">
+            <div class="preview-header">
+                <span>MAC Portal Content</span>
+                <button class="icon-btn" onclick="togglePreview('mac')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="preview-content" id="mac-content"></div>
+        </div>
+     </div>
+    </div>
+    
+    <div class="quick-actions">
+        <button class="quick-action-btn" onclick="showSampleStreams()">
+            <i class="fas fa-tv"></i> Sample Streams
+        </button>
+        <button class="quick-action-btn" onclick="importFromURL()">
+            <i class="fas fa-download"></i> Import from URL
+        </button>
+        <button class="quick-action-btn" onclick="showHelp()">
+            <i class="fas fa-question-circle"></i> Help
+        </button>
+    </div>
+    
+    <div class="stats-grid">
+     <div class="stat-card">
+      <div class="stat-number" id="recent-count">0</div>
+      <div class="stat-label">Recent Streams</div>
+     </div>
+     <div class="stat-card">
+      <div class="stat-number" id="playlist-count">0</div>
+      <div class="stat-label">Saved Playlists</div>
+     </div>
+     <div class="stat-card">
+      <div class="stat-number" id="total-plays">0</div>
+      <div class="stat-label">Total Plays</div>
+     </div>
+    </div>
+   </div>
+   <!-- Recent Tab -->
+   <div id="recent" class="tab-content">
+    <div class="card">
+     <div class="card-title">
+      <i class="fas fa-history"></i> Recently Played
+     </div>
+     <div class="search-box">
+      <input type="text" id="recent-search" placeholder="Search recent streams..." oninput="filterRecent()"> 
+      <i class="fas fa-search"></i>
+     </div>
+     <div class="filter-tabs">
+        <div class="filter-tab active" onclick="setRecentFilter('all')">All</div>
+        <div class="filter-tab" onclick="setRecentFilter('today')">Today</div>
+        <div class="filter-tab" onclick="setRecentFilter('week')">This Week</div>
+        <div class="filter-tab" onclick="setRecentFilter('month')">This Month</div>
+     </div>
+     <div id="recent-streams" class="stream-grid"></div>
+    </div>
+   </div>
+   <!-- Playlists Tab -->
+   <div id="playlists" class="tab-content">
+    <div class="card">
+     <div class="card-title">
+      <i class="fas fa-list"></i> My Playlists
+     </div>
+     <div class="search-box">
+      <input type="text" id="playlist-search" placeholder="Search playlists..." oninput="filterPlaylists()"> 
+      <i class="fas fa-search"></i>
+     </div>
+     <div class="filter-tabs">
+        <div class="filter-tab active" onclick="setPlaylistFilter('all')">All</div>
+        <div class="filter-tab" onclick="setPlaylistFilter('recent')">Recently Added</div>
+        <div class="filter-tab" onclick="setPlaylistFilter('updated')">Recently Updated</div>
+     </div>
+     <div id="playlist-list" class="stream-grid"></div>
+    </div>
+    <button class="fab" onclick="addPlaylist()"><i class="fas fa-plus"></i></button>
+   </div>
+   <!-- Settings Tab -->
+   <div id="settings" class="tab-content">
+    <div class="card">
+     <div class="card-title">
+      <i class="fas fa-cog"></i> Settings
+     </div>
+     <div class="settings-grid">
+      <div class="setting-item">
+       <div>
+        <strong>Dark Mode</strong>
+        <div style="font-size: 14px; color: var(--text-muted);">Switch to dark theme</div>
+       </div>
+       <div class="toggle-switch" id="theme-toggle" onclick="toggleTheme()"></div>
+      </div>
+      <div class="setting-item">
+       <div>
+        <strong>Font Size</strong>
+        <div style="font-size: 14px; color: var(--text-muted);">Adjust text size</div>
+       </div>
+       <select class="select-field" id="font-size" onchange="changeFontSize()"> 
+         <option value="14px">Small</option> 
+         <option value="16px" selected>Medium</option> 
+         <option value="18px">Large</option> 
+         <option value="20px">Extra Large</option> 
+       </select>
+      </div>
+      <div class="setting-item">
+       <div>
+        <strong>Auto-save Streams</strong>
+        <div style="font-size: 14px; color: var(--text-muted);">Automatically save played streams</div>
+       </div>
+       <div class="toggle-switch active" id="auto-save-toggle" onclick="toggleAutoSave()"></div>
+      </div>
+      <div class="setting-item">
+       <div>
+        <strong>Stream History Limit</strong>
+        <div style="font-size: 14px; color: var(--text-muted);">Maximum recent streams to keep</div>
+       </div>
+       <select class="select-field" id="history-limit" onchange="changeHistoryLimit()"> 
+         <option value="10">10 streams</option> 
+         <option value="25" selected>25 streams</option> 
+         <option value="50">50 streams</option> 
+         <option value="100">100 streams</option> 
+       </select>
+      </div>
+      <div class="setting-item">
+       <div>
+        <strong>Auto-play</strong>
+        <div style="font-size: 14px; color: var(--text-muted);">Automatically play streams when opened</div>
+       </div>
+       <div class="toggle-switch" id="auto-play-toggle" onclick="toggleAutoPlay()"></div>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+   <div class="nav-item active" onclick="showTab('home')">
+    <i class="nav-icon fas fa-home"></i> <span class="nav-label">Home</span>
+   </div>
+   <div class="nav-item" onclick="showTab('recent')">
+    <i class="nav-icon fas fa-history"></i> <span class="nav-label">Recent</span>
+   </div>
+   <div class="nav-item" onclick="showTab('playlists')">
+    <i class="nav-icon fas fa-list"></i> <span class="nav-label">Playlists</span>
+   </div>
+   <div class="nav-item" onclick="showTab('settings')">
+    <i class="nav-icon fas fa-cog"></i> <span class="nav-label">Settings</span>
+   </div>
+  </nav>
+  <!-- Modal -->
+  <div id="modal" class="modal">
+   <div class="modal-content" id="modal-content"></div>
+  </div>
+  <script>
+        // Data storage using localStorage
+        let appData = {
+            playlists: [],
+            recentStreams: [],
+            settings: {
+                theme: 'light',
+                fontSize: '16px',
+                autoSave: true,
+                historyLimit: 25,
+                autoPlay: false
+            },
+            stats: {
+                totalPlays: 0
+            }
+        };
+
+        let currentAction = '';
+        let currentIndex = -1;
+        let recentFilter = 'all';
+        let playlistFilter = 'all';
+        let currentPortal = 'direct';
+
+        // Initialize app
+        function initApp() {
+            loadData();
+            updateStats();
+            displayRecentStreams();
+            displayPlaylists();
+            applySettings();
+            
+            // Add keyboard shortcuts
+            document.addEventListener('keydown', handleKeyboardShortcuts);
+        }
+
+        // Load data from localStorage
+        function loadData() {
+            const savedData = localStorage.getItem('streamFlexData');
+            if (savedData) {
+                appData = JSON.parse(savedData);
+            }
+        }
+
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('streamFlexData', JSON.stringify(appData));
+        }
+
+        function showTab(tabId) {
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            
+            // Find the clicked nav item and activate it
+            const navItems = document.querySelectorAll('.nav-item');
+            for (let i = 0; i < navItems.length; i++) {
+                if (navItems[i].onclick && navItems[i].onclick.toString().includes(tabId)) {
+                    navItems[i].classList.add('active');
+                    break;
+                }
+            }
+            
+            document.getElementById(tabId).classList.add('active');
+
+            if (tabId === 'recent') displayRecentStreams();
+            if (tabId === 'playlists') displayPlaylists();
+        }
+
+        function showPortalTab(portalType) {
+            currentPortal = portalType;
+            document.querySelectorAll('.portal-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.portal-form').forEach(form => form.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(`${portalType}-form`).classList.add('active');
+        }
+
+        function playStream() {
+            let url, name;
+            
+            if (currentPortal === 'direct') {
+                url = document.getElementById('m3u8-url').value.trim();
+                name = document.getElementById('stream-name').value.trim() || extractStreamName(url);
+            } else if (currentPortal === 'xtream') {
+                // Get selected stream from Xtream preview
+                const selectedStream = document.querySelector('#xtream-content .preview-item.active');
+                if (!selectedStream) {
+                    showNotification('Please select a stream from the Xtream preview', 'error');
+                    return;
+                }
+                url = selectedStream.dataset.url;
+                name = selectedStream.querySelector('.preview-item-title').textContent;
+            } else if (currentPortal === 'mac') {
+                // Get selected stream from MAC preview
+                const selectedStream = document.querySelector('#mac-content .preview-item.active');
+                if (!selectedStream) {
+                    showNotification('Please select a stream from the MAC preview', 'error');
+                    return;
+                }
+                url = selectedStream.dataset.url;
+                name = selectedStream.querySelector('.preview-item-title').textContent;
+            }
+
+            if (!url) {
+                showNotification('Please enter a valid stream URL', 'error');
+                return;
+            }
+
+            if (appData.settings.autoSave) {
+                addToRecentStreams(name, url);
+            }
+
+            appData.stats.totalPlays++;
+            updateStats();
+            saveData();
+
+            // Show loading state
+            const playBtn = document.querySelector('.btn-primary');
+            const originalText = playBtn.innerHTML;
+            playBtn.innerHTML = '<div class="loading"></div> Loading...';
+            playBtn.disabled = true;
+
+            // Open player.html with the URL as a query parameter
+            setTimeout(() => {
+                window.open(`player.html?url=${encodeURIComponent(url)}&name=${encodeURIComponent(name)}`, '_blank');
+                
+                if (currentPortal === 'direct') {
+                    document.getElementById('m3u8-url').value = '';
+                    document.getElementById('stream-name').value = '';
+                }
+                
+                // Reset button
+                playBtn.innerHTML = originalText;
+                playBtn.disabled = false;
+            }, 1000);
+        }
+
+        function saveCurrentStream() {
+            const url = document.getElementById('m3u8-url').value.trim();
+            const name = document.getElementById('stream-name').value.trim() || extractStreamName(url);
+            
+            if (!url) {
+                showNotification('Please enter a valid stream URL', 'error');
+                return;
+            }
+
+            addToRecentStreams(name, url);
+            showNotification('Stream saved successfully!', 'success');
+            
+            document.getElementById('m3u8-url').value = '';
+            document.getElementById('stream-name').value = '';
+        }
+
+        // Xtream Codes Integration
+        async function connectXtream() {
+            const server = document.getElementById('xtream-server').value.trim();
+            const username = document.getElementById('xtream-username').value.trim();
+            const password = document.getElementById('xtream-password').value.trim();
+            
+            if (!server || !username || !password) {
+                showNotification('Please fill all Xtream Codes fields', 'error');
+                return;
+            }
+
+            try {
+                showNotification('Connecting to Xtream Codes...', 'info');
+                
+                // Simulate API call - in real implementation, you would make actual API calls
+                // to the Xtream Codes API endpoints
+                setTimeout(() => {
+                    // Mock data for demonstration
+                    const mockCategories = [
+                        { id: 1, name: 'Live TV', type: 'live' },
+                        { id: 2, name: 'Movies', type: 'movie' },
+                        { id: 3, name: 'Series', type: 'series' }
+                    ];
+                    
+                    const mockStreams = [
+                        { id: 1, name: 'Stream 1', url: 'https://example.com/stream1.m3u8', category: 'Live TV' },
+                        { id: 2, name: 'Stream 2', url: 'https://example.com/stream2.m3u8', category: 'Live TV' },
+                        { id: 3, name: 'Movie 1', url: 'https://example.com/movie1.m3u8', category: 'Movies' }
+                    ];
+                    
+                    displayXtreamContent(mockCategories, mockStreams);
+                    showNotification('Successfully connected to Xtream Codes', 'success');
+                }, 1500);
+                
+            } catch (error) {
+                showNotification('Failed to connect to Xtream Codes: ' + error.message, 'error');
+            }
+        }
+
+        function loadXtreamCategories() {
+            // This would load categories from Xtream API
+            showNotification('Loading categories...', 'info');
+            connectXtream();
+        }
+
+        function displayXtreamContent(categories, streams) {
+            const preview = document.getElementById('xtream-preview');
+            const content = document.getElementById('xtream-content');
+            
+            let html = '<div class="preview-item" onclick="toggleXtreamCategory(\'all\')" style="font-weight: 600; background: var(--surface);">All Categories</div>';
+            
+            categories.forEach(category => {
+                html += `<div class="preview-item" onclick="toggleXtreamCategory(${category.id})">
+                    <span class="category-badge">${category.type}</span>
+                    ${category.name}
+                </div>`;
+            });
+            
+            html += '<div style="margin: 16px 0; border-top: 1px solid var(--border); padding-top: 16px;"><strong>Available Streams:</strong></div>';
+            
+            streams.forEach(stream => {
+                html += `<div class="preview-item" data-url="${stream.url}" onclick="selectStream(this, 'xtream')">
+                    <div class="preview-item-title">${stream.name}</div>
+                    <div class="preview-item-meta">
+                        <span class="category-badge" style="background: var(--secondary);">${stream.category}</span>
+                        ${stream.url}
+                    </div>
+                </div>`;
+            });
+            
+            content.innerHTML = html;
+            preview.style.display = 'block';
+        }
+
+        // MAC Portal Integration
+        async function connectMacPortal() {
+            const server = document.getElementById('mac-server').value.trim();
+            const macAddress = document.getElementById('mac-address').value.trim();
+            
+            if (!server || !macAddress) {
+                showNotification('Please fill all MAC Portal fields', 'error');
+                return;
+            }
+
+            try {
+                showNotification('Connecting to MAC Portal...', 'info');
+                
+                // Simulate API call
+                setTimeout(() => {
+                    // Mock data for demonstration
+                    const mockCategories = [
+                        { id: 1, name: 'Live Channels', type: 'live' },
+                        { id: 2, name: 'VOD', type: 'vod' },
+                        { id: 3, name: 'Series', type: 'series' }
+                    ];
+                    
+                    const mockStreams = [
+                        { id: 1, name: 'Channel 1', url: 'https://example.com/channel1.m3u8', category: 'Live Channels' },
+                        { id: 2, name: 'Channel 2', url: 'https://example.com/channel2.m3u8', category: 'Live Channels' },
+                        { id: 3, name: 'Movie 1', url: 'https://example.com/vod1.m3u8', category: 'VOD' }
+                    ];
+                    
+                    displayMacContent(mockCategories, mockStreams);
+                    showNotification('Successfully connected to MAC Portal', 'success');
+                }, 1500);
+                
+            } catch (error) {
+                showNotification('Failed to connect to MAC Portal: ' + error.message, 'error');
+            }
+        }
+
+        function loadMacCategories() {
+            showNotification('Loading categories...', 'info');
+            connectMacPortal();
+        }
+
+        function displayMacContent(categories, streams) {
+            const preview = document.getElementById('mac-preview');
+            const content = document.getElementById('mac-content');
+            
+            let html = '<div class="preview-item" onclick="toggleMacCategory(\'all\')" style="font-weight: 600; background: var(--surface);">All Categories</div>';
+            
+            categories.forEach(category => {
+                html += `<div class="preview-item" onclick="toggleMacCategory(${category.id})">
+                    <span class="category-badge">${category.type}</span>
+                    ${category.name}
+                </div>`;
+            });
+            
+            html += '<div style="margin: 16px 0; border-top: 1px solid var(--border); padding-top: 16px;"><strong>Available Streams:</strong></div>';
+            
+            streams.forEach(stream => {
+                html += `<div class="preview-item" data-url="${stream.url}" onclick="selectStream(this, 'mac')">
+                    <div class="preview-item-title">${stream.name}</div>
+                    <div class="preview-item-meta">
+                        <span class="category-badge" style="background: var(--secondary);">${stream.category}</span>
+                        ${stream.url}
+                    </div>
+                </div>`;
+            });
+            
+            content.innerHTML = html;
+            preview.style.display = 'block';
+        }
+
+        function togglePreview(type) {
+            document.getElementById(`${type}-preview`).style.display = 'none';
+        }
+
+        function selectStream(element, type) {
+            // Remove active class from all items
+            document.querySelectorAll(`#${type}-content .preview-item`).forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Add active class to selected item
+            element.classList.add('active');
+            
+            // Update the play button text
+            const streamName = element.querySelector('.preview-item-title').textContent;
+            document.querySelector('.btn-primary').innerHTML = `<i class="fas fa-play"></i> Play ${streamName}`;
+        }
+
+        function toggleXtreamCategory(categoryId) {
+            // Filter streams by category - in real implementation, this would make API calls
+            showNotification(`Filtering by category ${categoryId}...`, 'info');
+        }
+
+        function toggleMacCategory(categoryId) {
+            // Filter streams by category - in real implementation, this would make API calls
+            showNotification(`Filtering by category ${categoryId}...`, 'info');
+        }
+
+        // Rest of the existing functions remain the same...
+        function addToRecentStreams(name, url) {
+            const stream = {
+                id: Date.now(),
+                name: name,
+                url: url,
+                playedAt: new Date().toISOString(),
+                playCount: 1
+            };
+
+            const existingIndex = appData.recentStreams.findIndex(s => s.url === url);
+            if (existingIndex !== -1) {
+                appData.recentStreams[existingIndex].playCount++;
+                appData.recentStreams[existingIndex].playedAt = stream.playedAt;
+            } else {
+                appData.recentStreams.unshift(stream);
+            }
+
+            const limit = parseInt(appData.settings.historyLimit);
+            if (appData.recentStreams.length > limit) {
+                appData.recentStreams = appData.recentStreams.slice(0, limit);
+            }
+
+            updateStats();
+            displayRecentStreams();
+            saveData();
+        }
+
+        function displayRecentStreams() {
+            const container = document.getElementById('recent-streams');
+            
+            // Apply filter
+            let filteredStreams = appData.recentStreams;
+            if (recentFilter !== 'all') {
+                const now = new Date();
+                filteredStreams = appData.recentStreams.filter(stream => {
+                    const streamDate = new Date(stream.playedAt);
+                    
+                    if (recentFilter === 'today') {
+                        return streamDate.toDateString() === now.toDateString();
+                    } else if (recentFilter === 'week') {
+                        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                        return streamDate >= weekAgo;
+                    } else if (recentFilter === 'month') {
+                        const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                        return streamDate >= monthAgo;
+                    }
+                    
+                    return true;
+                });
+            }
+            
+            if (filteredStreams.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-history"></i>
+                        <h3>No Recent Streams</h3>
+                        <p>Start playing streams to see them here</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filteredStreams.map(stream => `
+                <div class="stream-item" onclick="playRecentStream('${stream.url.replace(/'/g, "\\'")}', '${stream.name.replace(/'/g, "\\'")}')">
+                    <div class="stream-title">${stream.name}</div>
+                    <div class="stream-url">${truncateUrl(stream.url)}</div>
+                    <div class="stream-meta">
+                        <span>
+                            <i class="fas fa-play"></i> ${stream.playCount} plays
+                        </span>
+                        <span>${formatDate(stream.playedAt)}</span>
+                    </div>
+                    <div class="stream-actions">
+                        <button class="icon-btn" onclick="event.stopPropagation(); copyToClipboard('${stream.url.replace(/'/g, "\\'")}')" title="Copy URL">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        <button class="icon-btn" onclick="event.stopPropagation(); removeRecentStream(${stream.id})" title="Remove">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function setRecentFilter(filter) {
+            recentFilter = filter;
+            document.querySelectorAll('#recent .filter-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            displayRecentStreams();
+        }
+
+        function playRecentStream(url, name) {
+            document.getElementById('m3u8-url').value = url;
+            document.getElementById('stream-name').value = name;
+            showTab('home');
+            showNotification(`Loaded: ${name}`, 'info');
+        }
+
+        function removeRecentStream(id) {
+            showConfirmationDialog(
+                'Remove Stream',
+                'Are you sure you want to remove this stream from your history?',
+                () => {
+                    appData.recentStreams = appData.recentStreams.filter(stream => stream.id !== id);
+                    displayRecentStreams();
+                    updateStats();
+                    saveData();
+                    showNotification('Stream removed from history', 'success');
+                }
+            );
+        }
+
+        function filterRecent() {
+            const query = document.getElementById('recent-search').value.toLowerCase();
+            let filtered = appData.recentStreams.filter(stream => 
+                stream.name.toLowerCase().includes(query) || 
+                stream.url.toLowerCase().includes(query)
+            );
+            
+            // Apply time filter
+            if (recentFilter !== 'all') {
+                const now = new Date();
+                filtered = filtered.filter(stream => {
+                    const streamDate = new Date(stream.playedAt);
+                    
+                    if (recentFilter === 'today') {
+                        return streamDate.toDateString() === now.toDateString();
+                    } else if (recentFilter === 'week') {
+                        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                        return streamDate >= weekAgo;
+                    } else if (recentFilter === 'month') {
+                        const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                        return streamDate >= monthAgo;
+                    }
+                    
+                    return true;
+                });
+            }
+            
+            const container = document.getElementById('recent-streams');
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-search"></i>
+                        <h3>No Results Found</h3>
+                        <p>Try different search terms</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map(stream => `
+                <div class="stream-item" onclick="playRecentStream('${stream.url.replace(/'/g, "\\'")}', '${stream.name.replace(/'/g, "\\'")}')">
+                    <div class="stream-title">${stream.name}</div>
+                    <div class="stream-url">${truncateUrl(stream.url)}</div>
+                    <div class="stream-meta">
+                        <span><i class="fas fa-play"></i> ${stream.playCount} plays</span>
+                        <span>${formatDate(stream.playedAt)}</span>
+                    </div>
+                    <div class="stream-actions">
+                        <button class="icon-btn" onclick="event.stopPropagation(); copyToClipboard('${stream.url.replace(/'/g, "\\'")}')" title="Copy URL">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        <button class="icon-btn" onclick="event.stopPropagation(); removeRecentStream(${stream.id})" title="Remove">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addPlaylist() {
+            currentAction = 'add';
+            currentIndex = -1;
+            document.getElementById('modal-content').innerHTML = `
+                <h2 style="margin-bottom: 24px;"><i class="fas fa-plus"></i> Add Playlist</h2>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Playlist Name</label>
+                    <input type="text" class="input-field" id="playlist-name" placeholder="Enter playlist name">
+                </div>
+                <div style="margin-bottom: 24px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">M3U/M3U8 URL</label>
+                    <input type="text" class="input-field" id="playlist-url" placeholder="Enter playlist URL">
+                </div>
+                <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                    <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button class="btn btn-primary" onclick="savePlaylist()">
+                        <i class="fas fa-save"></i> Save Playlist
+                    </button>
+                </div>
+            `;
+            showModal();
+        }
+
+        function editPlaylist(index) {
+            currentAction = 'edit';
+            currentIndex = index;
+            const playlist = appData.playlists[index];
+            document.getElementById('modal-content').innerHTML = `
+                <h2 style="margin-bottom: 24px;"><i class="fas fa-edit"></i> Edit Playlist</h2>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Playlist Name</label>
+                    <input type="text" class="input-field" id="playlist-name" value="${playlist.name.replace(/"/g, '&quot;')}">
+                </div>
+                <div style="margin-bottom: 24px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">M3U/M3U8 URL</label>
+                    <input type="text" class="input-field" id="playlist-url" value="${playlist.url.replace(/"/g, '&quot;')}">
+                </div>
+                <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                    <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button class="btn btn-primary" onclick="savePlaylist()">
+                        <i class="fas fa-save"></i> Update Playlist
+                    </button>
+                </div>
+            `;
+            showModal();
+        }
+
+        function confirmDeletePlaylist(index) {
+            currentAction = 'delete';
+            currentIndex = index;
+            const playlist = appData.playlists[index];
+            document.getElementById('modal-content').innerHTML = `
+                <h2 style="margin-bottom: 24px; color: #ef4444;"><i class="fas fa-trash"></i> Delete Playlist</h2>
+                <p style="margin-bottom: 24px; font-size: 16px;">Are you sure you want to delete "<strong>${playlist.name.replace(/"/g, '&quot;')}</strong>"?</p>
+                <p style="margin-bottom: 24px; color: var(--text-muted); font-size: 14px;">This action cannot be undone.</p>
+                <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                    <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button class="btn btn-danger" onclick="deletePlaylist()">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </div>
+            `;
+            showModal();
+        }
+
+        function savePlaylist() {
+            const name = document.getElementById('playlist-name').value.trim();
+            const url = document.getElementById('playlist-url').value.trim();
+            
+            if (!name || !url) {
+                showNotification('Please enter both name and URL', 'error');
+                return;
+            }
+
+            const playlist = {
+                id: currentAction === 'add' ? Date.now() : appData.playlists[currentIndex].id,
+                name: name,
+                url: url,
+                createdAt: currentAction === 'add' ? new Date().toISOString() : appData.playlists[currentIndex].createdAt,
+                updatedAt: new Date().toISOString()
+            };
+
+            if (currentAction === 'add') {
+                appData.playlists.unshift(playlist);
+                showNotification('Playlist added successfully!', 'success');
+            } else if (currentAction === 'edit') {
+                appData.playlists[currentIndex] = playlist;
+                showNotification('Playlist updated successfully!', 'success');
+            }
+
+            displayPlaylists();
+            updateStats();
+            saveData();
+            closeModal();
+        }
+
+        function deletePlaylist() {
+            if (currentAction === 'delete') {
+                const playlist = appData.playlists[currentIndex];
+                appData.playlists.splice(currentIndex, 1);
+                displayPlaylists();
+                updateStats();
+                saveData();
+                closeModal();
+                showNotification(`"${playlist.name}" deleted successfully`, 'success');
+            }
+        }
+
+        function displayPlaylists() {
+            const container = document.getElementById('playlist-list');
+            
+            // Apply filter
+            let filteredPlaylists = appData.playlists;
+            if (playlistFilter !== 'all') {
+                const now = new Date();
+                filteredPlaylists = appData.playlists.filter(playlist => {
+                    const playlistDate = new Date(playlistFilter === 'recent' ? playlist.createdAt : playlist.updatedAt);
+                    
+                    if (playlistFilter === 'recent') {
+                        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                        return playlistDate >= weekAgo;
+                    } else if (playlistFilter === 'updated') {
+                        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                        return playlistDate >= weekAgo;
+                    }
+                    
+                    return true;
+                });
+            }
+            
+            if (filteredPlaylists.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-list"></i>
+                        <h3>No Playlists</h3>
+                        <p>Add your first playlist to get started</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filteredPlaylists.map((playlist, index) => `
+                <div class="stream-item" onclick="openPlaylist('${playlist.url.replace(/'/g, "\\'")}', '${playlist.name.replace(/'/g, "\\'")}')">
+                    <div class="stream-title">${playlist.name}</div>
+                    <div class="stream-url">${truncateUrl(playlist.url)}</div>
+                    <div class="stream-meta">
+                        <span>
+                            <i class="fas fa-calendar"></i> ${formatDate(playlist.createdAt)}
+                        </span>
+                        <span>
+                            <i class="fas fa-list"></i> Playlist
+                        </span>
+                    </div>
+                    <div class="stream-actions">
+                        <button class="icon-btn" onclick="event.stopPropagation(); copyToClipboard('${playlist.url.replace(/'/g, "\\'")}')" title="Copy URL">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        <button class="icon-btn" onclick="event.stopPropagation(); editPlaylist(${index})" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="icon-btn" onclick="event.stopPropagation(); confirmDeletePlaylist(${index})" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function setPlaylistFilter(filter) {
+            playlistFilter = filter;
+            document.querySelectorAll('#playlists .filter-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            displayPlaylists();
+        }
+
+        function openPlaylist(url, name) {
+            window.open(`m3u.html?url=${encodeURIComponent(url)}`, '_blank');
+        }
+
+        function filterPlaylists() {
+            const query = document.getElementById('playlist-search').value.toLowerCase();
+            let filtered = appData.playlists.filter(playlist => 
+                playlist.name.toLowerCase().includes(query) || 
+                playlist.url.toLowerCase().includes(query)
+            );
+            
+            // Apply filter
+            if (playlistFilter !== 'all') {
+                const now = new Date();
+                filtered = filtered.filter(playlist => {
+                    const playlistDate = new Date(playlistFilter === 'recent' ? playlist.createdAt : playlist.updatedAt);
+                    
+                    if (playlistFilter === 'recent') {
+                        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                        return playlistDate >= weekAgo;
+                    } else if (playlistFilter === 'updated') {
+                        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                        return playlistDate >= weekAgo;
+                    }
+                    
+                    return true;
+                });
+            }
+            
+            const container = document.getElementById('playlist-list');
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-search"></i>
+                        <h3>No Results Found</h3>
+                        <p>Try different search terms</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map((playlist, index) => `
+                <div class="stream-item" onclick="openPlaylist('${playlist.url.replace(/'/g, "\\'")}', '${playlist.name.replace(/'/g, "\\'")}')">
+                    <div class="stream-title">${playlist.name}</div>
+                    <div class="stream-url">${truncateUrl(playlist.url)}</div>
+                    <div class="stream-meta">
+                        <span><i class="fas fa-calendar"></i> ${formatDate(playlist.createdAt)}</span>
+                        <span><i class="fas fa-list"></i> Playlist</span>
+                    </div>
+                    <div class="stream-actions">
+                        <button class="icon-btn" onclick="event.stopPropagation(); copyToClipboard('${playlist.url.replace(/'/g, "\\'")}')" title="Copy URL">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        <button class="icon-btn" onclick="event.stopPropagation(); editPlaylist(${index})" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="icon-btn" onclick="event.stopPropagation(); confirmDeletePlaylist(${index})" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleTheme() {
+            const toggle = document.getElementById('theme-toggle');
+            const isDark = toggle.classList.contains('active');
+            
+            if (isDark) {
+                document.body.classList.remove('dark-theme');
+                toggle.classList.remove('active');
+                appData.settings.theme = 'light';
+            } else {
+                document.body.classList.add('dark-theme');
+                toggle.classList.add('active');
+                appData.settings.theme = 'dark';
+            }
+            saveData();
+        }
+
+        function changeFontSize() {
+            const fontSize = document.getElementById('font-size').value;
+            document.body.style.setProperty('--font-size', fontSize);
+            appData.settings.fontSize = fontSize;
+            saveData();
+        }
+
+        function toggleAutoSave() {
+            const toggle = document.getElementById('auto-save-toggle');
+            const isActive = toggle.classList.contains('active');
+            
+            if (isActive) {
+                toggle.classList.remove('active');
+                appData.settings.autoSave = false;
+            } else {
+                toggle.classList.add('active');
+                appData.settings.autoSave = true;
+            }
+            saveData();
+        }
+
+        function toggleAutoPlay() {
+            const toggle = document.getElementById('auto-play-toggle');
+            const isActive = toggle.classList.contains('active');
+            
+            if (isActive) {
+                toggle.classList.remove('active');
+                appData.settings.autoPlay = false;
+            } else {
+                toggle.classList.add('active');
+                appData.settings.autoPlay = true;
+            }
+            saveData();
+        }
+
+        function changeHistoryLimit() {
+            const limit = parseInt(document.getElementById('history-limit').value);
+            appData.settings.historyLimit = limit;
+            
+            if (appData.recentStreams.length > limit) {
+                appData.recentStreams = appData.recentStreams.slice(0, limit);
+                displayRecentStreams();
+                updateStats();
+            }
+            saveData();
+        }
+
+        function applySettings() {
+            if (appData.settings.theme === 'dark') {
+                document.body.classList.add('dark-theme');
+                document.getElementById('theme-toggle').classList.add('active');
+            }
+            
+            document.body.style.setProperty('--font-size', appData.settings.fontSize);
+            document.getElementById('font-size').value = appData.settings.fontSize;
+            
+            if (!appData.settings.autoSave) {
+                document.getElementById('auto-save-toggle').classList.remove('active');
+            }
+            
+            if (appData.settings.autoPlay) {
+                document.getElementById('auto-play-toggle').classList.add('active');
+            }
+            
+            document.getElementById('history-limit').value = appData.settings.historyLimit.toString();
+        }
+
+        function updateStats() {
+            document.getElementById('recent-count').textContent = appData.recentStreams.length;
+            document.getElementById('playlist-count').textContent = appData.playlists.length;
+            document.getElementById('total-plays').textContent = appData.stats.totalPlays;
+        }
+
+        function showClearConfirmation() {
+            showConfirmationDialog(
+                'Clear All Data',
+                'This will delete all your data including recent streams and playlists. This action cannot be undone.',
+                clearAllData,
+                'error'
+            );
+        }
+
+        function clearAllData() {
+            appData = {
+                playlists: [],
+                recentStreams: [],
+                settings: {
+                    theme: 'light',
+                    fontSize: '16px',
+                    autoSave: true,
+                    historyLimit: 25,
+                    autoPlay: false
+                },
+                stats: {
+                    totalPlays: 0
+                }
+            };
+            
+            localStorage.removeItem('streamFlexData');
+            updateStats();
+            displayRecentStreams();
+            displayPlaylists();
+            applySettings();
+            showNotification('All data cleared successfully', 'success');
+            closeModal();
+        }
+
+        function showModal() {
+            const modal = document.getElementById('modal');
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('show'), 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modal');
+            modal.classList.remove('show');
+            setTimeout(() => modal.style.display = 'none', 300);
+        }
+
+        document.getElementById('modal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('modal')) {
+                closeModal();
+            }
+        });
+
+        function extractStreamName(url) {
+            try {
+                const urlObj = new URL(url);
+                const pathSegments = urlObj.pathname.split('/');
+                const filename = pathSegments[pathSegments.length - 1];
+                return filename.replace(/\.[^/.]+$/, "") || urlObj.hostname;
+            } catch {
+                return 'Unknown Stream';
+            }
+        }
+
+        function truncateUrl(url, maxLength = 50) {
+            if (url.length <= maxLength) return url;
+            return url.substring(0, maxLength - 3) + '...';
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffTime = Math.abs(now - date);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 1) return 'Today';
+            if (diffDays === 2) return 'Yesterday';
+            if (diffDays <= 7) return `${diffDays - 1} days ago`;
+            
+            return date.toLocaleDateString();
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('URL copied to clipboard!', 'success');
+            }).catch(() => {
+                showNotification('Failed to copy URL', 'error');
+            });
+        }
+
+        function showNotification(message, type = 'info') {
+            // Remove existing toasts
+            document.querySelectorAll('.toast').forEach(toast => toast.remove());
+            
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <div class="toast-content">
+                    <i class="fas fa-${type === 'error' ? 'exclamation-circle' : type === 'success' ? 'check-circle' : 'info-circle'} toast-icon"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        document.body.removeChild(toast);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        function showConfirmationDialog(title, message, confirmCallback, type = 'warning') {
+            document.getElementById('modal-content').innerHTML = `
+                <div class="confirmation-dialog">
+                    <div class="icon">
+                        <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : 'question-circle'}"></i>
+                    </div>
+                    <h2 style="margin-bottom: 16px;">${title}</h2>
+                    <p style="margin-bottom: 24px; color: var(--text-muted);">${message}</p>
+                    <div class="actions">
+                        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                        <button class="btn btn-${type === 'error' ? 'danger' : 'primary'}" onclick="closeModal(); ${confirmCallback.name}()">
+                            <i class="fas fa-check"></i> Confirm
+                        </button>
+                    </div>
+                </div>
+            `;
+            showModal();
+        }
+
+        function showSampleStreams() {
+            document.getElementById('modal-content').innerHTML = `
+                <h2 style="margin-bottom: 24px;"><i class="fas fa-tv"></i> Sample Streams</h2>
+                <p style="margin-bottom: 20px; color: var(--text-muted);">Try these sample streams to test the player:</p>
+                <div style="display: grid; gap: 12px;">
+                    <div class="stream-item" onclick="loadSampleStream('Big Buck Bunny', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">
+                        <div class="stream-title">Big Buck Bunny</div>
+                        <div class="stream-url">https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8</div>
+                    </div>
+                    <div class="stream-item" onclick="loadSampleStream('Sintel', 'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8')">
+                        <div class="stream-title">Sintel</div>
+                        <div class="stream-url">https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8</div>
+                    </div>
+                    <div class="stream-item" onclick="loadSampleStream('Tears of Steel', 'https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8')">
+                        <div class="stream-title">Tears of Steel</div>
+                        <div class="stream-url">https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8</div>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: flex-end; margin-top: 24px;">
+                    <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+                </div>
+            `;
+            showModal();
+        }
+
+        function loadSampleStream(name, url) {
+            document.getElementById('m3u8-url').value = url;
+            document.getElementById('stream-name').value = name;
+            closeModal();
+            showTab('home');
+            showNotification(`Loaded: ${name}`, 'info');
+        }
+
+        function importFromURL() {
+            document.getElementById('modal-content').innerHTML = `
+                <h2 style="margin-bottom: 24px;"><i class="fas fa-download"></i> Import from URL</h2>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Playlist URL</label>
+                    <input type="text" class="input-field" id="import-url" placeholder="Enter M3U/M3U8 URL">
+                </div>
+                <div style="margin-bottom: 24px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Playlist Name (optional)</label>
+                    <input type="text" class="input-field" id="import-name" placeholder="Enter playlist name">
+                </div>
+                <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                    <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button class="btn btn-primary" onclick="importPlaylist()">
+                        <i class="fas fa-download"></i> Import
+                    </button>
+                </div>
+            `;
+            showModal();
+        }
+
+        function importPlaylist() {
+            const url = document.getElementById('import-url').value.trim();
+            const name = document.getElementById('import-name').value.trim() || extractStreamName(url);
+            
+            if (!url) {
+                showNotification('Please enter a valid URL', 'error');
+                return;
+            }
+
+            const playlist = {
+                id: Date.now(),
+                name: name,
+                url: url,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+
+            appData.playlists.unshift(playlist);
+            displayPlaylists();
+            updateStats();
+            saveData();
+            closeModal();
+            showNotification('Playlist imported successfully!', 'success');
+        }
+
+        function showHelp() {
+            document.getElementById('modal-content').innerHTML = `
+                <h2 style="margin-bottom: 24px;"><i class="fas fa-question-circle"></i> Help</h2>
+                <div style="margin-bottom: 24px;">
+                    <h3 style="margin-bottom: 12px;">How to use UnknownPlaylists</h3>
+                    <ul style="padding-left: 20px; color: var(--text-muted); line-height: 1.6;">
+                        <li>Enter a stream URL in the Home tab and click "Play Now" to watch</li>
+                        <li>Save streams to your Recent list for quick access</li>
+                        <li>Create playlists to organize multiple streams</li>
+                        <li>Use the search feature to find specific streams or playlists</li>
+                        <li>Customize the app appearance in Settings</li>
+                    </ul>
+                </div>
+                <div style="margin-bottom: 24px;">
+                    <h3 style="margin-bottom: 12px;">Supported Formats</h3>
+                    <ul style="padding-left: 20px; color: var(--text-muted); line-height: 1.6;">
+                        <li>M3U8 streams (HLS)</li>
+                        <li>MPEG-DASH streams</li>
+                        <li>Direct video URLs (MP4, WebM, etc.)</li>
+                        <li>M3U playlists</li>
+                        <li>Xtream Codes API</li>
+                        <li>MAC Portal streams</li>
+                    </ul>
+                </div>
+                <div style="display: flex; justify-content: flex-end;">
+                    <button class="btn btn-primary" onclick="closeModal()">Got it!</button>
+                </div>
+            `;
+            showModal();
+        }
+
+        function handleKeyboardShortcuts(e) {
+            // Ctrl/Cmd + K to focus search
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                const activeTab = document.querySelector('.tab-content.active').id;
+                if (activeTab === 'recent') {
+                    document.getElementById('recent-search').focus();
+                } else if (activeTab === 'playlists') {
+                    document.getElementById('playlist-search').focus();
+                }
+            }
+            
+            // Ctrl/Cmd + N to add new playlist
+            if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+                e.preventDefault();
+                addPlaylist();
+            }
+        }
+
+        // Initialize app when page loads
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+ </body>
+</html>
