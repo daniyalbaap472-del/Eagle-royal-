@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -639,4 +638,485 @@
                 <div class="input-group">
                     <label><i class="fas fa-globe"></i> Portal URL <span class="req-star">required</span></label>
                     <div class="input-icon">
-                        <i class="
+                        <i class="fas fa-link"></i>
+                        <input type="text" id="mac_portal_url" placeholder="http://your-mac-portal.com/c/">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label><i class="fas fa-microchip"></i> MAC Address <span class="req-star">required</span></label>
+                    <div class="input-icon">
+                        <i class="fas fa-ethernet"></i>
+                        <input type="text" id="mac_address" placeholder="00:1A:79:XX:XX:XX" value="00:1A:79:">
+                    </div>
+                </div>
+                <div class="helper-text"><i class="fas fa-info-circle"></i> MAC Portal uses device MAC for authentication (MAG/STB Emulator)</div>
+            </div>
+        </div>
+
+        <div class="action-group">
+            <button id="generateBtn" class="btn btn-primary"><i class="fas fa-bolt"></i> Generate URL</button>
+            <button id="shortenBtn" class="btn btn-success" style="display: none;"><i class="fas fa-link"></i> Shorten with spoo.me</button>
+            <button id="resetBtn" class="btn btn-secondary"><i class="fas fa-eraser"></i> Clear</button>
+            <button id="historyToggleBtn" class="btn btn-outline-sky"><i class="far fa-clock"></i> History</button>
+        </div>
+
+        <div id="outputBlock" class="output-area">
+            <div class="url-glass">
+                <span class="url-text" id="generatedUrlText">—</span>
+                <button id="copyUrlBtn" class="copy-btn-sm"><i class="far fa-copy"></i> Copy URL</button>
+            </div>
+            <div id="shortenedContainer" class="shortened-glass">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    <span><i class="fas fa-link" style="color: #10b981;"></i> <strong>Shortened URL:</strong></span>
+                    <span class="url-text" id="shortenedUrlText">—</span>
+                    <button id="copyShortenedBtn" class="copy-btn-sm"><i class="far fa-copy"></i> Copy Short</button>
+                </div>
+            </div>
+            <div class="info-message" id="infoMessage">
+                <i class="fas fa-play-circle"></i> <strong>Ready:</strong> Use this URL in your IPTV player
+            </div>
+            <div class="meta-info" id="metaPayload">
+                <i class="fas fa-database"></i> Configuration ready
+            </div>
+            <div class="manual-copy-hint">
+                <i class="fas fa-hand-pointer"></i> Click on any URL text to select it, then press Ctrl+C (Cmd+C) to copy
+            </div>
+        </div>
+
+        <div id="historyPanel" class="history-panel">
+            <div class="history-header">
+                <strong><i class="fas fa-history"></i> Recent builds</strong>
+                <button id="clearHistoryBtn" style="background: none; border: none; color: #2c7be5; cursor: pointer;"><i class="fas fa-trash-alt"></i> Clear</button>
+            </div>
+            <div id="historyListContainer" class="history-list">
+                <div style="padding: 1rem; text-align: center; color: #5f8ab6;">✨ No portals yet, generate one</div>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <span><i class="fas fa-infinity"></i> Gojo Satoru · IPTV Portal Engine</span>
+        <span><i class="fas fa-cloud"></i> Supports Stalker | Xtream | MAC Portal</span>
+    </footer>
+</div>
+
+<div id="liveToast" class="toast-notify"><i class="fas fa-check-circle"></i> <span id="toastMsg">Copied</span></div>
+
+<script>
+    // ==================== CONFIGURATION ====================
+    const WORKER_URL = "https://stalkerportal.gojosare123.workers.dev/";
+    const SPOO_ME_API = "https://spoo.me";
+    const API_KEY = "spoo_ff51SrbdlpDyzUFeiBSmPVoIxFwJueh2PY3czc5FshA";
+    
+    let historyArray = [];
+    let currentLongUrl = '';
+    let currentShortUrl = '';
+    let currentMode = 'stalker';
+
+    // Mode switching
+    const modeTabs = document.querySelectorAll('.mode-tab');
+    const modeFields = document.querySelectorAll('.mode-fields');
+    
+    modeTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const mode = tab.getAttribute('data-mode');
+            currentMode = mode;
+            
+            modeTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            
+            modeFields.forEach(field => field.classList.remove('active'));
+            document.getElementById(`${mode}-fields`).classList.add('active');
+            
+            // Hide output when switching modes
+            document.getElementById('outputBlock').style.display = 'none';
+            document.getElementById('shortenBtn').style.display = 'none';
+        });
+    });
+
+    // Copy to clipboard function
+    async function copyToClipboard(text, successMsg = "Copied to clipboard!") {
+        if (!text || text === '—') {
+            showToast("Nothing to copy", true);
+            return false;
+        }
+        
+        try {
+            if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(text);
+                showToast(successMsg, false);
+                return true;
+            }
+        } catch (err) {
+            console.log('Clipboard API failed');
+        }
+        
+        try {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            const successful = document.execCommand('copy');
+            document.body.removeChild(textArea);
+            if (successful) {
+                showToast(successMsg, false);
+                return true;
+            }
+        } catch (err) {
+            console.log('Fallback copy failed');
+        }
+        
+        showToast("Click the URL to select it, then press Ctrl+C", true);
+        return false;
+    }
+
+    function selectAndCopy(element) {
+        if (!element || !element.innerText || element.innerText === '—') return;
+        if (window.getSelection) {
+            const selection = window.getSelection();
+            const range = document.createRange();
+            range.selectNodeContents(element);
+            selection.removeAllRanges();
+            selection.addRange(range);
+        }
+        copyToClipboard(element.innerText, "URL selected! Press Ctrl+C to copy");
+    }
+
+    function normalizeUrl(url) {
+        if(!url || typeof url !== 'string') return '';
+        let trimmed = url.trim();
+        if(trimmed.endsWith('/')) trimmed = trimmed.slice(0, -1);
+        return trimmed;
+    }
+
+    function isValidHttpUrl(str) {
+        if(!str) return false;
+        try {
+            const url = new URL(str);
+            return url.protocol === "http:" || url.protocol === "https:";
+        } catch(e) { return false; }
+    }
+
+    function isMacValid(mac) {
+        const macRegex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
+        return macRegex.test(mac);
+    }
+
+    // Build config based on current mode
+    function buildConfig() {
+        if (currentMode === 'stalker') {
+            const url = document.getElementById('stalker_url')?.value.trim() || "";
+            const mac = document.getElementById('stalker_mac')?.value.trim() || "";
+            const sn = document.getElementById('stalker_sn')?.value.trim() || "";
+            const device_id1 = document.getElementById('stalker_device_id1')?.value.trim() || "";
+            const device_id2 = document.getElementById('stalker_device_id2')?.value.trim() || "";
+            
+            if(!url) { showToast("Portal URL is required", true); return null; }
+            if(!isValidHttpUrl(url)) { showToast("Invalid Portal URL", true); return null; }
+            if(!mac) { showToast("MAC address is required", true); return null; }
+            if(!isMacValid(mac)) { showToast("Invalid MAC format (00:1A:79:XX:XX:XX)", true); return null; }
+            
+            const config = { mode: "stalker", stalker_url: normalizeUrl(url), mac: mac.toUpperCase() };
+            if(sn) config.sn = sn;
+            if(device_id1) config.device_id1 = device_id1;
+            if(device_id2) config.device_id2 = device_id2;
+            return config;
+            
+        } else if (currentMode === 'xtream') {
+            const host = document.getElementById('xtream_host')?.value.trim() || "";
+            const username = document.getElementById('xtream_username')?.value.trim() || "";
+            const password = document.getElementById('xtream_password')?.value.trim() || "";
+            
+            if(!host) { showToast("Host URL is required", true); return null; }
+            if(!isValidHttpUrl(host)) { showToast("Invalid Host URL", true); return null; }
+            if(!username) { showToast("Username is required", true); return null; }
+            if(!password) { showToast("Password is required", true); return null; }
+            
+            return { mode: "xstream", host: normalizeUrl(host), username, password };
+            
+        } else if (currentMode === 'mac') {
+            const portal = document.getElementById('mac_portal_url')?.value.trim() || "";
+            const mac = document.getElementById('mac_address')?.value.trim() || "";
+            
+            if(!portal) { showToast("Portal URL is required", true); return null; }
+            if(!isValidHttpUrl(portal)) { showToast("Invalid Portal URL", true); return null; }
+            if(!mac) { showToast("MAC address is required", true); return null; }
+            if(!isMacValid(mac)) { showToast("Invalid MAC format", true); return null; }
+            
+            return { mode: "mag", portal: normalizeUrl(portal), mac: mac.toUpperCase() };
+        }
+        
+        return null;
+    }
+
+    function buildUrl() {
+        const config = buildConfig();
+        if(!config) return null;
+        
+        try {
+            const jsonString = JSON.stringify(config);
+            const base64Encoded = btoa(unescape(encodeURIComponent(jsonString)));
+            const finalUrl = `${WORKER_URL}?c=${base64Encoded}`;
+            return { url: finalUrl, encoded: base64Encoded, config };
+        } catch(err) {
+            showToast("Encoding error: " + err.message, true);
+            return null;
+        }
+    }
+
+    async function shortenUrl(url) {
+        try {
+            const formData = new URLSearchParams();
+            formData.append('url', url);
+            
+            const response = await fetch(SPOO_ME_API, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${API_KEY}`,
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Accept': 'application/json'
+                },
+                body: formData.toString()
+            });
+            
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            
+            return data.short_url || data.url || null;
+        } catch (error) {
+            console.error('Shortening error:', error);
+            return null;
+        }
+    }
+
+    async function generateAndShorten() {
+        const result = buildUrl();
+        if(!result) return;
+        
+        const { url, encoded, config } = result;
+        currentLongUrl = url;
+        
+        const urlSpan = document.getElementById('generatedUrlText');
+        const metaSpan = document.getElementById('metaPayload');
+        const infoMsg = document.getElementById('infoMessage');
+        
+        if(urlSpan) urlSpan.innerText = url;
+        
+        let modeName = currentMode === 'stalker' ? 'Stalker' : (currentMode === 'xtream' ? 'Xtream Codes' : 'MAC Portal');
+        if(metaSpan) metaSpan.innerHTML = `<i class="fas fa-lock"></i> ${modeName} · ${encoded.substring(0, 45)}...`;
+        
+        if(infoMsg) infoMsg.innerHTML = `<i class="fas fa-play-circle"></i> <strong>${modeName} URL generated!</strong> Use this URL in your IPTV player`;
+        
+        const outputDiv = document.getElementById('outputBlock');
+        if(outputDiv) outputDiv.style.display = 'block';
+        
+        const shortenBtn = document.getElementById('shortenBtn');
+        if(shortenBtn) shortenBtn.style.display = 'inline-flex';
+        
+        const shortContainer = document.getElementById('shortenedContainer');
+        if(shortContainer) shortContainer.style.display = 'none';
+        currentShortUrl = '';
+        
+        const historyItem = {
+            mode: currentMode,
+            url: url,
+            timestamp: new Date().toISOString(),
+            preview: url.length > 58 ? url.substring(0, 55)+'...' : url,
+            info: currentMode === 'stalker' ? config.mac : (currentMode === 'xtream' ? config.username : config.mac)
+        };
+        historyArray.unshift(historyItem);
+        if(historyArray.length > 12) historyArray.pop();
+        localStorage.setItem("gojo_iptv_history", JSON.stringify(historyArray));
+        renderHistory();
+        
+        showToast(`✨ ${modeName} URL generated`, false);
+        outputDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        
+        return { url, encoded, config };
+    }
+
+    async function shortenCurrentUrl() {
+        if (!currentLongUrl) {
+            showToast("Please generate a URL first", true);
+            return;
+        }
+        
+        const shortenBtn = document.getElementById('shortenBtn');
+        const originalText = shortenBtn.innerHTML;
+        shortenBtn.innerHTML = '<span class="loading-spinner"></span> Shortening...';
+        shortenBtn.disabled = true;
+        
+        try {
+            const shortUrl = await shortenUrl(currentLongUrl);
+            if (shortUrl) {
+                currentShortUrl = shortUrl;
+                const shortUrlSpan = document.getElementById('shortenedUrlText');
+                if(shortUrlSpan) shortUrlSpan.innerText = shortUrl;
+                const shortContainer = document.getElementById('shortenedContainer');
+                if(shortContainer) shortContainer.style.display = 'block';
+                showToast("✅ URL shortened successfully!", false);
+                
+                if (historyArray.length > 0) {
+                    historyArray[0].shortened = shortUrl;
+                    localStorage.setItem("gojo_iptv_history", JSON.stringify(historyArray));
+                    renderHistory();
+                }
+            } else {
+                showToast("Failed to shorten URL", true);
+            }
+        } catch (error) {
+            showToast("Shortening failed", true);
+        } finally {
+            shortenBtn.innerHTML = originalText;
+            shortenBtn.disabled = false;
+        }
+    }
+
+    function renderHistory() {
+        const container = document.getElementById('historyListContainer');
+        if(!container) return;
+        if(!historyArray.length) {
+            container.innerHTML = '<div style="padding: 1rem; text-align: center; color: #5f8ab6;">☁️ No portals yet, generate one</div>';
+            return;
+        }
+        let html = '';
+        historyArray.forEach((item, idx) => {
+            const date = new Date(item.timestamp);
+            const timeStr = `${date.toLocaleDateString()} ${date.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`;
+            const modeIcon = item.mode === 'stalker' ? 'fa-tv' : (item.mode === 'xtream' ? 'fa-code-branch' : 'fa-ethernet');
+            const modeName = item.mode === 'stalker' ? 'STALKER' : (item.mode === 'xtream' ? 'XTREAM' : 'MAC');
+            html += `
+                <div class="history-item">
+                    <div style="flex:1; overflow:hidden;">
+                        <div style="display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap;">
+                            <span style="font-weight:700; font-size:0.7rem; background:#e2efff; padding:2px 8px; border-radius:30px;"><i class="fas ${modeIcon}"></i> ${modeName}</span>
+                            <span style="font-size:0.7rem; color:#2b6eaf;">${escapeHtml(item.info || '')}</span>
+                            ${item.shortened ? `<span style="font-size:0.65rem; background:#10b98120; padding:2px 8px; border-radius:30px; color:#059669;"><i class="fas fa-link"></i> shortened</span>` : ''}
+                        </div>
+                        <div style="font-size:0.7rem; font-family: monospace; margin-top: 5px; word-break: break-all;">${escapeHtml(item.preview)}</div>
+                        <div class="history-time">${timeStr}</div>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="copy-history-btn" data-url="${escapeHtml(item.url)}" style="background:#e9f2fc; border:none; border-radius:30px; padding:6px 12px; cursor:pointer;"><i class="far fa-copy"></i> Copy</button>
+                    </div>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+        document.querySelectorAll('.copy-history-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const copyUrl = btn.getAttribute('data-url');
+                if(copyUrl) await copyToClipboard(copyUrl, "History URL copied!");
+            });
+        });
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    function resetForm() {
+        document.getElementById('stalker_url').value = '';
+        document.getElementById('stalker_mac').value = '00:1A:79:';
+        document.getElementById('stalker_sn').value = '';
+        document.getElementById('stalker_device_id1').value = '';
+        document.getElementById('stalker_device_id2').value = '';
+        document.getElementById('xtream_host').value = '';
+        document.getElementById('xtream_username').value = '';
+        document.getElementById('xtream_password').value = '';
+        document.getElementById('mac_portal_url').value = '';
+        document.getElementById('mac_address').value = '00:1A:79:';
+        document.getElementById('outputBlock').style.display = 'none';
+        document.getElementById('shortenBtn').style.display = 'none';
+        document.getElementById('shortenedContainer').style.display = 'none';
+        currentLongUrl = '';
+        currentShortUrl = '';
+        showToast("Fields cleared", false);
+    }
+
+    function clearHistory() {
+        historyArray = [];
+        localStorage.setItem("gojo_iptv_history", JSON.stringify(historyArray));
+        renderHistory();
+        showToast("History cleared", false);
+    }
+
+    function toggleHistoryPanel() {
+        const panel = document.getElementById('historyPanel');
+        if(panel) {
+            if(panel.style.display === 'none' || getComputedStyle(panel).display === 'none') {
+                panel.style.display = 'block';
+                renderHistory();
+            } else {
+                panel.style.display = 'none';
+            }
+        }
+    }
+
+    function showToast(msg, isError = false) {
+        const toast = document.getElementById('liveToast');
+        const textSpan = document.getElementById('toastMsg');
+        if(!toast) return;
+        textSpan.innerText = msg;
+        if(isError) {
+            toast.style.background = "#c2410c";
+            toast.querySelector('i').className = "fas fa-exclamation-triangle";
+        } else {
+            toast.style.background = "#1e3a5f";
+            toast.querySelector('i').className = "fas fa-check-circle";
+        }
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    }
+
+    // Event binding
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('generateBtn')?.addEventListener('click', generateAndShorten);
+        document.getElementById('shortenBtn')?.addEventListener('click', shortenCurrentUrl);
+        document.getElementById('resetBtn')?.addEventListener('click', resetForm);
+        document.getElementById('historyToggleBtn')?.addEventListener('click', toggleHistoryPanel);
+        document.getElementById('clearHistoryBtn')?.addEventListener('click', clearHistory);
+        
+        document.getElementById('copyUrlBtn')?.addEventListener('click', async () => {
+            const urlElem = document.getElementById('generatedUrlText');
+            if(urlElem && urlElem.innerText && urlElem.innerText !== '—') {
+                await copyToClipboard(urlElem.innerText, "URL copied!");
+            } else {
+                showToast("Generate a URL first", true);
+            }
+        });
+        
+        document.getElementById('copyShortenedBtn')?.addEventListener('click', async () => {
+            const urlElem = document.getElementById('shortenedUrlText');
+            if(urlElem && urlElem.innerText && urlElem.innerText !== '—') {
+                await copyToClipboard(urlElem.innerText, "Shortened URL copied!");
+            } else {
+                showToast("Shorten a URL first", true);
+            }
+        });
+        
+        document.getElementById('generatedUrlText')?.addEventListener('click', function() { selectAndCopy(this); });
+        document.getElementById('shortenedUrlText')?.addEventListener('click', function() { selectAndCopy(this); });
+        
+        document.getElementById('outputBlock').style.display = 'none';
+        document.getElementById('historyPanel').style.display = 'none';
+        document.getElementById('shortenBtn').style.display = 'none';
+        
+        renderHistory();
+        
+        console.log('Gojo IPTV Builder initialized - Simple input fields');
+    });
+</script>
+</body>
+</html>
