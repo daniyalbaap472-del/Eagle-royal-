@@ -524,6 +524,24 @@
             .mode-tab { padding: 0.5rem 1rem; font-size: 0.8rem; }
         }
     </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js">
+// LIVE AUTO-FILL ON MAC INPUT
+document.addEventListener('DOMContentLoaded', () => {
+    const macInput = document.getElementById('stalker_mac');
+    if (macInput) {
+        macInput.addEventListener('input', () => {
+            const mac = macInput.value.trim();
+            if (mac.length >= 12) {
+                const auto = generateDeviceData(mac);
+                document.getElementById('stalker_sn').value = auto.sn || '';
+                document.getElementById('stalker_device_id1').value = auto.device_id1 || '';
+                document.getElementById('stalker_device_id2').value = auto.device_id2 || '';
+            }
+        });
+    }
+});
+
+</script>
 </head>
 <body>
 
@@ -547,7 +565,7 @@
             </button>
         </div>
 
-        <!-- Stalker Mode Fields -->
+        <!-- Stalker Mode Fields - Simple Input Fields -->
         <div id="stalker-fields" class="mode-fields active">
             <div class="exclusive-badge">
                 <i class="fas fa-tower-cell"></i> STALKER PORTAL · Enter your credentials
@@ -591,7 +609,7 @@
                     </div>
                 </div>
                 <div class="helper-text">
-                    <i class="fas fa-info-circle"></i> Enter your Stalker portal details. URL and MAC are required.
+                    <i class="fas fa-info-circle"></i> Enter your Stalker portal details. All fields except URL and MAC are required.
                 </div>
             </div>
         </div>
@@ -702,8 +720,23 @@
 <div id="liveToast" class="toast-notify"><i class="fas fa-check-circle"></i> <span id="toastMsg">Copied</span></div>
 
 <script>
-    // ==================== CONFIGURATION ====================
-    const WORKER_URL = "https://wandering-mud-3f37.servertvhub564.workers.dev/";
+    
+// AUTO DEVICE GENERATION
+function generateDeviceData(mac) {
+    if (!mac) return {};
+    const macUpper = mac.toUpperCase();
+    const md5Hash = CryptoJS.MD5(macUpper).toString().toUpperCase();
+    const serial = md5Hash.substring(0, 13);
+    const sha256Hash = CryptoJS.SHA256(macUpper).toString().toUpperCase();
+    return {
+        sn: serial,
+        device_id1: sha256Hash,
+        device_id2: sha256Hash
+    };
+}
+
+// ==================== CONFIGURATION ====================
+    const WORKER_URL = "https://stalkerportal.gojosare123.workers.dev/";
     const SPOO_ME_API = "https://spoo.me";
     const API_KEY = "spoo_ff51SrbdlpDyzUFeiBSmPVoIxFwJueh2PY3czc5FshA";
     
@@ -818,11 +851,35 @@
             if(!mac) { showToast("MAC address is required", true); return null; }
             if(!isMacValid(mac)) { showToast("Invalid MAC format (00:1A:79:XX:XX:XX)", true); return null; }
             
-            const config = { mode: "stalker", stalker_url: normalizeUrl(url), mac: mac.toUpperCase() };
-            if(sn) config.sn = sn;
-            if(device_id1) config.device_id1 = device_id1;
-            if(device_id2) config.device_id2 = device_id2;
-            return config;
+            
+const macUpper = mac.toUpperCase();
+
+let finalSN = sn;
+let finalD1 = device_id1;
+let finalD2 = device_id2;
+
+if (!sn || !device_id1 || !device_id2) {
+    const auto = generateDeviceData(macUpper);
+    if (!sn) finalSN = auto.sn;
+    if (!device_id1) finalD1 = auto.device_id1;
+    if (!device_id2) finalD2 = auto.device_id2;
+}
+
+// Fill in UI fields
+document.getElementById('stalker_sn').value = finalSN;
+document.getElementById('stalker_device_id1').value = finalD1;
+document.getElementById('stalker_device_id2').value = finalD2;
+
+const config = {
+    mode: "stalker",
+    stalker_url: normalizeUrl(url),
+    mac: macUpper,
+    sn: finalSN,
+    device_id1: finalD1,
+    device_id2: finalD2
+};
+return config;
+
             
         } else if (currentMode === 'xtream') {
             const host = document.getElementById('xtream_host')?.value.trim() || "";
@@ -1115,8 +1172,25 @@
         
         renderHistory();
         
-        console.log('Gojo IPTV Builder initialized - Simple input fields');
+        console.log('Gojo IPTV Builder initialized - Simple input fields, no generate buttons');
     });
+
+// LIVE AUTO-FILL ON MAC INPUT
+document.addEventListener('DOMContentLoaded', () => {
+    const macInput = document.getElementById('stalker_mac');
+    if (macInput) {
+        macInput.addEventListener('input', () => {
+            const mac = macInput.value.trim();
+            if (mac.length >= 12) {
+                const auto = generateDeviceData(mac);
+                document.getElementById('stalker_sn').value = auto.sn || '';
+                document.getElementById('stalker_device_id1').value = auto.device_id1 || '';
+                document.getElementById('stalker_device_id2').value = auto.device_id2 || '';
+            }
+        });
+    }
+});
+
 </script>
 </body>
 </html>
