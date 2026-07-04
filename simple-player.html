@@ -1,859 +1,371 @@
-<!DOCTYPE html>
+ <!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🦅 EAGLE ROYAL Player</title>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --bg-primary: #0a1f35;
-            --bg-secondary: #1a3a5f;
-            --text-primary: #e0f0ff;
-            --text-secondary: #a0c0e0;
-            --accent: #4da6ff;
-            --accent-hover: #66b3ff;
-            --success: #4CAF50;
-            --error: #f44336;
-            --warning: #ff9800;
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Player</title>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <style>
+        /* Minimal base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
         body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
-            color: var(--text-primary);
+            background: #1a1a1a;
+            color: #eee;
+            font-family: sans-serif;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
             min-height: 100vh;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
         }
-        
-        .main-container {
+        .container {
+            max-width: 900px;
             width: 100%;
-            max-width: 1400px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 12px;
         }
-        
-        /* Header */
+
+        /* Header with back button */
         .header {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            background: linear-gradient(135deg, rgba(26,58,95,0.95), rgba(43,74,111,0.95));
-            backdrop-filter: blur(20px);
-            padding: 20px 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            border: 2px solid rgba(77,166,255,0.3);
-            flex-wrap: wrap;
             gap: 15px;
         }
-        
         .back-button {
-            background: linear-gradient(135deg, var(--accent), var(--accent-hover));
-            color: white;
+            background: #333;
+            color: #fff;
             border: none;
-            padding: 12px 24px;
-            border-radius: 30px;
-            font-size: 16px;
-            font-weight: 700;
+            padding: 8px 18px;
+            border-radius: 4px;
+            font-size: 15px;
             cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 5px 20px rgba(77,166,255,0.4);
+            transition: background 0.15s;
         }
-        
         .back-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(77,166,255,0.7);
+            background: #555;
         }
-        
-        .header-controls {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
+
+        /* Channel info – simple line */
+        .info {
+            font-size: 15px;
+            color: #ccc;
         }
-        
-        .header-button {
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-            border: 2px solid rgba(77,166,255,0.3);
-            padding: 10px 20px;
-            border-radius: 30px;
-            font-size: 14px;
+        .info span {
             font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            color: #fff;
         }
-        
-        .header-button:hover {
-            background: var(--accent);
-            border-color: var(--accent-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(77,166,255,0.5);
-        }
-        
-        /* Channel Info */
-        .channel-info-card {
-            background: linear-gradient(135deg, rgba(26,58,95,0.95), rgba(43,74,111,0.95));
-            backdrop-filter: blur(20px);
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            border: 2px solid rgba(77,166,255,0.3);
-            display: flex;
-            align-items: center;
-            gap: 25px;
-            animation: fadeIn 0.5s ease;
-        }
-        
-        .channel-info-card img {
-            width: 120px;
-            height: 120px;
+
+        /* Video player */
+        video {
+            width: 100%;
+            background: #000;
+            border-radius: 4px;
+            display: block;
+            /* keep aspect ratio by default */
             object-fit: contain;
-            background: rgba(10,31,53,0.6);
-            padding: 15px;
-            border-radius: 15px;
-            border: 2px solid rgba(77,166,255,0.3);
         }
-        
-        .channel-details {
-            flex: 1;
-        }
-        
-        .channel-details h2 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--accent);
-            margin-bottom: 10px;
-            text-shadow: 0 0 10px rgba(77,166,255,0.5);
-        }
-        
-        .channel-name {
-            font-size: 1.8rem;
-            font-weight: 900;
-            color: var(--text-primary);
-            text-shadow: 0 0 15px rgba(77,166,255,0.6);
-        }
-        
-        .live-badge {
-            display: inline-block;
-            background: var(--error);
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            margin-top: 10px;
-            animation: livePulse 2s infinite;
-        }
-        
-        /* Video Player */
-        .player-container {
-            position: relative;
-            width: 100%;
-            background: #000;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 15px 50px rgba(0,0,0,0.8);
-            border: 3px solid rgba(77,166,255,0.3);
-        }
-        
-        .video-wrapper {
-            position: relative;
-            width: 100%;
-            padding-top: 56.25%; /* 16:9 Aspect Ratio */
-        }
-        
-        #player {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-        }
-        
-        /* Loading Spinner */
-        .loading-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 10;
-        }
-        
-        .spinner {
-            width: 60px;
-            height: 60px;
-            border: 6px solid rgba(77,166,255,0.2);
-            border-radius: 50%;
-            border-top-color: var(--accent);
-            animation: spin 1s linear infinite;
-        }
-        
-        /* Error Overlay */
-        .error-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.9);
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 30px;
-            text-align: center;
-            z-index: 11;
-        }
-        
-        .error-overlay i {
-            font-size: 4rem;
-            color: var(--error);
-            margin-bottom: 20px;
-        }
-        
-        .error-overlay h3 {
-            font-size: 1.8rem;
-            margin-bottom: 15px;
-            color: var(--text-primary);
-        }
-        
-        .error-overlay p {
-            font-size: 1.1rem;
-            color: var(--text-secondary);
-            margin-bottom: 25px;
-        }
-        
-        .error-overlay button {
-            background: linear-gradient(135deg, var(--accent), var(--accent-hover));
-            color: white;
-            border: none;
-            padding: 14px 28px;
-            border-radius: 30px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 5px 20px rgba(77,166,255,0.4);
-        }
-        
-        .error-overlay button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(77,166,255,0.7);
-        }
-        
-        /* Status Message */
-        .status-message {
-            text-align: center;
-            padding: 15px 25px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            display: none;
-            font-weight: 600;
-            animation: fadeIn 0.3s;
-        }
-        
-        .status-message.info {
-            background: rgba(77,166,255,0.2);
-            color: var(--accent);
-            border: 2px solid rgba(77,166,255,0.5);
-        }
-        
-        .status-message.error {
-            background: rgba(244,67,54,0.2);
-            color: var(--error);
-            border: 2px solid rgba(244,67,54,0.5);
-        }
-        
-        .status-message.success {
-            background: rgba(76,175,80,0.2);
-            color: var(--success);
-            border: 2px solid rgba(76,175,80,0.5);
-        }
-        
-        /* Video Controls */
-        .video-controls {
+
+        /* Aspect ratio controls */
+        .controls {
             display: flex;
-            justify-content: space-between;
-            gap: 15px;
-            padding: 20px;
-            background: linear-gradient(135deg, rgba(26,58,95,0.95), rgba(43,74,111,0.95));
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            border: 2px solid rgba(77,166,255,0.3);
-            flex-wrap: wrap;
-        }
-        
-        .control-group {
-            display: flex;
+            justify-content: center;
             gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
+            margin-top: 4px;
         }
-        
-        .control-group label {
-            font-weight: 600;
-            color: var(--text-secondary);
-        }
-        
-        .control-btn {
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-            border: 2px solid rgba(77,166,255,0.3);
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .control-btn:hover {
-            background: var(--accent);
-            border-color: var(--accent-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(77,166,255,0.5);
-        }
-        
-        .control-btn.active {
-            background: var(--accent);
-            border-color: var(--accent-hover);
-            box-shadow: 0 0 20px rgba(77,166,255,0.6);
-        }
-        
-        select.control-btn {
-            cursor: pointer;
-        }
-        
-        /* Stats Panel */
-        .stats-panel {
-            background: linear-gradient(135deg, rgba(26,58,95,0.95), rgba(43,74,111,0.95));
-            backdrop-filter: blur(20px);
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            border: 2px solid rgba(77,166,255,0.3);
-            display: none;
-            animation: fadeIn 0.3s;
-        }
-        
-        .stats-panel h3 {
-            margin-bottom: 20px;
-            color: var(--accent);
-            font-size: 1.5rem;
-            text-shadow: 0 0 10px rgba(77,166,255,0.5);
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-        
-        .stat-item {
-            background: rgba(10,31,53,0.6);
-            padding: 15px;
-            border-radius: 15px;
-            border: 2px solid rgba(77,166,255,0.2);
-            transition: all 0.3s;
-        }
-        
-        .stat-item:hover {
-            border-color: var(--accent);
-            box-shadow: 0 5px 20px rgba(77,166,255,0.3);
-        }
-        
-        .stat-label {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            margin-bottom: 5px;
-        }
-        
-        .stat-value {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--accent);
-        }
-        
-        /* Floating PiP Button */
-        .pip-button {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            z-index: 9;
-            background: rgba(77,166,255,0.9);
-            color: white;
+        .fit-button {
+            background: #333;
+            color: #fff;
             border: none;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            padding: 6px 16px;
+            border-radius: 4px;
+            font-size: 14px;
             cursor: pointer;
-            transition: all 0.3s;
-            font-size: 1.2rem;
-            box-shadow: 0 5px 20px rgba(77,166,255,0.5);
+            transition: background 0.15s, transform 0.1s;
         }
-        
-        .pip-button:hover {
-            background: var(--accent-hover);
-            transform: scale(1.1);
-            box-shadow: 0 8px 30px rgba(77,166,255,0.8);
+        .fit-button:hover {
+            background: #444;
         }
-        
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .fit-button.active {
+            background: #FF5722;
+            font-weight: 600;
         }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+
+        /* Status message */
+        .status {
+            text-align: center;
+            padding: 8px;
+            border-radius: 4px;
+            background: rgba(255, 87, 34, 0.1);
+            color: #FF5722;
+            display: none;
         }
-        
-        @keyframes livePulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            body { padding: 10px; }
-            .main-container { gap: 15px; }
-            .header { flex-direction: column; padding: 15px; }
-            .channel-info-card { flex-direction: column; text-align: center; }
-            .channel-info-card img { width: 100px; height: 100px; }
-            .channel-name { font-size: 1.4rem; }
-            .video-controls { flex-direction: column; }
-            .control-group { width: 100%; justify-content: center; }
-            .stats-grid { grid-template-columns: 1fr; }
+        .status.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
         }
     </style>
-</head>
-<body>
-    <div class="main-container">
-        <div class="header">
-            <button class="back-button" id="backButton">
-                <i class="fas fa-arrow-left"></i> Back
-            </button>
-            <div class="header-controls">
-                <button class="header-button" id="statsToggle">
-                    <i class="fas fa-chart-bar"></i> Stats
-                </button>
-                <button class="header-button" id="reloadStream">
-                    <i class="fas fa-sync-alt"></i> Reload
-                </button>
-                <button class="header-button" id="shareButton">
-                    <i class="fas fa-share"></i> Share
-                </button>
-            </div>
-        </div>
-        
-        <div class="channel-info-card">
-            <img id="channelIcon" src="https://placehold.co/120x120/1a3a5f/e0f0ff?text=Logo" alt="Channel Logo">
-            <div class="channel-details">
-                <h2>🎬 Now Playing</h2>
-                <div class="channel-name" id="channelName">Loading...</div>
-                <span class="live-badge"><i class="fas fa-circle"></i> LIVE</span>
-            </div>
-        </div>
-        
-        <div id="statusMessage" class="status-message"></div>
-        
-        <div class="player-container">
-            <div class="video-wrapper">
-                <video id="player" controls playsinline crossorigin="anonymous"></video>
-                
-                <div class="loading-overlay" id="loadingOverlay">
-                    <div class="spinner"></div>
-                </div>
-                
-                <div class="error-overlay" id="errorOverlay">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <h3 id="errorTitle">Stream Error</h3>
-                    <p id="errorMessage">An error occurred while loading the stream.</p>
-                    <button id="retryButton"><i class="fas fa-redo"></i> Retry</button>
-                </div>
-                
-                <button class="pip-button" id="pipButton" title="Picture-in-Picture">
-                    <i class="fas fa-compress-arrows-alt"></i>
-                </button>
-            </div>
-        </div>
-        
-        <div class="video-controls">
-            <div class="control-group">
-                <label>Video Fit:</label>
-                <button class="control-btn active" data-fit="contain">
-                    <i class="fas fa-compress"></i> Fit
-                </button>
-                <button class="control-btn" data-fit="cover">
-                    <i class="fas fa-expand"></i> Fill
-                </button>
-                <button class="control-btn" data-fit="fill">
-                    <i class="fas fa-arrows-alt"></i> Stretch
-                </button>
-            </div>
-            
-            <div class="control-group">
-                <label>Quality:</label>
-                <select class="control-btn" id="qualitySelector">
-                    <option value="auto">Auto</option>
-                </select>
-            </div>
-            
-            <div class="control-group">
-                <button class="control-btn" id="muteButton">
-                    <i class="fas fa-volume-up"></i> Mute
-                </button>
-                <button class="control-btn" id="fullscreenButton">
-                    <i class="fas fa-expand"></i> Fullscreen
-                </button>
-            </div>
-        </div>
-        
-        <div class="stats-panel" id="statsPanel">
-            <h3>📊 Stream Statistics</h3>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <div class="stat-label">Buffer Length</div>
-                    <div class="stat-value" id="statBuffer">0 s</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">Current Bitrate</div>
-                    <div class="stat-value" id="statBitrate">0 Mbps</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">Resolution</div>
-                    <div class="stat-value" id="statResolution">0x0</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">Frames Dropped</div>
-                    <div class="stat-value" id="statDropped">0</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">Volume Level</div>
-                    <div class="stat-value" id="statVolume">100%</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">Connection Speed</div>
-                    <div class="stat-value" id="statSpeed">0 Mbps</div>
-                </div>
-            </div>
-        </div>
+ </head>
+ <body>
+  <div class="container">
+   <!-- Back button -->
+   <div class="header">
+    <button class="back-button">← Back</button>
+    <div class="info">
+     Channel: <span id="channelName">Loading...</span>
     </div>
-
-    <script>
+   </div>
+   <!-- Video element with native controls -->
+   <video id="player" controls playsinline crossorigin="anonymous"></video>
+   <!-- Aspect ratio buttons -->
+   <div class="controls">
+    <button class="fit-button active" data-fit="fit">Fit</button>
+    <button class="fit-button" data-fit="fill">Fill</button>
+    <button class="fit-button" data-fit="stretch">Stretch</button>
+   </div>
+   <!-- Status overlay -->
+   <div id="statusMessage" class="status"></div>
+  </div>
+  <script>
         (function() {
-            const CORS_PROXY_URL = 'https://proxy-js.onrender.com/';
+            const CORS_PROXY_URL = 'https://demonji.onrender.com/cors-proxy.php/';
             const urlParams = new URLSearchParams(window.location.search);
             const streamParam = urlParams.get('s') || '';
             const channelNameParam = urlParams.get('name') || 'Unknown Channel';
-            const channelIconParam = urlParams.get('icon') || '';
-            const backUrlParam = urlParams.get('back') || 'index.html';
-            
+            const backUrlParam = urlParams.get('back') || 'MaC.html';
+
             const player = document.getElementById('player');
             const channelName = document.getElementById('channelName');
-            const channelIcon = document.getElementById('channelIcon');
-            const backButton = document.getElementById('backButton');
+            const backButton = document.querySelector('.back-button');
             const statusMessage = document.getElementById('statusMessage');
-            const loadingOverlay = document.getElementById('loadingOverlay');
-            const errorOverlay = document.getElementById('errorOverlay');
-            const errorTitle = document.getElementById('errorTitle');
-            const errorMessage = document.getElementById('errorMessage');
-            const retryButton = document.getElementById('retryButton');
-            const pipButton = document.getElementById('pipButton');
-            const qualitySelector = document.getElementById('qualitySelector');
-            const statsPanel = document.getElementById('statsPanel');
-            const statsToggle = document.getElementById('statsToggle');
-            const reloadStreamBtn = document.getElementById('reloadStream');
-            const muteButton = document.getElementById('muteButton');
-            const fullscreenButton = document.getElementById('fullscreenButton');
-            const shareButton = document.getElementById('shareButton');
-            
+            const fitButtons = document.querySelectorAll('.fit-button');
+
             let hls;
             let decodedStreamUrl = '';
             let reconnectAttempts = 0;
-            const MAX_RECONNECT_ATTEMPTS = 5;
+            const MAX_RECONNECT_ATTEMPTS = 10;
             const RECONNECT_DELAY = 3000;
-            let statsInterval = null;
+            let stallDetector = null;
 
-            function init() {
-                setupEventListeners();
-                setChannelInfo();
-                
+            // --- Back navigation ---
+            backButton.addEventListener('click', function() {
                 try {
-                    decodedStreamUrl = atob(decodeURIComponent(streamParam));
-                    initHls();
-                } catch (e) {
-                    showError('Invalid Stream URL', 'The stream URL format is invalid.');
+                    window.location.assign(decodeURIComponent(backUrlParam));
+                } catch (_) {
+                    window.location.href = 'MaC.html';
                 }
-            }
+            });
 
-            function setupEventListeners() {
-                backButton.addEventListener('click', () => {
-                    try {
-                        window.location.href = decodeURIComponent(backUrlParam);
-                    } catch {
-                        window.history.back();
-                    }
+            // --- Aspect ratio buttons ---
+            fitButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const fit = this.dataset.fit;
+                    player.style.objectFit = fit === 'fill' ? 'cover' : fit === 'stretch' ? 'fill' : 'contain';
+                    fitButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
                 });
-                
-                retryButton.addEventListener('click', initHls);
-                pipButton.addEventListener('click', togglePip);
-                statsToggle.addEventListener('click', toggleStats);
-                reloadStreamBtn.addEventListener('click', () => {
-                    showStatus('Reloading stream...', 'info');
-                    initHls();
-                });
-                muteButton.addEventListener('click', toggleMute);
-                fullscreenButton.addEventListener('click', toggleFullscreen);
-                shareButton.addEventListener('click', shareStream);
-                
-                document.querySelectorAll('[data-fit]').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        player.style.objectFit = btn.dataset.fit;
-                        document.querySelectorAll('[data-fit]').forEach(b => b.classList.remove('active'));
-                        btn.classList.add('active');
-                    });
-                });
+            });
 
-                player.addEventListener('play', () => {
-                    hideError();
-                    startStatsMonitoring();
-                });
+            // --- Channel info ---
+            channelName.textContent = decodeURIComponent(channelNameParam);
 
-                player.addEventListener('pause', stopStatsMonitoring);
-                player.addEventListener('volumechange', updateMuteButton);
-
-                if (!document.pictureInPictureEnabled) {
-                    pipButton.style.display = 'none';
-                }
-            }
-
-            function setChannelInfo() {
-                channelName.textContent = decodeURIComponent(channelNameParam);
-                if (channelIconParam) {
-                    channelIcon.src = decodeURIComponent(channelIconParam);
-                    channelIcon.alt = channelName.textContent + ' Logo';
-                }
-            }
-
-            function showStatus(message, type = 'info') {
-                statusMessage.textContent = message;
-                statusMessage.className = `status-message ${type}`;
+            // --- Status helpers ---
+            function showStatus(msg, isError = false) {
+                statusMessage.textContent = msg;
                 statusMessage.style.display = 'block';
+                statusMessage.className = 'status' + (isError ? ' error' : '');
             }
-
             function hideStatus() {
                 statusMessage.style.display = 'none';
             }
 
-            function showLoading() {
-                loadingOverlay.style.display = 'flex';
+            // --- Stall detector (HEVC/AC3 fallback) ---
+            function startStallDetector() {
+                stallDetector = setTimeout(() => {
+                    if (player.currentTime > 0.1 && player.videoWidth === 0) {
+                        if (hls) hls.destroy();
+                        clearTimeout(stallDetector);
+                        showStatus('Error: Video format (HEVC/H.265) or audio (AC3) not supported by your browser.', true);
+                    }
+                }, 4000);
             }
 
-            function hideLoading() {
-                loadingOverlay.style.display = 'none';
-            }
-
-            function showError(title, message) {
-                errorTitle.textContent = title;
-                errorMessage.textContent = message;
-                errorOverlay.style.display = 'flex';
-                hideLoading();
-            }
-
-            function hideError() {
-                errorOverlay.style.display = 'none';
-            }
-
-            function togglePip() {
-                if (document.pictureInPictureElement) {
-                    document.exitPictureInPicture();
+            // --- HLS error handling ---
+            function handleStreamError() {
+                clearTimeout(stallDetector);
+                if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+                    reconnectAttempts++;
+                    showStatus(`Stream lost. Reconnecting… (${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`, true);
+                    setTimeout(initHls, RECONNECT_DELAY);
                 } else {
-                    player.requestPictureInPicture();
+                    showStatus('Could not reconnect to the stream.', true);
                 }
             }
 
-            function toggleStats() {
-                statsPanel.style.display = statsPanel.style.display === 'none' ? 'block' : 'none';
-            }
-
-            function toggleMute() {
-                player.muted = !player.muted;
-                updateMuteButton();
-            }
-
-            function updateMuteButton() {
-                muteButton.innerHTML = player.muted ? 
-                    '<i class="fas fa-volume-mute"></i> Unmute' : 
-                    '<i class="fas fa-volume-up"></i> Mute';
-            }
-
-            function toggleFullscreen() {
-                if (!document.fullscreenElement) {
-                    player.requestFullscreen().catch(err => console.error(err));
-                } else {
-                    document.exitFullscreen();
-                }
-            }
-
-            function shareStream() {
-                if (navigator.share) {
-                    navigator.share({
-                        title: channelName.textContent,
-                        text: 'Watch ' + channelName.textContent + ' live!',
-                        url: window.location.href
-                    });
-                } else {
-                    navigator.clipboard.writeText(window.location.href);
-                    showStatus('Link copied to clipboard!', 'success');
-                    setTimeout(hideStatus, 3000);
-                }
-            }
-
-            function startStatsMonitoring() {
-                stopStatsMonitoring();
-                statsInterval = setInterval(updateStats, 1000);
-            }
-
-            function stopStatsMonitoring() {
-                if (statsInterval) {
-                    clearInterval(statsInterval);
-                    statsInterval = null;
-                }
-            }
-
-            function updateStats() {
-                if (!hls) return;
-
-                // Buffer
-                const bufferLength = player.buffered.length > 0 ? 
-                    Math.floor(player.buffered.end(player.buffered.length - 1) - player.currentTime) : 0;
-                document.getElementById('statBuffer').textContent = bufferLength + ' s';
-
-                // Bitrate
-                const level = hls.levels[hls.currentLevel];
-                if (level) {
-                    const bitrate = (level.bitrate / 1000000).toFixed(2);
-                    document.getElementById('statBitrate').textContent = bitrate + ' Mbps';
-                    document.getElementById('statResolution').textContent = `${level.width}x${level.height}`;
-                }
-
-                // Volume
-                document.getElementById('statVolume').textContent = Math.round(player.volume * 100) + '%';
-
-                // Speed
-                const speed = (hls.bandwidthEstimate / 1000000).toFixed(2);
-                document.getElementById('statSpeed').textContent = speed + ' Mbps';
-
-                // Dropped frames
-                if (player.getVideoPlaybackQuality) {
-                    const quality = player.getVideoPlaybackQuality();
-                    document.getElementById('statDropped').textContent = quality.droppedVideoFrames || 0;
-                }
-            }
-
+            // --- HLS initialisation ---
             function initHls() {
                 if (!decodedStreamUrl) {
-                    showError('No Stream URL', 'No stream URL provided.');
+                    showStatus('Error: No stream URL provided.', true);
                     return;
                 }
 
                 if (hls) hls.destroy();
-                stopStatsMonitoring();
-                showLoading();
-                showStatus('Loading stream...', 'info');
-                hideError();
+                clearTimeout(stallDetector);
+                player.pause();
+                showStatus('Loading channel…');
 
                 if (Hls.isSupported()) {
                     hls = new Hls({
-                        maxBufferLength: 30,
-                        maxMaxBufferLength: 60,
+                        maxBufferLength: 300,
+                        maxMaxBufferLength: 600,
+                        maxBufferSize: 500 * 1024 * 1024,
+                        fragLoadingMaxRetry: 8,
+                        lowLatencyMode: true,
                         enableWorker: true,
-                        lowLatencyMode: true
+                        xhrSetup: (xhr, url) => {
+                            xhr.open('GET', CORS_PROXY_URL + url, true);
+                            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                            xhr.setRequestHeader('Referer', 'http://demonji.onrender.com/');
+                        }
                     });
 
-                    hls.loadSource(decodedStreamUrl);
+                    hls.loadSource(CORS_PROXY_URL + decodedStreamUrl);
                     hls.attachMedia(player);
 
-                    hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
-                        hideLoading();
+                    hls.on(Hls.Events.MANIFEST_PARSED, () => {
                         hideStatus();
                         reconnectAttempts = 0;
-
-                        // Update quality selector
-                        qualitySelector.innerHTML = '<option value="auto">Auto</option>';
-                        data.levels.forEach((level, index) => {
-                            const option = document.createElement('option');
-                            option.value = index;
-                            option.textContent = level.height + 'p';
-                            qualitySelector.appendChild(option);
-                        });
-
-                        qualitySelector.onchange = function() {
-                            hls.currentLevel = this.value === 'auto' ? -1 : parseInt(this.value);
-                        };
-
                         player.play().catch(() => {
-                            showStatus('Click to play', 'info');
+                            showStatus('Autoplay blocked – tap to play.', false);
                         });
+                        startStallDetector();
                     });
 
                     hls.on(Hls.Events.ERROR, (event, data) => {
                         if (data.fatal) {
-                            if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
-                                reconnectAttempts++;
-                                showStatus(`Reconnecting... (${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`, 'error');
-                                setTimeout(initHls, RECONNECT_DELAY);
-                            } else {
-                                showError('Connection Failed', 'Unable to connect to the stream. Please try again later.');
-                            }
+                            handleStreamError();
                         }
                     });
-                } else if (player.canPlayType('application/vnd.apple.mpegurl')) {
-                    // Native HLS (Safari)
-                    player.src = decodedStreamUrl;
-                    player.addEventListener('loadedmetadata', () => {
-                        hideLoading();
-                        hideStatus();
-                        player.play();
-                    });
-                    player.addEventListener('error', () => {
-                        showError('Playback Error', 'Unable to play this stream.');
-                    });
                 } else {
-                    showError('Not Supported', 'HLS streaming is not supported on this browser.');
+                    showStatus('HLS is not supported on this browser.', true);
                 }
             }
 
-            // Initialize
-            init();
+            // --- Decode and start ---
+            try {
+                decodedStreamUrl = atob(decodeURIComponent(streamParam));
+                initHls();
+            } catch (e) {
+                showStatus('Error: Invalid stream URL format.', true);
+            }
         })();
     </script>
-</body>
+  <script>
+    (function() {
+        'use strict';
+
+        // ─── 1. Disable right‑click (context menu) ───
+        document.addEventListener('contextmenu', e => e.preventDefault());
+
+        // ─── 2. Disable text selection (except on form inputs) ───
+        document.addEventListener('selectstart', e => {
+            if (e.target.closest('input, textarea, [contenteditable="true"]')) return;
+            e.preventDefault();
+        });
+
+        // ─── 3. Disable dragging of page elements ───
+        document.addEventListener('dragstart', e => e.preventDefault());
+
+        // ─── 4. Block keyboard shortcuts that open DevTools or view‑source ───
+        //    (We do NOT block Ctrl+C / Ctrl+V / Ctrl+S — they are essential for users)
+        document.addEventListener('keydown', e => {
+            const key = e.key.toLowerCase();
+            const ctrl = e.ctrlKey || e.metaKey;
+            const shift = e.shiftKey;
+
+            if (key === 'f12' ||
+                (ctrl && shift && (key === 'i' || key === 'j')) ||
+                (ctrl && key === 'u')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // ─── 5. Block view‑source: protocol (if someone types view-source: in URL) ───
+        if (window.location.protocol === 'view-source:') {
+            window.location.href = 'about:blank';
+        }
+
+        // ─── 6. (Optional) Silence console logging — prevents casual inspection ───
+        //     This does not break your site, but makes `console.log` useless.
+        const noop = () => {};
+        ['log', 'warn', 'error', 'info', 'debug', 'trace', 'dir', 'dirxml', 'table', 'assert', 'count', 'group', 'groupEnd', 'time', 'timeEnd', 'profile', 'profileEnd'].forEach(m => {
+            if (console[m]) console[m] = noop;
+        });
+
+        // ─── 7. (Safe) DevTools detection using window size difference ───
+        //     This is less intrusive and rarely triggers false positives.
+        (function detectDevTools() {
+            let warned = false;
+
+            function checkSize() {
+                // DevTools usually take up at least 200px of width or height.
+                const threshold = 200;
+                const widthDiff = window.outerWidth - window.innerWidth;
+                const heightDiff = window.outerHeight - window.innerHeight;
+
+                if ((widthDiff > threshold || heightDiff > threshold) && !warned) {
+                    warned = true;
+                    // Instead of wiping the page, we show a subtle overlay
+                    // that disappears when they close DevTools.
+                    const overlay = document.createElement('div');
+                    overlay.id = 'devtools-overlay';
+                    overlay.style.cssText = `
+                        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                        background: rgba(0,0,0,0.85);
+                        display: flex; justify-content: center; align-items: center;
+                        z-index: 999999;
+                        color: #ff4444;
+                        font-family: sans-serif;
+                        font-size: 1.5rem;
+                        flex-direction: column;
+                        text-align: center;
+                        padding: 20px;
+                        backdrop-filter: blur(4px);
+                    `;
+                    overlay.innerHTML = `
+                        <h1 style="font-size: 2.5rem; margin: 0;">⛔ Developer Tools Detected</h1>
+                        <p style="color: #aaa; max-width: 500px;">Please close the developer tools to continue using this site.</p>
+                        <p style="color: #666; font-size: 0.9rem; margin-top: 20px;">(This overlay will disappear automatically when you close them.)</p>
+                    `;
+                    document.body.appendChild(overlay);
+
+                    // Re-check every second; remove overlay if tools are closed.
+                    const interval = setInterval(() => {
+                        const newWidthDiff = window.outerWidth - window.innerWidth;
+                        const newHeightDiff = window.outerHeight - window.innerHeight;
+                        if (newWidthDiff <= threshold && newHeightDiff <= threshold) {
+                            const el = document.getElementById('devtools-overlay');
+                            if (el) el.remove();
+                            clearInterval(interval);
+                            warned = false;
+                        }
+                    }, 1000);
+                }
+            }
+
+            // Check on resize and periodically
+            window.addEventListener('resize', checkSize);
+            setInterval(checkSize, 2000);
+            // Initial check after a short delay
+            setTimeout(checkSize, 500);
+        })();
+
+        console.log('🛡️ Protection active (user‑friendly mode)');
+    })();
+</script>
+ </body>
 </html>
